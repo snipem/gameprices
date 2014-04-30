@@ -25,8 +25,6 @@ elif version == 2:
     data = json.load(response)
     print(data['default_sku']['entitlements'][0]['name'].encode("utf-8") + " - " + data['default_sku']['display_price'].encode("utf-8"))  
 
-print data['default_sku']['entitlements'][0]['name'].encode("utf-8") + " - " + data['default_sku']['display_price'].encode("utf8")
-
 currentPrice = float(data['default_sku']['price']) / 100
 
 if (currentPrice > wishprice):
