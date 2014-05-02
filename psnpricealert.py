@@ -32,7 +32,6 @@ parser.add_argument("--price", help="desired price of game", type=float)
 apiRoot = "https://store.sonyentertainmentnetwork.com/store/api/chihiro/00_09_000"
 
 def getJsonResponse(url):
-<<<<<<< HEAD
 
     response = urlopen(url)
 
@@ -56,7 +55,6 @@ def checkWishPrice(cid, store, wishPrice):
         print("Wish price {0:.2f} does not yet match {1:.2f}, exiting".format(wishPrice, currentPrice))
     else:
         print("Wish price %{0:.2f} matched. Is now: %{1:.2f}".format(wishPrice, currentPrice))
-
     	#TODO send alert
         raise Exception("Alert sending not yet implemented")
 
