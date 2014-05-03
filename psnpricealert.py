@@ -19,9 +19,9 @@ else:
 
 logging.basicConfig(
     filename="psnpricealert.log",
-    level = logging.DEBUG,
+    level = logging.INFO,
     format = "%(asctime)s [%(levelname)-8s] %(message)s",
-    filemode = "a")
+    filemode = "w")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--cid", help="CID of game to check")
@@ -61,19 +61,26 @@ def getCidForName(name, store):
     url = apiRoot+"/bucket_search/"+store+"/19/"+encName+"?size=99999&start=0"
     data = getJsonResponse(url)
     links = data['categories']['games']['links']
+    cids = []
 
-    if (len(links) > 1):
-        logging.error("Found more than one entry for name " + name)
-        for link in links:
-            logging.debug ("Found: " + link['default_sku']['entitlements'][0]['name'] + " - " + link['default_sku']['entitlements'][0]['id'])
-        raise Exception("More than one entry found for name '" + name + "'. Check log file.")
-    else:
-        cid = links[0]['default_sku']['entitlements'][0]['id']
-        logging.info("Found cid '"+cid+"' for name '"+name+"'")
-        return cid
+
+    for link in links:
+        try:
+            logging.debug("Parsing:\n" + prettyPrintJson(link))
+            name = link['name']
+            itemType = link['default_sku']['name']
+            cid = link['default_sku']['entitlements'][0]['id']
+            platform = link['playable_platform']
+        
+            logging.info ("Found: " + name + " - " + cid + " - Platform: " + str(platform) + " - Type: " + itemType)
+            cids.append(cid)
+        except Exception , e:
+            logging.warn("Got error '"+e+"'' while parsing\n" + prettyPrintJson(link))
+
+    return cids
 
 def prettyPrintJson(jsonString):
-    print_enc(json.dumps(jsonString, sort_keys=True,indent=4, separators=(',', ': ')))
+    return json.dumps(jsonString, sort_keys=True,indent=4, separators=(',', ': '))
 
 def print_enc(uncoded):
     if version == 2:
@@ -86,9 +93,15 @@ def main():
     args = parser.parse_args()
 
     if (args.search != None and args.store != None):
-        cid = getCidForName(args.search,args.store)
-        print (cid)
-        exit(0)
+        cids = getCidForName(args.search,args.store)
+
+        if (len(cids) != 1):
+            logging.error("Found "+str(len(cids))+" entries for name '" + args.search + "' while searching for only one")
+            exit(-1)
+        else:
+            print (cids.pop())
+            exit(0)
+
     elif (args.store != None and args.cid != None and args.price != None):
         priceMatched = checkWishPrice(args.cid, args.store, args.price)
         if (priceMatched):
