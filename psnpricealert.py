@@ -14,7 +14,8 @@ if version == 3:
 elif version == 2:
     from urllib2 import urlopen
     from urllib2 import quote
-    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
+    #Set UTF-8 as standard output encoding, try to act as Python 3.x does
+    sys.stdout = codecs.getwriter("UTF-8")(sys.stdout)
 else:
     version == False
 
