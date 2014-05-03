@@ -31,12 +31,19 @@ Example
 -------
 You may run this script with the following command lines:
 
-Define the name of a game and the store. Get a CID as result, will return EP0101-ULES01372_00-GPCMETALGE000001
+### Searching for the CID of an item
 
-	python psnpricealert.py --search "metal gear solid peace walker psp" --store DE/de ||
-	echo "Did not find a unique CID. See log for further details. Be more precise"
+Define the name of a game and the store.
 
-Check if desired price has been met. Price is in local currency. As exit statuses render the outcome of the alert, you may send you e-mails or desktop notifications with "&&" or "||". In this example, there is a string printed to the console.
+	python psnpricealert.py --search "metal gear solid peace walker psp" --store DE/de
+
+You will get a result containing one to many search results with the CID
+
+	EP0101-ULES01372_00-GPCMETALGE000001	Metal Gear Solid: Peace Walker [PSP]	[u'PS Vita', u'PSP\xae']	Vollversion
+
+### Check if desired price has been met
+
+The price is in local currency. As exit statuses render the outcome of the alert, you may send you e-mails or desktop notifications with "&&" or "||". In this example, there is a string printed to the console.
 
 	python psnpricealert.py --cid EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
 	echo "Price matched, let's buy Metal Gear Solid PW"

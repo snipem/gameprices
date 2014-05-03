@@ -55,14 +55,9 @@ def checkWishPrice(cid, store, wishPrice):
         return True
 
 def getCidForName(name, store):
-    # encode name for HTTP request
-    encName = quote(name)
 
-    url = apiRoot+"/bucket_search/"+store+"/19/"+encName+"?size=99999&start=0"
-    data = getJsonResponse(url)
-    links = data['categories']['games']['links']
+    links = searchForItemsByName(name, store)
     cids = []
-
 
     for link in links:
         try:
@@ -79,6 +74,36 @@ def getCidForName(name, store):
 
     return cids
 
+def searchForItemsByName(name, store):
+    # encode name for HTTP request
+    encName = quote(name)
+
+    url = apiRoot+"/bucket_search/"+store+"/19/"+encName+"?size=99999&start=0"
+    data = getJsonResponse(url)
+    links = data['categories']['games']['links']
+    return links
+
+def searchForItemsByNameAndFormatOutput(name, store):
+    links = searchForItemsByName(name, store)
+    cids = []
+    foundItems = []
+
+    for link in links:
+        try:
+            logging.debug("Parsing:\n" + prettyPrintJson(link))
+            name = link['name']
+            itemType = link['default_sku']['name']
+            cid = link['default_sku']['entitlements'][0]['id']
+            platform = link['playable_platform']
+        
+            foundItems.append(cid + "\t" + name + "\t" + str(platform) + "\t" + itemType)
+            cids.append(cid)
+        except Exception , e:
+            logging.warn("Got error '"+e+"'' while parsing\n" + prettyPrintJson(link))
+
+    return foundItems
+    
+
 def prettyPrintJson(jsonString):
     return json.dumps(jsonString, sort_keys=True,indent=4, separators=(',', ': '))
 
@@ -93,14 +118,12 @@ def main():
     args = parser.parse_args()
 
     if (args.search != None and args.store != None):
-        cids = getCidForName(args.search,args.store)
-
-        if (len(cids) != 1):
-            logging.error("Found "+str(len(cids))+" entries for name '" + args.search + "' while searching for only one")
-            exit(-1)
-        else:
-            print (cids.pop())
+        printString = searchForItemsByNameAndFormatOutput(args.search,args.store)
+        if (len(printString) > 0):
+            print_enc("\n".join(printString))
             exit(0)
+        else:
+            exit(-1)
 
     elif (args.store != None and args.cid != None and args.price != None):
         priceMatched = checkWishPrice(args.cid, args.store, args.price)
