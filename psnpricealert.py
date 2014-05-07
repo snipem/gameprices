@@ -4,6 +4,7 @@ import logging
 import argparse
 import codecs
 import locale
+import time
 
 version = sys.version_info[0]
 
@@ -30,6 +31,8 @@ parser.add_argument("--price", help="desired price of game", type=float)
 parser.add_argument("--search", help="Name of item to search for")
 
 apiRoot = "https://store.sonyentertainmentnetwork.com/store/api/chihiro/00_09_000"
+fetchSize = "99999"
+apiVersion = "19"
 
 def getJsonResponse(url):
 
@@ -40,10 +43,14 @@ def getJsonResponse(url):
 
     return data
 
-def checkWishPrice(cid, store, wishPrice):
-    url = apiRoot + "/container/"+store+"/19/"+cid+"?size=99999"
+def getItemForCid(cid, store):
+    url = apiRoot + "/container/"+store+"/"+apiVersion+"/"+cid+"?size="+fetchSize
     data = getJsonResponse(url)
+    return data
 
+def checkWishPrice(cid, store, wishPrice):
+
+    data = getItemForCid(cid, store)
     print_enc(data['default_sku']['entitlements'][0]['name'] + " - " + data['default_sku']['display_price'])
     currentPrice = float(data['default_sku']['price']) / 100
 
@@ -78,7 +85,7 @@ def searchForItemsByName(name, store):
     # encode name for HTTP request
     encName = quote(name)
 
-    url = apiRoot+"/bucket_search/"+store+"/19/"+encName+"?size=99999&start=0"
+    url = apiRoot+"/bucket_search/"+store+"/"+apiVersion+"/"+encName+"?size="+fetchSize+"&start=0"
     data = getJsonResponse(url)
     links = data['categories']['games']['links']
     return links
@@ -102,7 +109,18 @@ def searchForItemsByNameAndFormatOutput(name, store):
             logging.warn("Got error '"+e+"'' while parsing\n" + prettyPrintJson(link))
 
     return foundItems
+
+def getItemsByContainer(container, store):
+
+    encContainer = quote(container)
+    timestamp = timestamp = int(time.time())
     
+    url = apiRoot+"/container/"+store+"/"+apiVersion+"/"+container+"/"+str(timestamp)+"?size="+fetchSize
+
+    data = getJsonResponse(url)
+    links = data['links']
+
+    return links
 
 def prettyPrintJson(jsonString):
     return json.dumps(jsonString, sort_keys=True,indent=4, separators=(',', ': '))

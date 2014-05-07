@@ -37,7 +37,7 @@ Define the name of a game and the store.
 
 	python psnpricealert.py --search "metal gear solid peace walker psp" --store DE/de
 
-You will get a result containing one to many search results with the CID
+You will get a result containing one to many search results with the CID. The first output of each search line is the CID, the second the name, the third the supported systems and the last is a description of the item type in the local store language. It is "Vollversion" here which means "full version" in German.
 
 	EP0101-ULES01372_00-GPCMETALGE000001	Metal Gear Solid: Peace Walker [PSP]	[u'PS Vita', u'PSP\xae']	Vollversion
 
