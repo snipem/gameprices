@@ -76,7 +76,7 @@ def getCidForName(name, store):
         
             logging.info ("Found: " + name + " - " + cid + " - Platform: " + str(platform) + " - Type: " + itemType)
             cids.append(cid)
-        except Exception , e:
+        except Exception as e:
             logging.warn("Got error '"+e+"'' while parsing\n" + prettyPrintJson(link))
 
     return cids
@@ -105,7 +105,7 @@ def searchForItemsByNameAndFormatOutput(name, store):
         
             foundItems.append(cid + "\t" + name + "\t" + str(platform) + "\t" + itemType)
             cids.append(cid)
-        except Exception , e:
+        except Exception as e:
             logging.warn("Got error '"+e+"'' while parsing\n" + prettyPrintJson(link))
 
     return foundItems
