@@ -39,7 +39,6 @@ def getPlaystationPlusPrice(item):
     rewards = item['default_sku']['rewards']
 
     for reward in rewards:
-        print(utils.prettyPrintJson(reward))
         if (reward['isPlus'] == True):
             return float(reward['price'])/100
 

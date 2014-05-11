@@ -31,6 +31,8 @@ def test_getPlaystationPlusPrice():
 	store = "DE/de"
 	item = psn.getItemForCid(freeForPlusCid,store)
 
+	print("Using '"+item['name']+"' ("+freeForPlusCid+") from "+store+" for comparison. Item must be free for Plus members in order to pass the unit test. This might fail due to price changes")
+
 	assert item is not None
 
 	normalPrice = psn.getPrice(item)
@@ -41,3 +43,4 @@ def test_getPlaystationPlusPrice():
 	assert type(normalPrice) is float
 	assert type(plusPrice) is float
 	assert plusPrice == 0
+	
