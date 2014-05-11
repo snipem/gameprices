@@ -1,5 +1,6 @@
 playstation-price-drop-alert
 ============================
+[![Build Status](https://travis-ci.org/snipem/playstation-price-drop-alert.svg?branch=master)](https://travis-ci.org/snipem/playstation-price-drop-alert)
 
 Command line tool for alerting price drops in the Sony Entertainment Network aka Playstation Network
 
