@@ -3,7 +3,6 @@ import logging
 import argparse
 import codecs
 import locale
-import time
 
 from psnpricealert.psn import psn
 from psnpricealert.utils import utils
@@ -23,7 +22,9 @@ parser.add_argument("--search", help="Name of item to search for")
 def checkWishPrice(cid, store, wishPrice):
 
     data = psn.getItemForCid(cid, store)
-    utils.print_enc(data['default_sku']['entitlements'][0]['name'] + " - " + data['default_sku']['display_price'])
+    normalPrice = psn.getPrice(item)
+
+    utils.print_enc(data['default_sku']['entitlements'][0]['name'] + " - " + normalPrice)
     currentPrice = float(data['default_sku']['price']) / 100
 
     if (currentPrice > wishPrice):

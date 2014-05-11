@@ -1,6 +1,7 @@
 import sys
 import logging
 from psnpricealert.utils import utils
+import time
 
 apiRoot = "https://store.sonyentertainmentnetwork.com/store/api/chihiro/00_09_000"
 fetchSize = "99999"
@@ -29,6 +30,20 @@ def getItemForCid(cid, store):
     url = apiRoot + "/container/"+store+"/"+apiVersion+"/"+cid+"?size="+fetchSize
     data = utils.getJsonResponse(url)
     return data
+
+def getPrice(item):
+    return float(item['default_sku']['price'])/100
+
+def getPlaystationPlusPrice(item):
+
+    rewards = item['default_sku']['rewards']
+
+    for reward in rewards:
+        print(utils.prettyPrintJson(reward))
+        if (reward['isPlus'] == True):
+            return float(reward['price'])/100
+
+    return getPrice(item)
 
 def getCidForName(name, store):
 
@@ -66,7 +81,7 @@ def getItemsByContainer(container, store):
     
     url = apiRoot+"/container/"+store+"/"+apiVersion+"/"+container+"/"+str(timestamp)+"?size="+fetchSize
 
-    data = getJsonResponse(url)
+    data = utils.getJsonResponse(url)
     links = data['links']
 
     return links
