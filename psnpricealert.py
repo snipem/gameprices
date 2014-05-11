@@ -33,38 +33,6 @@ def checkWishPrice(cid, store, wishPrice):
         utils.print_enc("Wish price %{0:.2f} matched. Is now: %{1:.2f}".format(wishPrice, currentPrice))
         return True
 
-<<<<<<< HEAD
-=======
-def getCidForName(name, store):
-
-    links = searchForItemsByName(name, store)
-    cids = []
-
-    for link in links:
-        try:
-            logging.debug("Parsing:\n" + prettyPrintJson(link))
-            name = link['name']
-            itemType = link['default_sku']['name']
-            cid = link['default_sku']['entitlements'][0]['id']
-            platform = link['playable_platform']
-        
-            logging.info ("Found: " + name + " - " + cid + " - Platform: " + str(platform) + " - Type: " + itemType)
-            cids.append(cid)
-        except Exception as e:
-            logging.warn("Got error '"+e+"'' while parsing\n" + prettyPrintJson(link))
-
-    return cids
-
-def searchForItemsByName(name, store):
-    # encode name for HTTP request
-    encName = quote(name)
-
-    url = apiRoot+"/bucket_search/"+store+"/"+apiVersion+"/"+encName+"?size="+fetchSize+"&start=0"
-    data = getJsonResponse(url)
-    links = data['categories']['games']['links']
-    return links
-
->>>>>>> FETCH_HEAD
 def searchForItemsByNameAndFormatOutput(name, store):
     links = psn.searchForItemsByName(name, store)
     cids = []
