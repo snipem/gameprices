@@ -25,9 +25,5 @@ def getJsonResponse(url):
 def prettyPrintJson(jsonString):
     return json.dumps(jsonString, sort_keys=True,indent=4, separators=(',', ': '))
 
-def print_enc(uncoded):
-    if version == 2:
-        print (uncoded.encode("utf-8"))
-    else:
-        uncoded = uncoded +"\n"
-        sys.stdout.buffer.write(uncoded.encode('utf8'))
+def print_enc(s):
+    print(s.decode('utf-8') if type(s) == type(b'') else s)

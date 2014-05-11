@@ -21,11 +21,11 @@ parser.add_argument("--search", help="Name of item to search for")
 
 def checkWishPrice(cid, store, wishPrice):
 
-    data = psn.getItemForCid(cid, store)
+    item = psn.getItemForCid(cid, store)
     normalPrice = psn.getPrice(item)
 
-    utils.print_enc(data['default_sku']['entitlements'][0]['name'] + " - " + normalPrice)
-    currentPrice = float(data['default_sku']['price']) / 100
+    utils.print_enc(item['default_sku']['entitlements'][0]['name'] + " - " + str(normalPrice))
+    currentPrice = float(item['default_sku']['price']) / 100
 
     if (currentPrice > wishPrice):
         utils.print_enc("Wish price {0:.2f} does not yet match {1:.2f}, exiting".format(wishPrice, currentPrice))

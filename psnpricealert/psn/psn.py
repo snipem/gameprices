@@ -65,10 +65,9 @@ def getCidForName(name, store):
     return cids
 
 def searchForItemsByName(name, store):
-    # encode name for HTTP request
-    encName = quote(name)
 
-    url = apiRoot+"/bucket_search/"+store+"/"+apiVersion+"/"+encName+"?size="+fetchSize+"&start=0"
+    encodedName = quote(name)
+    url = apiRoot+"/bucket_search/"+store+"/"+apiVersion+"/"+encodedName+"?size="+fetchSize+"&start=0"
     data = utils.getJsonResponse(url)
     links = data['categories']['games']['links']
     return links
