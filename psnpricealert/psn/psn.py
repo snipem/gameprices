@@ -45,7 +45,7 @@ def getCidForName(name, store):
         
             logging.info ("Found: " + name + " - " + cid + " - Platform: " + str(platform) + " - Type: " + itemType)
             cids.append(cid)
-        except Exception , e:
+        except Exception as e:
             logging.warn("Got error '"+str(e)+"'' while parsing\n" + utils.prettyPrintJson(link))
 
     return cids
