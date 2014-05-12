@@ -10,7 +10,7 @@ apiVersion = "19"
 version = sys.version_info[0]
 
 logging.basicConfig(
-    filename="psn.log",
+    filename="log/psn.log",
     level = logging.INFO,
     format = "%(asctime)s [%(levelname)-8s] %(message)s",
     filemode = "w")
@@ -46,6 +46,10 @@ def getPlaystationPlusPrice(item):
  
 def getName(item):
     return item['default_sku']['entitlements'][0]['name']
+
+def getImage(item):
+    if (len (item["images"]) > 0):
+        return item["images"][0]['url']
 
 def getCidForName(name, store):
 

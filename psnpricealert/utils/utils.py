@@ -1,5 +1,6 @@
 import sys
 import json
+from pprint import pprint
 
 version = sys.version_info[0]
 
@@ -12,6 +13,12 @@ elif version == 2:
     from urllib2 import quote
 else:
     version == False
+
+def getJsonFile(filename):
+    json_data=open(filename)
+    data = json.load(json_data)
+    json_data.close()
+    return data
 
 def getJsonResponse(url):
 

@@ -8,7 +8,7 @@ from psnpricealert.psn import psn
 from psnpricealert.utils import utils
 
 logging.basicConfig(
-    filename="psnpricealert.log",
+    filename="log/psnpricealert.log",
     level = logging.INFO,
     format = "%(asctime)s [%(levelname)-8s] %(message)s",
     filemode = "w")
@@ -43,9 +43,10 @@ def searchForItemsByNameAndFormatOutput(name, store):
             name = link['name']
             itemType = link['default_sku']['name']
             cid = link['default_sku']['entitlements'][0]['id']
+            price = str(psn.getPrice(link))
 
             platform = ", ".join(link['playable_platform'])
-            foundItems.append((cid + "\t" + name + "\t" + platform + "\t" + itemType))
+            foundItems.append((cid + "\t" + name + "\t" + platform + "\t" + price + "\t" + itemType))
             cids.append(cid)
         except Exception as e:
             print(e)
