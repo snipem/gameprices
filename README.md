@@ -28,6 +28,9 @@ Usage
 	  --price PRICE    desired price of game
 	  --search SEARCH  Name of item to search for
 
+### Retrieving UTF-8 encoded output on terminals
+You may have to tell Python that your terminal is capable of dealing with UTF-8 outputs. Some PSN items are annoted with trademark, copyright or foreign language specific symbols. To do so set `export PYTHONIOENCODING=utf-8` in your terminal window. 
+
 Example
 -------
 You may run this script with the following command lines:
