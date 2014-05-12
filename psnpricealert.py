@@ -23,15 +23,13 @@ def checkWishPrice(cid, store, wishPrice):
 
     item = psn.getItemForCid(cid, store)
     normalPrice = psn.getPrice(item)
+    name = psn.getName(item)
 
-    utils.print_enc(item['default_sku']['entitlements'][0]['name'] + " - " + str(normalPrice))
-    currentPrice = float(item['default_sku']['price']) / 100
-
-    if (currentPrice > wishPrice):
-        utils.print_enc("Wish price {0:.2f} does not yet match {1:.2f}, exiting".format(wishPrice, currentPrice))
+    if (normalPrice > wishPrice):
+        utils.print_enc(("Wish price {0:.2f} for '"+name+"' does not yet match {1:.2f}, exiting").format(wishPrice, normalPrice))
         return False
     else:
-        utils.print_enc("Wish price %{0:.2f} matched. Is now: %{1:.2f}".format(wishPrice, currentPrice))
+        utils.print_enc(("Wish price {0:.2f} for '"+name+"' matched. Is now: {1:.2f}").format(wishPrice, normalPrice))
         return True
 
 def searchForItemsByNameAndFormatOutput(name, store):
@@ -45,12 +43,13 @@ def searchForItemsByNameAndFormatOutput(name, store):
             name = link['name']
             itemType = link['default_sku']['name']
             cid = link['default_sku']['entitlements'][0]['id']
-            platform = link['playable_platform']
-        
-            foundItems.append(cid + "\t" + name + "\t" + str(platform) + "\t" + itemType)
+
+            platform = ", ".join(link['playable_platform'])
+            foundItems.append((cid + "\t" + name + "\t" + platform + "\t" + itemType))
             cids.append(cid)
         except Exception as e:
-            logging.warn("Got error '"+e+"'' while parsing\n" + prettyPrintJson(link))
+            print(e)
+            logging.warn("Got error "+str(e)+" while parsing\n" + utils.prettyPrintJson(link))
 
     return foundItems
 

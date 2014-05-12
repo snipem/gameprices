@@ -43,6 +43,9 @@ def getPlaystationPlusPrice(item):
             return float(reward['price'])/100
 
     return getPrice(item)
+ 
+def getName(item):
+    return item['default_sku']['entitlements'][0]['name']
 
 def getCidForName(name, store):
 
@@ -55,9 +58,9 @@ def getCidForName(name, store):
             name = link['name']
             itemType = link['default_sku']['name']
             cid = link['default_sku']['entitlements'][0]['id']
-            platform = link['playable_platform']
+            platform = ", ".join(link['playable_platform'])
         
-            logging.info ("Found: " + name + " - " + cid + " - Platform: " + str(platform) + " - Type: " + itemType)
+            logging.info ("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + itemType)
             cids.append(cid)
         except Exception as e:
             logging.warn("Got error '"+str(e)+"'' while parsing\n" + utils.prettyPrintJson(link))
