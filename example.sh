@@ -1,4 +1,6 @@
 #!/bin/sh
+#Tell python that our terminal is able to understand UTF-8
+export PYTHONIOENCODING=utf-8
 
 #Define the name of a game and the store
 python psnpricealert.py --search "metal gear solid peace walker psp" --store DE/de
