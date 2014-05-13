@@ -7,13 +7,10 @@ if (sys.version_info[0] == 2):
 	from email.MIMEMultipart import MIMEMultipart
 	from email.MIMEBase import MIMEBase
 	from email.MIMEText import MIMEText
-	from email import Encoders
 else:
 	from email.mime.multipart import MIMEMultipart
 	from email.mime.base import MIMEBase
 	from email.mime.text import MIMEText
-	#from email.encoders import Encoders
-
 
 import smtplib
 

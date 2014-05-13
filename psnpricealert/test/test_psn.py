@@ -24,7 +24,6 @@ def test_getItemForCid():
 def test_getItemForCid2():
 	store = "DE/de"
 	cids = psn.getCidForName("Child of Light",store)
-	print cids[0]
 	item = psn.getItemForCid(cids[0],store)
 
 	assert item['name'] is not None
