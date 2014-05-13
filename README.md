@@ -18,6 +18,8 @@ Prices are always in the local currency. Therefore it is € for DE/de and £ fo
 
 Usage
 -----
+
+### Command line interface
 	usage: psnpricealert.py [-h] [--cid CID] [--store STORE] [--price PRICE]
 	                        [--search SEARCH]
 
@@ -28,8 +30,12 @@ Usage
 	  --price PRICE    desired price of game
 	  --search SEARCH  Name of item to search for
 
-### Retrieving UTF-8 encoded output on terminals
+#### Retrieving UTF-8 encoded output on terminals
 You may have to tell Python that your terminal is capable of dealing with UTF-8 outputs. Some PSN items are annoted with trademark, copyright or foreign language specific symbols. To do so set `export PYTHONIOENCODING=utf-8` in your terminal window. 
+
+### Mail alerting
+
+Just run `python psnmailalert.py` for mail alerting. See example below.
 
 Example
 -------
@@ -51,3 +57,9 @@ The price is in local currency. As exit statuses render the outcome of the alert
 
 	python psnpricealert.py --cid EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
 	echo "Price matched, let's buy Metal Gear Solid PW"
+
+### Mail alerting - Get a mail when alerts have been met
+
+With `psnmailalert.py` you may set alerts for price drops in the `alerts.csv` file. In order to receive mails you have to set your account settings in the file `mailconfig.json`. See `mailconfig.json_example` for an example config.
+
+![Mail with alerts](res/mail.png?raw=true "Mail with alerts")
