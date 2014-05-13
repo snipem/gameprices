@@ -1,8 +1,21 @@
 from psnpricealert.psn import psn
 from psnpricealert.utils import utils
-from mailer import Mailer
-from mailer import Message
 import csv
+import sys
+
+if (sys.version_info[0] == 2):
+	from email.MIMEMultipart import MIMEMultipart
+	from email.MIMEBase import MIMEBase
+	from email.MIMEText import MIMEText
+	from email import Encoders
+else:
+	from email.mime.multipart import MIMEMultipart
+	from email.mime.base import MIMEBase
+	from email.mime.text import MIMEText
+	#from email.encoders import Encoders
+
+
+import smtplib
 
 def getMailConfig():
 	mailConfig = {}
@@ -11,7 +24,7 @@ def getMailConfig():
 
 def getAlerts(alertsFilename):
 	alerts = []
-	with open(alertsFilename, 'rb') as csvfile:
+	with open(alertsFilename) as csvfile:
 		alertsreader = csv.reader(csvfile, delimiter=',', quotechar='"')
 		for row in alertsreader:
 			alert = {}
@@ -23,7 +36,7 @@ def getAlerts(alertsFilename):
 	return alerts
 
 def setAlerts(filename, alerts):
-	c = csv.writer(open(filename, "wb"))
+	c = csv.writer(open(filename, "w"))
 	for alert in alerts:
 		c.writerow([alert['cid'],alert['price'],alert['store']])
 
@@ -51,16 +64,28 @@ def checkAlertsAndGenerateMailBody(alerts):
 def sendMail(body):
 
 	mailConfig = getMailConfig()
-	message = Message(From=mailConfig["from"],
-	                  To=mailConfig["to"],
-	                  charset="UTF-8")
 
-	message.Subject = "PlaystationNetwork Price Drop"
-	message.Html = body
+	msg = MIMEMultipart('alternative')
+	msg['From'] = mailConfig["from"]
+	msg['To'] = mailConfig["to"]
+	msg['Subject'] = "PlaystationNetwork Price Drop"
 
-	sender = Mailer(mailConfig["server"])
-	sender.login(mailConfig["username"],mailConfig["password"])
-	sender.send(message)
+	if (sys.version_info[0] == 2):
+		sendBody = body.encode('utf-8')
+	else:
+		sendBody = body
+
+	htmlMail = MIMEText(sendBody, 'html')
+	msg.attach(htmlMail)
+
+	mailServer = smtplib.SMTP(mailConfig["server"])
+	mailServer.ehlo()
+	mailServer.starttls()
+	mailServer.ehlo()
+	mailServer.login(mailConfig["username"],mailConfig["password"])
+	mailServer.sendmail(mailConfig["from"], msg['To'], msg.as_string())
+
+	mailServer.quit()
 
 
 def generateBodyElement(alert, item):
