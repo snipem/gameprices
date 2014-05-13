@@ -21,6 +21,14 @@ def test_getItemForCid():
 
 	assert item['name'] is not None
 
+def test_getItemForCid2():
+	store = "DE/de"
+	cids = psn.getCidForName("Child of Light",store)
+	print cids[0]
+	item = psn.getItemForCid(cids[0],store)
+
+	assert item['name'] is not None
+
 def test_getItemByContainer():
 	store = "DE/de"
 	items = psn.getItemsByContainer('STORE-MSF75508-PLUSINSTANTGAME',store)

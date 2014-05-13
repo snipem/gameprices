@@ -11,7 +11,7 @@ version = sys.version_info[0]
 
 logging.basicConfig(
     filename="log/psn.log",
-    level = logging.INFO,
+    level = logging.DEBUG,
     format = "%(asctime)s [%(levelname)-8s] %(message)s",
     filemode = "w")
 
@@ -61,7 +61,7 @@ def getCidForName(name, store):
             logging.debug("Parsing:\n" + utils.prettyPrintJson(link))
             name = link['name']
             itemType = link['default_sku']['name']
-            cid = link['default_sku']['entitlements'][0]['id']
+            cid = link['id']
             platform = ", ".join(link['playable_platform'])
         
             logging.info ("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + itemType)

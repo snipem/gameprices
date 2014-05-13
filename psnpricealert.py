@@ -42,7 +42,7 @@ def searchForItemsByNameAndFormatOutput(name, store):
             logging.debug("Parsing:\n" + utils.prettyPrintJson(link))
             name = link['name']
             itemType = link['default_sku']['name']
-            cid = link['default_sku']['entitlements'][0]['id']
+            cid = link['id']
             price = str(psn.getPrice(link))
 
             platform = ", ".join(link['playable_platform'])
