@@ -53,7 +53,7 @@ You will get a result containing one to many search results with the CID. The fi
 
 ### Check if desired price has been met
 
-The price is in local currency. As exit statuses render the outcome of the alert, you may send you e-mails or desktop notifications with "&&" or "||". In this example, there is a string printed to the console.
+The price is in local currency. As exit statuses render the outcome of the alert, you may send you e-mails or desktop notifications with `&&` or `||`. In this example, there is a string printed to the console.
 
 	python psnpricealert.py --cid EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
 	echo "Price matched, let's buy Metal Gear Solid PW"
