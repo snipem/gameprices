@@ -44,19 +44,18 @@ def alertIsMatched(alert, item):
 def checkAlertsAndGenerateMailBody(alerts):
 	
 	bodyElements = []
-	returnAlerts = alerts
+	unmatchedAlerts = list(alerts)
 
 	for alert in alerts:
 		item = psn.getItemForCid(alert['cid'],alert['store'])
 		if (alertIsMatched(alert, item)):
 			bodyElements.append(generateBodyElement(alert, item))
-			
-			#TODO remove matched alerts
-			#returnAlerts.remove(alert)
+
+			unmatchedAlerts.remove(alert)
 
 	body = "\n".join(bodyElements)
 
-	return returnAlerts, body
+	return unmatchedAlerts, body
 
 def sendMail(body):
 
@@ -65,7 +64,7 @@ def sendMail(body):
 	msg = MIMEMultipart('alternative')
 	msg['From'] = mailConfig["from"]
 	msg['To'] = mailConfig["to"]
-	msg['Subject'] = "PlaystationNetwork Price Drop"
+	msg['Subject'] = "Playstation Network Price Drop"
 
 	if (sys.version_info[0] == 2):
 		sendBody = body.encode('utf-8')
