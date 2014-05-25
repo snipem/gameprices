@@ -14,7 +14,7 @@ In order to check the price of an item. You need a store identifier. These store
 * GB/en
 * US/en
 
-Prices are always in the local currency. Therefore it is € for DE/de and £ for GB/en.
+Prices are always in the local currency. Therefore it is € for DE/de and £ for GB/en. Additionaly, prices are that for PlayStation Plus users.
 
 Usage
 -----

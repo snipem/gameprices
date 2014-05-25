@@ -32,17 +32,18 @@ def getItemForCid(cid, store):
     return data
 
 def getPrice(item):
+    return getPlaystationPlusPrice(item)
+
+def getNormalPrice(item):
     return float(item['default_sku']['price'])/100
 
 def getPlaystationPlusPrice(item):
-
     rewards = item['default_sku']['rewards']
-
     for reward in rewards:
-        if (reward['isPlus'] == True):
+        if (reward['reward_type'] == 2):
             return float(reward['price'])/100
 
-    return getPrice(item)
+    return getNormalPrice(item)
  
 def getName(item):
     return item['default_sku']['entitlements'][0]['name']
