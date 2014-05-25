@@ -35,24 +35,23 @@ def checkWishPrice(cid, store, wishPrice):
         return True
 
 def searchForItemsByNameAndFormatOutput(name, store):
-    links = psn.searchForItemsByName(name, store)
+    items = psn.searchForItemsByName(name, store)
     cids = []
     foundItems = []
 
-    for link in links:
+    for item in items:
         try:
-            logging.debug("Parsing:\n" + utils.prettyPrintJson(link))
-            name = link['name']
-            itemType = link['default_sku']['name']
-            cid = link['id']
-            price = str(psn.getPrice(link))
+            logging.debug("Parsing:\n" + utils.prettyPrintJson(item))
+            name = item['name']
+            itemType = item['game_contentType']
+            cid = item['id']
+            price = str(psn.getPrice(item))
 
-            platform = ", ".join(link['playable_platform'])
+            platform = ", ".join(item['playable_platform'])
             foundItems.append((cid + "\t" + name + "\t" + platform + "\t" + price + "\t" + itemType))
             cids.append(cid)
         except Exception as e:
-            print(e)
-            logging.warn("Got error "+str(e)+" while parsing\n" + utils.prettyPrintJson(link))
+            logging.warn("Got error "+str(e)+" while parsing\n" + utils.prettyPrintJson(item))
 
     return foundItems
 
