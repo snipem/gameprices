@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from psnpricealert.psn import psn
 from psnpricealert.utils import utils
 import csv

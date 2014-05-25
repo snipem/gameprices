@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 import logging
 import argparse
@@ -14,10 +16,10 @@ logging.basicConfig(
     filemode = "w")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--cid", help="CID of game to check")
-parser.add_argument("--store", help="regional PSN store to check")
-parser.add_argument("--price", help="desired price of game", type=float)
-parser.add_argument("--search", help="Name of item to search for")
+parser.add_argument("--cid", "-c", help="CID of game to check")
+parser.add_argument("--store", "-s", help="regional PSN store to check. Default: 'DE/de'", default="DE/de")
+parser.add_argument("--price", "-p", help="desired price of game", type=float)
+parser.add_argument("--query", "-q", help="Name of item to search for")
 
 def checkWishPrice(cid, store, wishPrice):
 
@@ -57,8 +59,8 @@ def searchForItemsByNameAndFormatOutput(name, store):
 def main():
     args = parser.parse_args()
 
-    if (args.search != None and args.store != None):
-        printString = searchForItemsByNameAndFormatOutput(args.search,args.store)
+    if (args.query != None and args.store != None):
+        printString = searchForItemsByNameAndFormatOutput(args.query,args.store)
         if (len(printString) > 0):
             utils.print_enc("\n".join(printString))
             exit(0)
