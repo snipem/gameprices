@@ -16,7 +16,8 @@ logging.basicConfig(
     filemode = "w")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--cid", "-c", help="CID of game to check")
+parser.add_argument("--id", "-i", help="CID of game to check")
+parser.add_argument("--container", "-c", help="Container to list")
 parser.add_argument("--store", "-s", help="regional PSN store to check. Default: 'DE/de'", default="DE/de")
 parser.add_argument("--price", "-p", help="desired price of game", type=float)
 parser.add_argument("--query", "-q", help="Name of item to search for")
@@ -34,8 +35,7 @@ def checkWishPrice(cid, store, wishPrice):
         utils.print_enc(("Wish price {0:.2f} for '"+name+"' matched. Is now: {1:.2f}").format(wishPrice, normalPrice))
         return True
 
-def searchForItemsByNameAndFormatOutput(name, store):
-    items = psn.searchForItemsByName(name, store)
+def formatItems(items):
     cids = []
     foundItems = []
 
@@ -52,8 +52,16 @@ def searchForItemsByNameAndFormatOutput(name, store):
             cids.append(cid)
         except Exception as e:
             logging.warn("Got error "+str(e)+" while parsing\n" + utils.prettyPrintJson(item))
+    
+    return foundItems	
 
-    return foundItems
+def searchForItemsByNameAndFormatOutput(name, store):
+    items = psn.searchForItemsByName(name, store)
+    return formatItems(items)
+
+def searchForItemsByContainerAndFormatOutput(container, store):
+    items = psn.getItemsByContainer(container, store)
+    return formatItems(items)
 
 def main():
     args = parser.parse_args()
@@ -65,9 +73,16 @@ def main():
             exit(0)
         else:
             exit(-1)
+    elif (args.container != None and args.store != None):
+        printString = searchForItemsByContainerAndFormatOutput(args.container,args.store)
+        if (len(printString) > 0):
+            utils.print_enc("\n".join(printString))
+            exit(0)
+        else:
+            exit(-1)
 
-    elif (args.store != None and args.cid != None and args.price != None):
-        priceMatched = checkWishPrice(args.cid, args.store, args.price)
+    elif (args.store != None and args.id != None and args.price != None):
+        priceMatched = checkWishPrice(args.id, args.store, args.price)
         if (priceMatched):
             exit(0)
         else:
