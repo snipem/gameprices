@@ -24,12 +24,14 @@ Usage
 Just run `python psnmailalert.py` for mail alerting. See example below.
 
 ### Command line interface
-	usage: psncli.py [-h] [--cid CID] [--store STORE] [--price PRICE]
-	                 [--query QUERY]
+	usage: psncli.py [-h] [--id ID] [--container CONTAINER] [--store STORE]
+	                 [--price PRICE] [--query QUERY]
 
 	optional arguments:
 	  -h, --help            show this help message and exit
-	  --cid CID, -c CID     CID of game to check
+	  --id ID, -i ID        CID of game to check
+	  --container CONTAINER, -c CONTAINER
+	                        Container to list
 	  --store STORE, -s STORE
 	                        regional PSN store to check. Default: 'DE/de'
 	  --price PRICE, -p PRICE
