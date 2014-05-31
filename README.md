@@ -10,9 +10,10 @@ The Sony Entertainment Network (SEN) uses CIDs to identify items in it's catalog
 
 In order to check the price of an item. You need a store identifier. These store identifiers are known to work:
 
-* DE/de
-* GB/en
-* US/en
+* DE/de (Germany)
+* GB/en (Great Britain)
+* US/en (United States)
+* SE/en (Sweden)
 
 Prices are always in the local currency. Therefore it is € for DE/de and £ for GB/en. Additionaly, prices are that for PlayStation Plus users.
 
