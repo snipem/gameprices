@@ -60,6 +60,9 @@ With `psnmailalert.py` you may set alerts for price drops in the `alerts.csv` fi
 
  	./psnmailalert.py
 
+#### Example mail ####
+![Mail with alerts](res/mail.png?raw=true "Mail with alerts")
+
 ### Searching for the CID of an item
 
 Define the name of a game and the store.
@@ -76,6 +79,3 @@ The price is in local currency. As exit statuses render the outcome of the alert
 
 	./psncli.py --cid EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
 	echo "Price matched, let's buy Metal Gear Solid PW"
-
-
-![Mail with alerts](res/mail.png?raw=true "Mail with alerts")
