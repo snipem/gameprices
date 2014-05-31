@@ -49,11 +49,18 @@ def checkAlertsAndGenerateMailBody(alerts):
 	unmatchedAlerts = list(alerts)
 
 	for alert in alerts:
-		item = psn.getItemForCid(alert['cid'],alert['store'])
-		if (alertIsMatched(alert, item)):
-			bodyElements.append(generateBodyElement(alert, item))
+		cid = alert['cid']
+		store = alert['store']
 
-			unmatchedAlerts.remove(alert)
+		item = psn.getItemForCid(cid,store)
+
+		if (item == None):
+			utils.print_enc("No item found for cid '"+cid+"' in store "+store)
+		else:
+			if (alertIsMatched(alert, item)):
+				bodyElements.append(generateBodyElement(alert, item))
+
+				unmatchedAlerts.remove(alert)
 
 	body = "\n".join(bodyElements)
 
@@ -101,11 +108,14 @@ def main():
 	alerts = getAlerts(alertsFilename)
 
 	alertsRemaining, body = checkAlertsAndGenerateMailBody(alerts)
-
+	utils.print_enc("Finished processing")
+	
 	if (len(body) > 0):
 		sendMail(body)
 		utils.print_enc("Mail was sent")
 		setAlerts(alertsFilename,alertsRemaining)
+	else:
+		utils.print_enc("No mail was sent")
 	
 	exit(0)
 

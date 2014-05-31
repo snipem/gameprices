@@ -27,9 +27,13 @@ else:
     version == False
 
 def getItemForCid(cid, store):
-    url = apiRoot + "/container/"+store+"/"+apiVersion+"/"+cid+"?size="+fetchSize
-    data = utils.getJsonResponse(url)
-    return data
+    try:
+        url = apiRoot + "/container/"+store+"/"+apiVersion+"/"+cid+"?size="+fetchSize
+        data = utils.getJsonResponse(url)
+        return data
+    except Exception as e:
+        logging.error("Got error '"+str(e)+"' while retrieving cid '"+cid+"' in store "+store)
+        return None
 
 def getPrice(item):
     return getPlaystationPlusPrice(item)
