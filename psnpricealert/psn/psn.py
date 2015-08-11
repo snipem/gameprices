@@ -3,7 +3,8 @@ import logging
 from psnpricealert.utils import utils
 import time
 
-apiRoot = "https://store.sonyentertainmentnetwork.com/store/api/chihiro/00_09_000"
+apiRoot = "https://store.playstation.com/chihiro-api"
+storeRoot = "https://store.playstation.com/#!"
 fetchSize = "99999"
 apiVersion = "19"
 
@@ -15,7 +16,6 @@ logging.basicConfig(
     format = "%(asctime)s [%(levelname)-8s] %(message)s",
     filemode = "w")
 
-
 # import only once
 if version == 3:
     from urllib.request import urlopen
@@ -26,9 +26,14 @@ elif version == 2:
 else:
     version == False
 
+
+storeCodeMappings = {
+    "NL/nl": "nl-nl"
+}
+
 def getItemForCid(cid, store):
     try:
-        url = apiRoot + "/container/"+store+"/"+apiVersion+"/"+cid+"?size="+fetchSize
+        url = apiRoot + "/viewfinder/"+store+"/"+apiVersion+"/"+cid+"?size="+fetchSize
         data = utils.getJsonResponse(url)
         return data
     except Exception as e:
@@ -50,11 +55,18 @@ def getPlaystationPlusPrice(item):
     return getNormalPrice(item)
  
 def getName(item):
-    return item['default_sku']['entitlements'][0]['name']
+    return item['name']
 
 def getImage(item):
     if (len (item["images"]) > 0):
         return item["images"][0]['url']
+
+def getStoreUrl(item, store):
+    cid = item["id"]
+
+    url = storeRoot + "/" + storeCodeMappings[store] + "/cid=" + cid
+
+    return url
 
 def getCidForName(name, store):
 
@@ -79,17 +91,20 @@ def getCidForName(name, store):
 def searchForItemsByName(name, store):
 
     encodedName = quote(name)
-    url = apiRoot+"/bucket_search/"+store+"/"+apiVersion+"/"+encodedName+"?size="+fetchSize+"&start=0"
+    url = apiRoot+"/bucket-search/"+store+"/"+apiVersion+"/"+encodedName+"?size="+fetchSize+"&start=0"
     data = utils.getJsonResponse(url)
     links = data['categories']['games']['links']
     return links
 
-def getItemsByContainer(container, store):
+def getItemsByContainer(container, store, filtersDict):
 
     encContainer = quote(container)
     timestamp = timestamp = int(time.time())
-    
-    url = apiRoot+"/container/"+store+"/"+apiVersion+"/"+container+"/"+str(timestamp)+"?size="+fetchSize
+
+    url = apiRoot+"/viewfinder/"+store+"/"+apiVersion+"/"+container+"?size="+fetchSize
+
+    for i in filtersDict:
+        url = url + "&" + quote(i) + "=" + quote(filtersDict[i])
 
     data = utils.getJsonResponse(url)
     links = data['links']
