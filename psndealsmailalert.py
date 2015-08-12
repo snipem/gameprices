@@ -51,7 +51,8 @@ def checkContainersAndGenerateMailBody(containers):
 		else:
 
 			body = "<div style=\"width: 800px; margin: auto; display: table; border: 1px solid lightgray; padding: 10px;\">\n"
-			body = body + ("<p style=\"font-family: sans-serif; font-size: 1.0em; color: #E02E2E; background-color: #F0F3ED; padding: 10px;\">Deals in Store "
+			body = body + ("<p style=\"font-family: sans-serif; font-size: 1.0em; color: #FFFFFF; background-color: #5177B4; padding: 10px; "
+						   "text-align: center; font-weight: bold; border-radius: 5px 5px 5px 5px;\">Deals in Store "
 						   + store  + " for container " + container["containerId"] + "</p>\n")
 
 			itemNum = 0
@@ -109,10 +110,10 @@ def generateBodyElement(container, item, startNewRow):
 
 	url = psn.getStoreUrl(item, container["store"])
 
-	returnBody.append("<div style=\"float: left; padding: 10px; font-family: sans-serif; font-size: 0.8em; max-width: 250px; " + startNewRowHtml + "\">")
-	returnBody.append("<p><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"'/></a></p>")
-	returnBody.append("<p>"+psn.getName(item)+"</p>")
-	returnBody.append("<p>Is now: "+str(psn.getPrice(item))+"</p>")
+	returnBody.append("<div style=\"float: left; box-sizing: border-box; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 260px; " + startNewRowHtml + "\">")
+	returnBody.append("<div><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"'/></a></div>")
+	returnBody.append("<div style=\"margin-top: 5px;\"><span style=\"margin-right: 10px; font-weight: bold; font-size: 1.4em; color: #CE1818;\">"
+					  + str(psn.getPrice(item)) + "</span><span>"+psn.getName(item)+"</span></div>")
 	returnBody.append("</div>")
 
 	return "\n".join(returnBody)
