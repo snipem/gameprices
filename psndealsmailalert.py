@@ -50,47 +50,24 @@ def checkContainersAndGenerateMailBody(containers):
 			utils.print_enc("No items found for Container '"+containerId+"' in store "+store)
 		else:
 
-			body = """<html>
-						<head>
-							<style>
-								div.container {
-									width: 80%;
-									margin: auto;
-								}
-
-								div.container .header {
-									font-family: sans-serif;
-									font-size: 1.0em;
-									color: #E02E2E;
-									background-color: #F0F3ED;
-									padding: 10px;
-								}
-
-								div.item {
-									float: left;
-									padding: 10px;
-									font-family: sans-serif;
-									font-size: 0.8em;
-									max-width: 250px;
-								}
-							</style>
-						</head>
-						<body>"""
-
-			body = body + "<div class=\"container\"><p class=\"header\">Deals in Store " + store  + " for container " + container["containerId"] + "</p>"
+			body = "<div style=\"width: 800px; margin: auto; display: table; border: 1px solid lightgray; padding: 10px;\">\n"
+			body = body + ("<p style=\"font-family: sans-serif; font-size: 1.0em; color: #E02E2E; background-color: #F0F3ED; padding: 10px;\">Deals in Store "
+						   + store  + " for container " + container["containerId"] + "</p>\n")
 
 			itemNum = 0
 			for item in items:
-				itemNum = itemNum + 1
-				startNewRow = False
 
-				if itemNum % 4 == 0:
+				if itemNum % 3 != 0:
+					startNewRow = False
+				else:
 					startNewRow = True
 
 				bodyElements.append(generateBodyElement(container, item, startNewRow))
 
+				itemNum = itemNum + 1
+
+
 	body = body + "\n".join(bodyElements) + "</div>"
-	body = body + "</body></html>"
 
 	return body
 
@@ -128,11 +105,11 @@ def generateBodyElement(container, item, startNewRow):
 	startNewRowHtml = ""
 
 	if startNewRow:
-		startNewRowHtml = " style=\"clear: left;\""
+		startNewRowHtml = "clear: left;"
 
 	url = psn.getStoreUrl(item, container["store"])
 
-	returnBody.append("<div class=\"item\"" + startNewRowHtml + ">")
+	returnBody.append("<div style=\"float: left; padding: 10px; font-family: sans-serif; font-size: 0.8em; max-width: 250px; " + startNewRowHtml + "\">")
 	returnBody.append("<p><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"'/></a></p>")
 	returnBody.append("<p>"+psn.getName(item)+"</p>")
 	returnBody.append("<p>Is now: "+str(psn.getPrice(item))+"</p>")
