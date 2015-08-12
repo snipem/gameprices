@@ -49,7 +49,7 @@ def getNormalPrice(item):
 def getPlaystationPlusPrice(item):
     rewards = item['default_sku']['rewards']
     for reward in rewards:
-        if (reward['reward_type'] == 2):
+        if (reward['reward_type'] == 2 and reward['isPlus']):
             return float(reward['price'])/100
 
     return getNormalPrice(item)
