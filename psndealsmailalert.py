@@ -4,6 +4,7 @@ from psnpricealert.psn import psn
 from psnpricealert.utils import utils
 import csv
 import sys
+import datetime
 
 if (sys.version_info[0] == 2):
 	from email.MIMEMultipart import MIMEMultipart
@@ -109,11 +110,17 @@ def generateBodyElement(container, item, startNewRow):
 		startNewRowHtml = "clear: left;"
 
 	url = psn.getStoreUrl(item, container["store"])
+	offerEndDate = psn.getOfferEndDate(item)
 
 	returnBody.append("<div style=\"float: left; box-sizing: border-box; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 260px; " + startNewRowHtml + "\">")
 	returnBody.append("<div><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"'/></a></div>")
+
+	if offerEndDate is not None:
+		returnBody.append("<div style=\"background-color: #000000; color: white; font-size: 1.0em; padding: 5px; border-radius: 0px 0px 10px 0px; padding-left: 10px;\">Ends "
+						  + datetime.datetime.strftime(offerEndDate ,"%d/%m/%Y") + "</div>")
+
 	returnBody.append("<div style=\"margin-top: 5px;\"><span style=\"margin-right: 10px; font-weight: bold; font-size: 1.4em; color: #CE1818;\">"
-					  + str(psn.getPrice(item)) + "</span><span>"+psn.getName(item)+"</span></div>")
+					  + str(psn.getDisplayPrice(item, container["store"])) + "</span><span>"+psn.getName(item)+"</span></div>")
 	returnBody.append("</div>")
 
 	return "\n".join(returnBody)

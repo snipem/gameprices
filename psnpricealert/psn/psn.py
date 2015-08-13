@@ -1,7 +1,8 @@
 import sys
 import logging
-from psnpricealert.utils import utils
 import time
+import datetime
+from psnpricealert.utils import utils
 
 apiRoot = "https://store.playstation.com/chihiro-api"
 storeRoot = "https://store.playstation.com/#!"
@@ -26,9 +27,11 @@ elif version == 2:
 else:
     version == False
 
-
+""" Dictionary object containing data specific to a Country store. The key is the store identifier per the
+PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
+[1]: The currency symbol, in its unicode encoding """
 storeCodeMappings = {
-    "NL/nl": "nl-nl"
+    "NL/nl": ["nl-nl",'\u20ac']
 }
 
 def getItemForCid(cid, store):
@@ -39,6 +42,12 @@ def getItemForCid(cid, store):
     except Exception as e:
         logging.error("Got error '"+str(e)+"' while retrieving cid '"+cid+"' in store "+store)
         return None
+
+def getDisplayPrice(item, store):
+    price = getPrice(item)
+    displayPrice = storeCodeMappings[store][1] + str(price)
+
+    return displayPrice
 
 def getPrice(item):
     return getPlaystationPlusPrice(item)
@@ -61,10 +70,24 @@ def getImage(item):
     if (len (item["images"]) > 0):
         return item["images"][0]['url']
 
+def getOfferEndDate(item):
+
+    """ Returns the Offer End Date for a given Item
+        :param item: The item for which the Offer End Date is to be retrieved
+        :return: A datetime object which is the Offer End Date """
+
+    print(getName(item))
+
+    if item['default_sku'] is not None:
+        if 'end_date' in item['default_sku']:
+            endDate = item['default_sku']['end_date']
+            if endDate is not None:
+                return datetime.datetime.strptime(endDate, "%Y-%m-%dT%H:%M:%SZ")
+
 def getStoreUrl(item, store):
     cid = item["id"]
 
-    url = storeRoot + "/" + storeCodeMappings[store] + "/cid=" + cid
+    url = storeRoot + "/" + storeCodeMappings[store][0] + "/cid=" + cid
 
     return url
 
