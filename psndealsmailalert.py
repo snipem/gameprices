@@ -51,7 +51,7 @@ def checkContainersAndGenerateMailBody(containers):
 			utils.print_enc("No items found for Container '"+containerId+"' in store "+store)
 		else:
 
-			body = "<div style=\"width: 800px; margin: auto; display: table; border: 1px solid lightgray; padding: 10px;\">\n"
+			body = "<div style=\"width: 620px; margin: auto; display: table; border: 1px solid lightgray; padding: 10px;\">\n"
 			body = body + ("<p style=\"font-family: sans-serif; font-size: 1.0em; color: #FFFFFF; background-color: #5177B4; padding: 10px; "
 						   "text-align: center; font-weight: bold; border-radius: 5px 5px 5px 5px;\">Deals in Store "
 						   + store  + " for container " + container["containerId"] + "</p>\n")
@@ -112,8 +112,8 @@ def generateBodyElement(container, item, startNewRow):
 	url = psn.getStoreUrl(item, container["store"])
 	offerEndDate = psn.getOfferEndDate(item)
 
-	returnBody.append("<div style=\"float: left; box-sizing: border-box; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 260px; " + startNewRowHtml + "\">")
-	returnBody.append("<div><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"'/></a></div>")
+	returnBody.append("<div style=\"float: left; box-sizing: border-box; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 200px; " + startNewRowHtml + "\">")
+	returnBody.append("<div><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"' style=\"width: 180px; height:180px;\"/></a></div>")
 
 	if offerEndDate is not None:
 		returnBody.append("<div style=\"background-color: #000000; color: white; font-size: 1.0em; padding: 5px; border-radius: 0px 0px 10px 0px; padding-left: 10px;\">Ends "
