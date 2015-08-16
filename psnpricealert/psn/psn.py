@@ -31,7 +31,7 @@ else:
 PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
 [1]: The currency symbol, in its unicode encoding """
 storeCodeMappings = {
-    "NL/nl": ["nl-nl",'\u20ac']
+    "NL/nl": ["nl-nl",u'\N{EURO SIGN}']
 }
 
 def getItemForCid(cid, store):
@@ -75,8 +75,6 @@ def getOfferEndDate(item):
     """ Returns the Offer End Date for a given Item
         :param item: The item for which the Offer End Date is to be retrieved
         :return: A datetime object which is the Offer End Date """
-
-    print(getName(item))
 
     if item['default_sku'] is not None:
         if 'end_date' in item['default_sku']:

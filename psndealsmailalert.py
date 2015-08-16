@@ -120,7 +120,7 @@ def generateBodyElement(container, item, startNewRow):
 						  + datetime.datetime.strftime(offerEndDate ,"%d/%m/%Y") + "</div>")
 
 	returnBody.append("<div style=\"margin-top: 5px;\"><span style=\"margin-right: 10px; font-weight: bold; font-size: 1.4em; color: #CE1818;\">"
-					  + str(psn.getDisplayPrice(item, container["store"])) + "</span><span>"+psn.getName(item)+"</span></div>")
+					  + psn.getDisplayPrice(item, container["store"]) + "</span><span>"+psn.getName(item)+"</span></div>")
 	returnBody.append("</div>")
 
 	return "\n".join(returnBody)
