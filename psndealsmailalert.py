@@ -113,7 +113,7 @@ def generateBodyItem(container, item):
 	offerEndDate = psn.getOfferEndDate(item)
 
 	returnBody.append("<div style=\"float: left; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 180px;\">")
-	returnBody.append("<div><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"' style=\"width: 180px; height:180px;\"/></a></div>")
+	returnBody.append("<div style=\"height: 180px;\"><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"' style=\"width: 180px; height:180px;\"/></a></div>")
 
 	if offerEndDate is not None:
 		returnBody.append("<div style=\"background-color: #000000; color: white; font-size: 1.0em; padding: 5px; border-radius: 0px 0px 10px 0px; padding-left: 10px;\">Ends "
