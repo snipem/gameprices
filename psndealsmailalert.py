@@ -2,6 +2,7 @@
 
 from psnpricealert.psn import psn
 from psnpricealert.utils import utils
+from xml.sax.saxutils import escape
 import csv
 import sys
 import datetime
@@ -62,7 +63,7 @@ def checkContainersAndGenerateMailBody(containers):
 
 				bodyElements.append(generateBodyItemsRow(container, itemsSubset))
 
-	body = body + "\n".join(bodyElements) + "</td></tr></table></td></tr></table>"
+	body = body + "\n".join(bodyElements) + "</tbody></table></td></tr></tbody></table>"
 
 	return body
 
@@ -101,7 +102,7 @@ def generateBodyItemsRow(container, items):
 	for item in items:
 		returnBody.append(generateBodyItem(container, item))
 
-	returnBody.append("</tr></td>")
+	returnBody.append("</td></tr>")
 
 	return "\n".join(returnBody)
 
@@ -111,16 +112,19 @@ def generateBodyItem(container, item):
 
 	url = psn.getStoreUrl(item, container["store"])
 	offerEndDate = psn.getOfferEndDate(item)
+	itemName = escape(psn.getName(item))
 
 	returnBody.append("<div style=\"float: left; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 180px;\">")
-	returnBody.append("<div style=\"height: 180px;\"><a href=\"" + url + "\" target=\"_new\"><img src='"+psn.getImage(item)+"' style=\"width: 180px; height:180px;\"/></a></div>")
+	returnBody.append("<div style=\"height: 180px; min-height: 180px; max-height: 180px\"><a href=\"" + url +
+					  "\" target=\"_blank\"><img src='"+psn.getImage(item)+"' alt=\"" + itemName +
+					  "\" style=\"width: 180px; height:180px;\"/></a></div>")
 
 	if offerEndDate is not None:
 		returnBody.append("<div style=\"background-color: #000000; color: white; font-size: 1.0em; padding: 5px; border-radius: 0px 0px 10px 0px; padding-left: 10px;\">Ends "
 						  + datetime.datetime.strftime(offerEndDate ,"%d/%m/%Y") + "</div>")
 
 	returnBody.append("<div style=\"margin-top: 5px;\"><span style=\"margin-right: 10px; font-weight: bold; font-size: 1.4em; color: #CE1818;\">"
-					  + psn.getDisplayPrice(item, container["store"]) + "</span><span>"+psn.getName(item)+"</span></div>")
+					  + psn.getDisplayPrice(item, container["store"]) + "</span><span>" + itemName + "</span></div>")
 	returnBody.append("</div>")
 
 	return "\n".join(returnBody)
