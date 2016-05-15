@@ -59,8 +59,8 @@ def searchForItemsByNameAndFormatOutput(name, store):
     items = psn.searchForItemsByName(name, store)
     return formatItems(items)
 
-def searchForItemsByContainerAndFormatOutput(container, store):
-    items = psn.getItemsByContainer(container, store)
+def searchForItemsByContainerAndFormatOutput(container, store, filtersDict):
+    items = psn.getItemsByContainer(container, store, filtersDict)
     return formatItems(items)
 
 def main():
@@ -74,7 +74,7 @@ def main():
         else:
             exit(-1)
     elif (args.container != None and args.store != None):
-        printString = searchForItemsByContainerAndFormatOutput(args.container,args.store)
+        printString = searchForItemsByContainerAndFormatOutput(args.container, args.store, {"platform": "ps4"})
         if (len(printString) > 0):
             utils.print_enc("\n".join(printString))
             exit(0)
