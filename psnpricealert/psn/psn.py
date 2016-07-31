@@ -53,6 +53,10 @@ def getPrice(item):
     return getPlaystationPlusPrice(item)
 
 def getNormalPrice(item):
+    rewards = item['default_sku']['rewards']
+    for reward in rewards:
+        return float(reward['price'])/100
+
     return float(item['default_sku']['price'])/100
 
 def getPlaystationPlusPrice(item):
@@ -62,7 +66,7 @@ def getPlaystationPlusPrice(item):
             return float(reward['price'])/100
 
     return getNormalPrice(item)
- 
+
 def getName(item):
     return item['name']
 
@@ -101,7 +105,7 @@ def getCidForName(name, store):
             itemType = link['default_sku']['name']
             cid = link['id']
             platform = ", ".join(link['playable_platform'])
-        
+
             logging.info ("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + itemType)
             cids.append(cid)
         except Exception as e:
