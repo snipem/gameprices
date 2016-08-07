@@ -2,6 +2,7 @@ import sys
 import logging
 import time
 import datetime
+from pprint import pprint
 from psnpricealert.utils import utils
 
 apiRoot = "https://store.playstation.com/chihiro-api"
@@ -31,8 +32,17 @@ else:
 PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
 [1]: The currency symbol, in its unicode encoding """
 storeCodeMappings = {
-    "NL/nl": ["nl-nl",u'\N{EURO SIGN}']
+    "NL/nl": ["nl-nl",u'\N{EURO SIGN}'],
+    "DE/de": ["de-de",u'\N{EURO SIGN}'],
+    "US/en": ["us-en",u'\N{DOLLAR SIGN}'],
+    "JP/jp": ["jp-jp",u'\N{YEN SIGN}']
 }
+
+def filterNone(item):
+    if item is None:
+	return False
+    else:
+	return True
 
 def getItemForCid(cid, store):
     try:
@@ -43,29 +53,54 @@ def getItemForCid(cid, store):
         logging.error("Got error '"+str(e)+"' while retrieving cid '"+cid+"' in store "+store)
         return None
 
+def getRewards(item):
+    rewards = []
+    
+    #TODO Use Default SKU
+    #if "default_sku" in item and "rewards" in item["default_sku"]: rewards.append(item["default_sku"]["rewards"].pop())
+
+    for sku in item["skus"]:
+            if "rewards" in sku:
+                    for reward in sku["rewards"]:
+                        rewards.append(reward)
+   
+    return rewards
+
 def getDisplayPrice(item, store):
     price = getPrice(item)
     displayPrice = storeCodeMappings[store][1] + str(price)
 
     return displayPrice
 
+def getCheapestPrice(prices):
+    return sorted(filter(filterNone,prices))[0]
+
 def getPrice(item):
-    return getPlaystationPlusPrice(item)
+    normalPrice = getNormalPrice(item)
+    nonPlaystationPlusPrice = getNonPlaystationPlusPrice(item)
+    playstationPlusPrice = getPlaystationPlusPrice(item)
+
+    return getCheapestPrice([normalPrice, nonPlaystationPlusPrice ,playstationPlusPrice])
 
 def getNormalPrice(item):
-    rewards = item['default_sku']['rewards']
-    for reward in rewards:
-        return float(reward['price'])/100
-
     return float(item['default_sku']['price'])/100
 
-def getPlaystationPlusPrice(item):
-    rewards = item['default_sku']['rewards']
-    for reward in rewards:
-        if (reward['reward_type'] == 2 and reward['isPlus']):
-            return float(reward['price'])/100
+def getNonPlaystationPlusPrice(item):
+    for reward in getRewards(item):
+         if (reward.get('reward_type') == 4):
+            return float(reward.get('price'))/100
 
-    return getNormalPrice(item)
+
+def getPlaystationPlusPrice(item):
+    for reward in getRewards(item):
+        if reward.get('bonus_price') is not None:
+                return float(reward.get('bonus_price'))/100
+        elif reward.get('isPlus') is True:
+                return float(reward.get('price'))/100
+        else:
+                return None
+
+    return None
 
 def getName(item):
     return item['name']

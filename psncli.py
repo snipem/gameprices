@@ -51,9 +51,9 @@ def formatItems(items):
             foundItems.append((cid + "\t" + name + "\t" + platform + "\t" + price + "\t" + itemType))
             cids.append(cid)
         except Exception as e:
-            logging.warn("Got error "+str(e)+" while parsing\n" + utils.prettyPrintJson(item))
-    
-    return foundItems	
+            logging.exception(e)
+
+    return foundItems
 
 def searchForItemsByNameAndFormatOutput(name, store):
     items = psn.searchForItemsByName(name, store)

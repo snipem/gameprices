@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import unittest
 from psnpricealert.psn import psn
 
@@ -55,3 +58,33 @@ class MyTest(unittest.TestCase):
 		assert type(plusPrice) is float
 		assert plusPrice == 0
 	
+	def test_checkCurrencySymbol(self):
+		store = "DE/de"
+		cids = psn.getCidForName("Child of Light", store)
+		item = psn.getItemForCid(cids[0],store)
+		assert psn.getDisplayPrice(item, store)[0] == u'\N{EURO SIGN}'
+
+        def test_getRewards(self):
+		store = "DE/de"
+		item = psn.getItemForCid("EP0006-CUSA02532_00-UNRAVELUNRAVEL09",store)
+		assert len(psn.getRewards(item)) > -1
+	
+        @unittest.skip("Skip temporary price reduction")	
+	def test_checkCurrentlyReducedItem_AllPrices(self):
+		store = "DE/de"
+		item = psn.getItemForCid("EP2107-CUSA00327_00-DONTSTARVEPS4V01",store)
+		print("Checking: ", item['name'])
+		assert psn.getNormalPrice(item) == 13.99 
+		assert psn.getPlaystationPlusPrice(item) == 4.89 
+		assert psn.getNonPlaystationPlusPrice(item) == 6.99 
+		assert psn.getPrice(item) == 4.89
+	
+        @unittest.skip("Skip temporary price reduction")	
+	def test_checkCurrentlyReducedItem_NoPlusReduction(self):
+		store = "DE/de"
+		item = psn.getItemForCid("EP9000-CUSA00194_00-UNTILDAWN0000001",store)
+		print("Checking: ", item['name'])
+		assert psn.getNormalPrice(item) == 59.99 
+		assert psn.getPlaystationPlusPrice(item) == None 
+		assert psn.getNonPlaystationPlusPrice(item) == 44.99 
+		assert psn.getPrice(item) == 44.99
