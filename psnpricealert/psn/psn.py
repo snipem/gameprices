@@ -14,9 +14,9 @@ version = sys.version_info[0]
 
 logging.basicConfig(
     filename="log/psn.log",
-    level = logging.DEBUG,
-    format = "%(asctime)s [%(levelname)-8s] %(message)s",
-    filemode = "w")
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)-8s] %(message)s",
+    filemode="w")
 
 # import only once
 if version == 3:
@@ -32,39 +32,45 @@ else:
 PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
 [1]: The currency symbol, in its unicode encoding """
 storeCodeMappings = {
-    "NL/nl": ["nl-nl",u'\N{EURO SIGN}'],
-    "DE/de": ["de-de",u'\N{EURO SIGN}'],
-    "US/en": ["us-en",u'\N{DOLLAR SIGN}'],
-    "JP/jp": ["jp-jp",u'\N{YEN SIGN}']
+    "NL/nl": ["nl-nl", u'\N{EURO SIGN}'],
+    "DE/de": ["de-de", u'\N{EURO SIGN}'],
+    "US/en": ["us-en", u'\N{DOLLAR SIGN}'],
+    "JP/jp": ["jp-jp", u'\N{YEN SIGN}']
 }
+
 
 def filterNone(item):
     if item is None:
-	return False
+        return False
     else:
-	return True
+        return True
+
 
 def getItemForCid(cid, store):
     try:
-        url = apiRoot + "/viewfinder/"+store+"/"+apiVersion+"/"+cid+"?size="+fetchSize
+        url = apiRoot + "/viewfinder/" + store + "/" + \
+            apiVersion + "/" + cid + "?size=" + fetchSize
         data = utils.getJsonResponse(url)
         return data
     except Exception as e:
-        logging.error("Got error '"+str(e)+"' while retrieving cid '"+cid+"' in store "+store)
+        logging.error("Got error '" + str(e) +
+                      "' while retrieving cid '" + cid + "' in store " + store)
         return None
+
 
 def getRewards(item):
     rewards = []
-    
-    #TODO Use Default SKU
+
+    # TODO Use Default SKU
     #if "default_sku" in item and "rewards" in item["default_sku"]: rewards.append(item["default_sku"]["rewards"].pop())
 
     for sku in item["skus"]:
-            if "rewards" in sku:
-                    for reward in sku["rewards"]:
-                        rewards.append(reward)
-   
+        if "rewards" in sku:
+            for reward in sku["rewards"]:
+                rewards.append(reward)
+
     return rewards
+
 
 def getDisplayPrice(item, store):
     price = getPrice(item)
@@ -72,45 +78,51 @@ def getDisplayPrice(item, store):
 
     return displayPrice
 
+
 def getCheapestPrice(prices):
-    return sorted(filter(filterNone,prices))[0]
+    return sorted(filter(filterNone, prices))[0]
+
 
 def getPrice(item):
     normalPrice = getNormalPrice(item)
     nonPlaystationPlusPrice = getNonPlaystationPlusPrice(item)
     playstationPlusPrice = getPlaystationPlusPrice(item)
 
-    return getCheapestPrice([normalPrice, nonPlaystationPlusPrice ,playstationPlusPrice])
+    return getCheapestPrice([normalPrice, nonPlaystationPlusPrice, playstationPlusPrice])
+
 
 def getNormalPrice(item):
-    return float(item['default_sku']['price'])/100
+    return float(item['default_sku']['price']) / 100
+
 
 def getNonPlaystationPlusPrice(item):
     for reward in getRewards(item):
-         if (reward.get('reward_type') == 4):
-            return float(reward.get('price'))/100
+        if (reward.get('reward_type') == 4):
+            return float(reward.get('price')) / 100
 
 
 def getPlaystationPlusPrice(item):
     for reward in getRewards(item):
         if reward.get('bonus_price') is not None:
-                return float(reward.get('bonus_price'))/100
+            return float(reward.get('bonus_price')) / 100
         elif reward.get('isPlus') is True:
-                return float(reward.get('price'))/100
+            return float(reward.get('price')) / 100
         else:
-                return None
+            return None
 
     return None
+
 
 def getName(item):
     return item['name']
 
+
 def getImage(item):
-    if (len (item["images"]) > 0):
+    if (len(item["images"]) > 0):
         return item["images"][0]['url']
 
-def getOfferEndDate(item):
 
+def getOfferEndDate(item):
     """ Returns the Offer End Date for a given Item
         :param item: The item for which the Offer End Date is to be retrieved
         :return: A datetime object which is the Offer End Date """
@@ -121,12 +133,14 @@ def getOfferEndDate(item):
             if endDate is not None:
                 return datetime.datetime.strptime(endDate, "%Y-%m-%dT%H:%M:%SZ")
 
+
 def getStoreUrl(item, store):
     cid = item["id"]
 
     url = storeRoot + "/" + storeCodeMappings[store][0] + "/cid=" + cid
 
     return url
+
 
 def getCidForName(name, store):
 
@@ -141,27 +155,33 @@ def getCidForName(name, store):
             cid = link['id']
             platform = ", ".join(link['playable_platform'])
 
-            logging.info ("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + itemType)
+            logging.info("Found: " + name + " - " + cid +
+                         " - Platform: " + platform + " - Type: " + itemType)
             cids.append(cid)
         except Exception as e:
-            logging.warn("Got error '"+str(e)+"'' while parsing\n" + utils.prettyPrintJson(link))
+            logging.warn("Got error '" + str(e) +
+                         "'' while parsing\n" + utils.prettyPrintJson(link))
 
     return cids
+
 
 def searchForItemsByName(name, store):
 
     encodedName = quote(name)
-    url = apiRoot+"/bucket-search/"+store+"/"+apiVersion+"/"+encodedName+"?size="+fetchSize+"&start=0"
+    url = apiRoot + "/bucket-search/" + store + "/" + apiVersion + \
+        "/" + encodedName + "?size=" + fetchSize + "&start=0"
     data = utils.getJsonResponse(url)
     links = data['categories']['games']['links']
     return links
+
 
 def getItemsByContainer(container, store, filtersDict):
 
     encContainer = quote(container)
     timestamp = timestamp = int(time.time())
 
-    url = apiRoot+"/viewfinder/"+store+"/"+apiVersion+"/"+container+"?size="+fetchSize
+    url = apiRoot + "/viewfinder/" + store + "/" + \
+        apiVersion + "/" + container + "?size=" + fetchSize
 
     for i in filtersDict:
         url = url + "&" + quote(i) + "=" + quote(filtersDict[i])
