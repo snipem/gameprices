@@ -61,12 +61,18 @@ class MyTest(unittest.TestCase):
         assert type(plusPrice) is float
         assert plusPrice == 0
 
-    def test_checkCurrencySymbol(self):
+    def test_checkCurrencySymbolAsPartOfName(self):
         store = "DE/de"
         cids = psn.getCidForName("Child of Light", store)
         item = psn.getItemForCid(cids[0], store)
         assert psn.getDisplayPrice(item, store)[0] == u'\N{EURO SIGN}'
 
+    def test_checkCurrencySymbol(self):
+        assert psn.getCurrencySymbol("DE/de") == u'\N{EURO SIGN}'
+        assert psn.getCurrencySymbol("US/en") == u'\N{DOLLAR SIGN}'
+        assert psn.getCurrencySymbol("JP/jp") == u'\N{YEN SIGN}'
+        assert psn.getCurrencySymbol("Unknown") == ''
+    
     def test_getRewards(self):
         store = "DE/de"
         item = psn.getItemForCid("EP0006-CUSA02532_00-UNRAVELUNRAVEL09", store)
@@ -91,3 +97,9 @@ class MyTest(unittest.TestCase):
         assert psn.getPlaystationPlusPrice(item) == None
         assert psn.getNonPlaystationPlusPrice(item) == 44.99
         assert psn.getPrice(item) == 44.99
+
+    def test_determineStoreFromCID(self):
+        assert psn.determineStore("EP9000-CUSA00194_00-UNTILDAWN0000001") == "DE/de"
+        assert psn.determineStore("JP0006-NPJB00377_00-BATTLEFIELD40000") == "JP/jp"
+        assert psn.determineStore("UP2034-CUSA04841_00-NMSDIGITAL000001") == "US/en"
+        assert psn.determineStore("1") == None 

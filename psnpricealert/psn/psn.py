@@ -30,12 +30,13 @@ else:
 
 """ Dictionary object containing data specific to a Country store. The key is the store identifier per the
 PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
-[1]: The currency symbol, in its unicode encoding """
+[1]: The currency symbol, in its unicode encoding 
+[2]: The character preceeding each marketplaces CID """
 storeCodeMappings = {
     "NL/nl": ["nl-nl", u'\N{EURO SIGN}'],
-    "DE/de": ["de-de", u'\N{EURO SIGN}'],
-    "US/en": ["us-en", u'\N{DOLLAR SIGN}'],
-    "JP/jp": ["jp-jp", u'\N{YEN SIGN}']
+    "DE/de": ["de-de", u'\N{EURO SIGN}',"E"],
+    "US/en": ["us-en", u'\N{DOLLAR SIGN}',"U"],
+    "JP/jp": ["jp-jp", u'\N{YEN SIGN}',"J"]
 }
 
 
@@ -174,6 +175,18 @@ def searchForItemsByName(name, store):
     links = data['categories']['games']['links']
     return links
 
+def getCurrencySymbol(store):
+    try:
+        return storeCodeMappings.get(store)[1] 
+    except:
+        return ""
+
+def determineStore(cid):
+    for store in storeCodeMappings:
+        storeCodeMapping = storeCodeMappings.get(store)
+         
+        if len(storeCodeMapping) >= 3 and cid.startswith(storeCodeMappings.get(store)[2]):
+            return store 
 
 def getItemsByContainer(container, store, filtersDict):
 
