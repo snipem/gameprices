@@ -96,10 +96,11 @@ def sendMail(body):
 def generateBodyElement(alert, item):
 
     returnBody = []
+    store = alert['store']
     returnBody.append("<p><img src='"+psn.getImage(item)+"'/></p>")
     returnBody.append("<p>"+psn.getName(item)+"</p>")
-    returnBody.append("<p>Wished: "+str(alert['price'])+"</p>")
-    returnBody.append("<p>Is now: "+str(psn.getPrice(item))+"</p>")
+    returnBody.append("<p>Wished: "+str(alert['price'])+(psn.getCurrencySymbol(store))+"</p>")
+    returnBody.append("<p>Is now: "+str(psn.getPrice(item))+(psn.getCurrencySymbol(store))+"</p>")
 
     return "\n".join(returnBody)
 
