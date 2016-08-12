@@ -29,7 +29,10 @@ def getAlerts(alertsFilename):
             alert = {}
             alert['cid'] = row[0]
             alert['price'] = row[1]
-            alert['store'] = row[2]
+            if len(row) >= 3:
+                alert['store'] = row[2]
+            else:
+                alert['store'] = psn.determineStore(alert['cid'])
             alerts.append(alert)
 
     return alerts
