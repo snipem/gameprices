@@ -76,7 +76,7 @@ def sendMail(body):
     msg = MIMEMultipart('alternative')
     msg['From'] = mailConfig["from"]
     msg['To'] = mailConfig["to"]
-    msg['Subject'] = "Playstation Network Price Drop"
+    msg['Subject'] = "PlayStation Network Price Drop"
 
     if (sys.version_info[0] == 2):
         sendBody = body.encode('utf-8')
