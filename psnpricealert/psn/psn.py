@@ -12,12 +12,6 @@ apiVersion = "19"
 
 version = sys.version_info[0]
 
-logging.basicConfig(
-    filename="log/psn.log",
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)-8s] %(message)s",
-    filemode="w")
-
 # import only once
 if version == 3:
     from urllib.request import urlopen

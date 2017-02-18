@@ -9,18 +9,14 @@ import locale
 from psnpricealert.psn import psn
 from psnpricealert.utils import utils
 
-logging.basicConfig(
-    filename="log/psnpricealert.log",
-    level = logging.INFO,
-    format = "%(asctime)s [%(levelname)-8s] %(message)s",
-    filemode = "w")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help="CID of game to check")
 parser.add_argument("--container", "-c", help="Container to list")
-parser.add_argument("--store", "-s", help="regional PSN store to check. Default: 'DE/de'", default="DE/de")
-parser.add_argument("--price", "-p", help="desired price of game", type=float)
+parser.add_argument("--store", "-s", help="Regional PSN store to check. Default: 'DE/de'", default="DE/de")
+parser.add_argument("--price", "-p", help="Desired price of game", type=float)
 parser.add_argument("--query", "-q", help="Name of item to search for")
+parser.add_argument("--log", "-l", help="Write to log file", dest='log', action='store_true')
 
 def checkWishPrice(cid, store, wishPrice):
 
@@ -65,6 +61,13 @@ def searchForItemsByContainerAndFormatOutput(container, store, filtersDict):
 
 def main():
     args = parser.parse_args()
+
+    if (args.log):
+        logging.basicConfig(
+            filename="psnpricealert.log",
+            level = logging.INFO,
+            format = "%(asctime)s [%(levelname)-8s] %(message)s",
+            filemode = "w")
 
     if (args.query != None and args.store != None):
         printString = searchForItemsByNameAndFormatOutput(args.query,args.store)
