@@ -60,3 +60,4 @@ docs/_build/
 
 
 *.sublime-workspace
+.DS_Store
