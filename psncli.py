@@ -9,6 +9,11 @@ import locale
 from psnpricealert.psn import psn
 from psnpricealert.utils import utils
 
+logging.basicConfig(
+    filename="psnpricealert.log",
+    level = logging.INFO,
+    format = "%(asctime)s [%(levelname)-8s] %(message)s",
+    filemode = "w")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help="CID of game to check")
@@ -62,12 +67,8 @@ def searchForItemsByContainerAndFormatOutput(container, store, filtersDict):
 def main():
     args = parser.parse_args()
 
-    if (args.log):
-        logging.basicConfig(
-            filename="psnpricealert.log",
-            level = logging.INFO,
-            format = "%(asctime)s [%(levelname)-8s] %(message)s",
-            filemode = "w")
+    if not args.log:
+        logging.getLogger().disabled = True
 
     if (args.query != None and args.store != None):
         printString = searchForItemsByNameAndFormatOutput(args.query,args.store)
