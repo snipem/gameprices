@@ -14,7 +14,7 @@ In order to check the price of an item. You need a store identifier. These store
 * GB/en (Great Britain)
 * US/en (United States)
 * SE/en (Sweden)
-* JP/jp (Japan) 
+* JP/jp (Japan)
 
 Prices are always in the local currency. Therefore it is € for DE/de and £ for GB/en. Additionaly, prices are that for PlayStation Plus users.
 
@@ -23,7 +23,7 @@ Usage
 
 ### Mail alerting for single alerts you define yourself
 
-Just run `python psnmailalert.py` for mail alerting. See example below. Alerts are set in the `alerts.csv` file. If no store is set. The german / european store is used as a default. 
+Just run `python psnmailalert.py` for mail alerting. See example below. Alerts are set in the `alerts.csv` file. If no store is set. The german / european store is used as a default.
 
 ### Command line interface
 	usage: psncli.py [-h] [--id ID] [--container CONTAINER] [--store STORE]
@@ -42,7 +42,7 @@ Just run `python psnmailalert.py` for mail alerting. See example below. Alerts a
 	                        Name of item to search for
 
 #### Retrieving UTF-8 encoded output on terminals
-You may have to tell Python that your terminal is capable of dealing with UTF-8 outputs. Some PSN items are annotated with trademark, copyright or foreign language specific symbols. To do so set `export PYTHONIOENCODING=utf-8` in your terminal window. 
+You may have to tell Python that your terminal is capable of dealing with UTF-8 outputs. Some PSN items are annotated with trademark, copyright or foreign language specific symbols. To do so set `export PYTHONIOENCODING=utf-8` in your terminal window.
 
 ### Mail alerting for collections of price reductions
 
@@ -71,7 +71,7 @@ If the store value is left blank, the script tries to extract the store from the
  	./psnmailalert.py
 
 #### Example mail ####
-![Mail with alerts](res/mail.png?raw=true "Mail with alerts")
+![Mail with alerts](https://raw.githubusercontent.com/snipem/psnprices/master/res/mail.png "Mail with alerts")
 
 ### Searching for the CID of an item
 
