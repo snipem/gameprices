@@ -18,15 +18,27 @@ In order to check the price of an item. You need a store identifier. These store
 
 Prices are always in the local currency. Therefore it is € for DE/de and £ for GB/en. Additionaly, prices are that for PlayStation Plus users.
 
+Installation
+------------
+Use PyPI to install `psnprices`
+
+    pip install psnprices
+
+This will install the Python modules and also the following command line tools
+
+    psncli
+    psnmailalert
+    psndealsmailalert
+
 Usage
 -----
 
 ### Mail alerting for single alerts you define yourself
 
-Just run `python psnmailalert.py` for mail alerting. See example below. Alerts are set in the `alerts.csv` file. If no store is set. The german / european store is used as a default.
+Just run `psnmailalert` for mail alerting. See example below. Alerts are set in the `alerts.csv` file. If no store is set. The german / european store is used as a default.
 
 ### Command line interface
-	usage: psncli.py [-h] [--id ID] [--container CONTAINER] [--store STORE]
+	usage: psncli [-h] [--id ID] [--container CONTAINER] [--store STORE]
 	                 [--price PRICE] [--query QUERY]
 
 	optional arguments:
@@ -54,7 +66,7 @@ You may run this script with the following command line variants:
 
 ### Mail alerting - Get a mail when alerts have been met
 
-With `psnmailalert.py` you may set alerts for price drops in the `alerts.csv` file. The first value is the CID for the item, the second is the price to be matched in order to alert you by mail, and the second value is the store to search in. You may mix stores in the `alerts.csv`. After a price has been matched, the alert is removed from `alerts.csv`. You will not get any further alerts for that item.
+With `psnmailalert` you may set alerts for price drops in the `alerts.csv` file. The first value is the CID for the item, the second is the price to be matched in order to alert you by mail, and the second value is the store to search in. You may mix stores in the `alerts.csv`. After a price has been matched, the alert is removed from `alerts.csv`. You will not get any further alerts for that item.
 
     P0001-NPEJ00305_00-B000000000001030,19.00,DE/de
     P0001-NPEJ00305_00-B000000000001030,19.00,DE/de
@@ -66,9 +78,9 @@ If the store value is left blank, the script tries to extract the store from the
 
  In order to receive mails you have to set your account settings in the file `mailconfig.json`. See `mailconfig.json_example` for an example config.
 
- To run `psnmailalert.py`, just type:
+ To run `psnmailalert`, just type:
 
- 	./psnmailalert.py
+ 	/psnmailalert
 
 #### Example mail ####
 ![Mail with alerts](https://raw.githubusercontent.com/snipem/psnprices/master/res/mail.png "Mail with alerts")
@@ -77,7 +89,7 @@ If the store value is left blank, the script tries to extract the store from the
 
 Define the name of a game and the store.
 
-	./psncli.py --query "metal gear solid peace walker psp" --store DE/de
+	psncli --query "metal gear solid peace walker psp" --store DE/de
 
 You will get a result containing one to many search results with the CID. The first output of each search line is the CID, the second the name, the third the supported systems and the last is a description of the item type in the local store language. It is "Vollversion" here which means "full version" in German.
 
@@ -87,5 +99,11 @@ You will get a result containing one to many search results with the CID. The fi
 
 The price is in local currency. As exit statuses render the outcome of the alert, you may send you e-mails or desktop notifications with `&&` or `||`. In this example, there is a string printed to the console.
 
-	./psncli.py --id EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
+	psncli --id EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
 	echo "Price matched, let's buy Metal Gear Solid PW"
+
+
+Disclaimer
+----------
+
+This script is not associated with Sony, Sony PlayStation, the PlayStation Network in any kind. It consumes an public interface that is publicly advertised to the browser to list store contents.
