@@ -6,11 +6,11 @@ import argparse
 import codecs
 import locale
 
-from psnpricealert.psn import psn
-from psnpricealert.utils import utils
+from psnprices.psn import psn
+from psnprices.utils import utils
 
 logging.basicConfig(
-    filename="psnpricealert.log",
+    filename="psnprices.log",
     level = logging.INFO,
     format = "%(asctime)s [%(levelname)-8s] %(message)s",
     filemode = "w")

@@ -1,7 +1,7 @@
 from setuptools import setup
 setup(
-        name = 'psnpricealert',
-        packages = ['psnpricealert'],
+        name = 'psnprices',
+        packages = ['psnprices'],
         version = '1.0',
         description = 'An interface for the undocumented Sony PlayStation Store PSN Api',
         author = 'Matthias Kuech',
@@ -14,8 +14,8 @@ setup(
         test_suite='nose.collector',
         tests_require=['nose'],
         entry_points = {
-            'console_scripts': ['psncli=psnpricealert.psncli:main',
-                                'psndealsmailalert=psnpricealert.psndealsmailalert:main',
-                                'psnmailalert=psnpricealert.psnmailalert:main'],
+            'console_scripts': ['psncli=psnprices.cli.psncli:main',
+                                'psndealsmailalert=psnprices.cli.psndealsmailalert:main',
+                                'psnmailalert=psnprices.cli.psnmailalert:main'],
         }
         )

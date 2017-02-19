@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from psnpricealert.psn import psn
-from psnpricealert.utils import utils
+from psnprices.psn import psn
+from psnprices.utils import utils
 from xml.sax.saxutils import escape
 import csv
 import sys
