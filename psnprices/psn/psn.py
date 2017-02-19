@@ -3,7 +3,7 @@ import logging
 import time
 import datetime
 from pprint import pprint
-from psnpricealert.utils import utils
+from psnprices.utils import utils
 
 apiRoot = "https://store.playstation.com/chihiro-api"
 storeRoot = "https://store.playstation.com/#!"

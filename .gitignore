@@ -60,3 +60,5 @@ docs/_build/
 
 
 *.sublime-workspace
+
+.eggs/README.txt
