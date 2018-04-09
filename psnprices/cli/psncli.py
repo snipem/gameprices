@@ -6,7 +6,7 @@ import argparse
 import codecs
 import locale
 
-from psnprices.psn import psn
+from psnprices.shops import psn
 from psnprices.utils import utils
 
 logging.basicConfig(

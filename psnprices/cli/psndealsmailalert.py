@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from psnprices.psn import psn
+from psnprices.shops import psn
 from psnprices.utils import utils
 from xml.sax.saxutils import escape
 import csv

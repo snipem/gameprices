@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from psnprices.psn import psn
+from psnprices.shops import psn
 
 
 class MyTest(unittest.TestCase):

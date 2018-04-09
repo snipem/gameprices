@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from psnprices.psn import psn
+from psnprices.shops import psn
 from psnprices.utils import utils
 import csv
 import sys
