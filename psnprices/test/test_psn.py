@@ -3,6 +3,7 @@
 
 import unittest
 from psnprices.shops import psn
+from psnprices.shops.psn import Psn
 
 
 class MyTest(unittest.TestCase):
@@ -103,3 +104,25 @@ class MyTest(unittest.TestCase):
         assert psn.determineStore("JP0006-NPJB00377_00-BATTLEFIELD40000") == "JP/jp"
         assert psn.determineStore("UP2034-CUSA04841_00-NMSDIGITAL000001") == "US/en"
         assert psn.determineStore("1") == None 
+
+class PsnTest(unittest.TestCase):
+
+    psn = Psn(country="DE/de")
+
+    def test_getItemForId(self):
+        game_offers = self.psn.search("Tearaway™ Unfolded")
+        game_offer = game_offers[0]
+        assert game_offer.name == "Tearaway™ Unfolded"
+
+    def test_search_alot(self):
+        game_offers = self.psn.search("park")
+        print('\n'.join(str(e) for e in game_offers))
+        assert len(game_offers) > 1
+
+    def test_get_item_by_id(self):
+        id = "EP9000-CUSA00562_00-TEARAWAYUNFOLDED"
+        name = "Tearaway™ Unfolded"
+        game_offer = self.psn.get_item_by(id=id, name=name)
+
+        assert game_offer.name == name
+        assert game_offer.id == id 

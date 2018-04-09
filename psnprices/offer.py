@@ -7,12 +7,13 @@ class GameOffer(object):
     platforms = []
     picture_url = None
 
-    def __init__(self, id, picture_url, name, url, prices, platforms):
+    def __init__(self, id, name, url, prices, platforms, picture_url=None, type=None):
         super(GameOffer, self).__init__()
         self.prices = prices
         self.name = name
         self.id = id
         self.url = url
+        self.type = type
         self.picture_url = picture_url
         self.platforms = platforms
 

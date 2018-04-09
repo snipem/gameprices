@@ -197,3 +197,50 @@ def getItemsByContainer(container, store, filtersDict):
     links = data['links']
 
     return links
+
+
+import requests
+import json
+from psnprices.shop import Shop
+from psnprices.offer import GameOffer, Price
+
+class Psn(Shop):
+
+    def _build_api_url(self, country, query):
+        return "%s/%s/select?q=%s&%s" % (apiRoot, country, query, appendix)
+
+    def search(self, name):
+        items = searchForItemsByName(name=name, store=self.country)
+        return_offers=[]
+        for game in items:
+            return_offers.append(
+                        GameOffer(
+                            id=game["id"],
+                            url=game["url"],
+                            type=game['gameContentTypesList'][0]['key'] if 'gameContentTypesList' in game else None,
+                            name=game["name"],
+                            # prices=[game['default_sku']['price']/100],
+                            prices=[
+                                Price(
+                                    value=getNormalPrice(game),
+                                    currency=getCurrencySymbol(self.country),
+                                    offer_type="NORMAL"
+                                    ),
+                                Price(
+                                    value=getPlaystationPlusPrice(game),
+                                    currency=getCurrencySymbol(self.country),
+                                    offer_type="PS+"
+                                    ),
+                            ],
+                            platforms=game['playable_platform'],
+                            picture_url=getImage(game)
+                            )
+                        )
+        return return_offers
+
+    # def get_item_by(self, id, name):
+    #     game_offers = self.search(name)
+    #     for game_offer in game_offers:
+    #         if game_offer.id == id:
+    #             return game_offer
+
