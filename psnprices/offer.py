@@ -18,7 +18,7 @@ class GameOffer(object):
         self.platforms = platforms
 
     def __str__(self):
-        return "%s - %s on %s" %(self.name, self.prices, self.platforms)
+        return "%s - %s on %s" %(self.name, self.prices, ",".join(self.platforms))
 
     def get_item_by(self, id, name):
         raise NotImplementedError

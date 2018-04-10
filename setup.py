@@ -7,7 +7,7 @@ except(IOError, ImportError):
 
 setup(
     name='psnprices',
-    packages=['psnprices', 'psnprices.psn', 'psnprices.cli', 'psnprices.test', 'psnprices.utils'],
+    packages=['psnprices', 'psnprices.shops', 'psnprices.cli', 'psnprices.test', 'psnprices.utils'],
     version='1.0',
     description='An interface for the undocumented Sony PlayStation Store PSN Api',
     long_description=long_description,
@@ -17,11 +17,16 @@ setup(
     download_url='https://github.com/snipem/psnprices/archive/1.0.tar.gz',
     keywords=['playstation', 'store', 'prices'],
     license='GPL2',
+    install_requires=[
+        'requests',
+    ],
     test_suite='nose.collector',
     tests_require=['nose'],
     entry_points={
-        'console_scripts': ['psncli=psnprices.cli.psncli:main',
-                            'psndealsmailalert=psnprices.cli.psndealsmailalert:main',
-                            'psnmailalert=psnprices.cli.psnmailalert:main'],
+        'console_scripts': [
+            'eshopcli=psnprices.cli.psncli:eshop_main',
+            'psncli=psnprices.cli.psncli:psn_main',
+            'psndealsmailalert=psnprices.cli.psndealsmailalert:main',
+            'psnmailalert=psnprices.cli.psnmailalert:main'],
         }
     )

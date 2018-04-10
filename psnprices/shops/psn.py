@@ -87,7 +87,7 @@ def getPrice(item):
 
 
 def getNormalPrice(item):
-    return float(item['default_sku']['price']) / 100
+    return float(item['default_sku']['price']) / 100 if 'default_sku' in item else None
 
 
 def getNonPlaystationPlusPrice(item):
@@ -209,38 +209,41 @@ class Psn(Shop):
     def _build_api_url(self, country, query):
         return "%s/%s/select?q=%s&%s" % (apiRoot, country, query, appendix)
 
+    def _item_to_game_offer(self, game):
+        return GameOffer(
+                    id=game["id"],
+                    url=game["url"],
+                    type=game['gameContentTypesList'][0]['key'] if 'gameContentTypesList' in game else None,
+                    name=game["name"],
+                    # prices=[game['default_sku']['price']/100],
+                    prices=[
+                        Price(
+                            value=getNormalPrice(game),
+                            currency=getCurrencySymbol(self.country),
+                            offer_type="NORMAL"
+                            ),
+                        Price(
+                            value=getPlaystationPlusPrice(game),
+                            currency=getCurrencySymbol(self.country),
+                            offer_type="PS+"
+                            ),
+                    ],
+                    platforms=game['playable_platform'],
+                    picture_url=getImage(game)
+                    )
+
+
     def search(self, name):
         items = searchForItemsByName(name=name, store=self.country)
         return_offers=[]
-        for game in items:
+        for item in items:
             return_offers.append(
-                        GameOffer(
-                            id=game["id"],
-                            url=game["url"],
-                            type=game['gameContentTypesList'][0]['key'] if 'gameContentTypesList' in game else None,
-                            name=game["name"],
-                            # prices=[game['default_sku']['price']/100],
-                            prices=[
-                                Price(
-                                    value=getNormalPrice(game),
-                                    currency=getCurrencySymbol(self.country),
-                                    offer_type="NORMAL"
-                                    ),
-                                Price(
-                                    value=getPlaystationPlusPrice(game),
-                                    currency=getCurrencySymbol(self.country),
-                                    offer_type="PS+"
-                                    ),
-                            ],
-                            platforms=game['playable_platform'],
-                            picture_url=getImage(game)
-                            )
+                        self._item_to_game_offer(item)
                         )
         return return_offers
 
-    # def get_item_by(self, id, name):
-    #     game_offers = self.search(name)
-    #     for game_offer in game_offers:
-    #         if game_offer.id == id:
-    #             return game_offer
+    def get_item_by(self, id, name):
+        item = getItemForCid(id, self.country)
+        return self._item_to_game_offer(item)
+
 

@@ -7,6 +7,8 @@ import codecs
 import locale
 
 from psnprices.shops import psn
+from psnprices.shops.eshop import Eshop
+from psnprices.shops.psn import Psn
 from psnprices.utils import utils
 
 logging.basicConfig(
@@ -22,6 +24,8 @@ parser.add_argument("--store", "-s", help="Regional PSN store to check. Default:
 parser.add_argument("--price", "-p", help="Desired price of game", type=float)
 parser.add_argument("--query", "-q", help="Name of item to search for")
 parser.add_argument("--log", "-l", help="Write to log file", dest='log', action='store_true')
+
+shop = None
 
 def checkWishPrice(cid, store, wishPrice):
 
@@ -42,13 +46,12 @@ def formatItems(items):
 
     for item in items:
         try:
-            logging.debug("Parsing:\n" + utils.prettyPrintJson(item))
-            name = item['name']
-            itemType = item['game_contentType']
-            cid = item['id']
-            price = str(psn.getPrice(item))
+            name = item.name
+            itemType = item.type
+            cid = item.id
+            price = str(item.prices[0].value) if len(item.prices) > 0 else ""
 
-            platform = ", ".join(item['playable_platform'])
+            platform = ",".join(item.platforms)
             foundItems.append((cid + "\t" + name + "\t" + platform + "\t" + price + "\t" + itemType))
             cids.append(cid)
         except Exception as e:
@@ -57,14 +60,18 @@ def formatItems(items):
     return foundItems
 
 def searchForItemsByNameAndFormatOutput(name, store):
-    items = psn.searchForItemsByName(name, store)
+    items = shop.search(name)
     return formatItems(items)
 
 def searchForItemsByContainerAndFormatOutput(container, store, filtersDict):
     items = psn.getItemsByContainer(container, store, filtersDict)
     return formatItems(items)
 
-def main():
+def main(inshop):
+
+    global shop
+    shop = inshop
+
     args = parser.parse_args()
 
     if not args.log:
@@ -92,5 +99,8 @@ def main():
         else:
             exit(-1)
 
-if __name__ == "__main__":
-    main()
+def eshop_main():
+    main(Eshop("DE/de"))
+
+def psn_main():
+    main(Psn("DE/de"))

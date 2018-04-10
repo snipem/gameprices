@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import sys
 from psnprices.shops import psn
 from psnprices.shops.psn import Psn
+from psnprices.cli.psncli import psn_main
 
 
 class MyTest(unittest.TestCase):
@@ -108,6 +110,11 @@ class MyTest(unittest.TestCase):
 class PsnTest(unittest.TestCase):
 
     psn = Psn(country="DE/de")
+    base_game = None
+
+    #TODO fix this
+    def setup_method(self, name="Bloodborne", id="EP9000-CUSA00207_00-BLOODBORNE0000EU"):
+        self.base_game = self.psn.get_item_by(name=name,id=id)
 
     def test_getItemForId(self):
         game_offers = self.psn.search("Tearaway™ Unfolded")
@@ -126,3 +133,14 @@ class PsnTest(unittest.TestCase):
 
         assert game_offer.name == name
         assert game_offer.id == id 
+
+    def test_game_has_picture(self):
+        assert "http" in self.base_game.picture_url
+        
+    def test_cli(self):
+        sys.argv = [
+            "psncli",
+            "--query",
+            "'Bloodborne'"
+            ]
+        psn_main()

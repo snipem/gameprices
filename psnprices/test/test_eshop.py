@@ -1,5 +1,7 @@
 import unittest
+import sys
 from psnprices.shops.eshop import Eshop
+from psnprices.cli.psncli import eshop_main
 
 class EshopTest(unittest.TestCase):
 
@@ -22,3 +24,11 @@ class EshopTest(unittest.TestCase):
 
         assert game_offer.name == name
         assert game_offer.id == id 
+
+    def test_cli(self):
+        sys.argv = [
+            "eshopcli",
+            "--query",
+            "'Vostok'"
+            ]
+        eshop_main()
