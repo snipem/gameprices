@@ -150,7 +150,10 @@ class PsnTest(unittest.TestCase):
             "--query",
             "'Bloodborne'"
             ]
-        psn_main()
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            psn_main()
+        assert pytest_wrapped_e.type == SystemExit
+        assert pytest_wrapped_e.value.code == 0 
 
     def test_mailalert(self):
 

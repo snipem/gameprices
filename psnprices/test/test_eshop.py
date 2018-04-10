@@ -2,6 +2,7 @@ import unittest
 import sys
 from psnprices.shops.eshop import Eshop
 from psnprices.cli.psncli import eshop_main
+import pytest
 
 class EshopTest(unittest.TestCase):
 
@@ -31,4 +32,8 @@ class EshopTest(unittest.TestCase):
             "--query",
             "'Vostok'"
             ]
-        eshop_main()
+
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            eshop_main()
+        assert pytest_wrapped_e.type == SystemExit
+        assert pytest_wrapped_e.value.code == 0 
