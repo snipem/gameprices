@@ -1,18 +1,14 @@
 #!/usr/bin/env python
 
-from psnprices.shops import psn
 from psnprices.utils import utils
+from psnprices.shops.psn import Psn
+from psnprices.shops import psn
 import csv
 import sys
 
-if (sys.version_info[0] == 2):
-    from email.MIMEMultipart import MIMEMultipart
-    from email.MIMEBase import MIMEBase
-    from email.MIMEText import MIMEText
-else:
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.base import MIMEBase
-    from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
 
 import smtplib
 
@@ -32,7 +28,7 @@ def getAlerts(alertsFilename):
             if len(row) >= 3:
                 alert['store'] = row[2]
             else:
-                alert['store'] = psn.determineStore(alert['cid'])
+                alert['store'] = psn._determineStore(alert['cid'])
             alerts.append(alert)
 
     return alerts
@@ -44,7 +40,7 @@ def setAlerts(filename, alerts):
 
 
 def alertIsMatched(alert, item):
-    return float(psn.getPrice(item)) <= float(alert['price'])
+    return float(item.price[0].value) <= float(alert['price']) if len(item) > 0 else False
 
 def checkAlertsAndGenerateMailBody(alerts):
 
@@ -55,7 +51,8 @@ def checkAlertsAndGenerateMailBody(alerts):
         cid = alert['cid']
         store = alert['store']
 
-        item = psn.getItemForCid(cid,store)
+        shop = Psn("DE/de")
+        item = shop.search(cid)
 
         if (item == None):
             utils.print_enc("No item found for cid '"+cid+"' in store "+store)
@@ -100,10 +97,10 @@ def generateBodyElement(alert, item):
 
     returnBody = []
     store = alert['store']
-    returnBody.append("<p><img src='"+psn.getImage(item)+"'/></p>")
-    returnBody.append("<p>"+psn.getName(item)+"</p>")
-    returnBody.append("<p>Wished: "+str(alert['price'])+(psn.getCurrencySymbol(store))+"</p>")
-    returnBody.append("<p>Is now: "+str(psn.getPrice(item))+(psn.getCurrencySymbol(store))+"</p>")
+    returnBody.append("<p><img src='"+item.get_full_image()+"'/></p>")
+    returnBody.append("<p>"+item.name+"</p>")
+    returnBody.append("<p>Wished: "+str(alert['price'])+"</p>")
+    returnBody.append("<p>Is now: "+str(item.price[0].value)+"</p>")
 
     return "\n".join(returnBody)
 

@@ -7,14 +7,9 @@ import csv
 import sys
 import datetime
 
-if (sys.version_info[0] == 2):
-	from email.MIMEMultipart import MIMEMultipart
-	from email.MIMEBase import MIMEBase
-	from email.MIMEText import MIMEText
-else:
-	from email.mime.multipart import MIMEMultipart
-	from email.mime.base import MIMEBase
-	from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
 
 import smtplib
 
@@ -46,7 +41,7 @@ def checkContainersAndGenerateMailBody(containers):
 		containerId = container['containerId']
 		store = container['store']
 
-		items = psn.getItemsByContainer(containerId, store, {"platform": "ps4"})
+		items = psn._getItemsByContainer(containerId, store, {"platform": "ps4"})
 
 		if (items == None):
 			utils.print_enc("No items found for Container '"+containerId+"' in store "+store)
@@ -110,13 +105,13 @@ def generateBodyItem(container, item):
 
 	returnBody = []
 
-	url = psn.getStoreUrl(item, container["store"])
-	offerEndDate = psn.getOfferEndDate(item)
-	itemName = escape(psn.getName(item))
+	url = psn._getStoreUrl(item, container["store"])
+	offerEndDate = psn._getOfferEndDate(item)
+	itemName = escape(psn._getName(item))
 
 	returnBody.append("<div style=\"float: left; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 180px;\">")
 	returnBody.append("<div style=\"height: 180px; min-height: 180px; max-height: 180px\"><a href=\"" + url +
-					  "\" target=\"_blank\"><img src='"+psn.getImage(item)+"' alt=\"" + itemName +
+					  "\" target=\"_blank\"><img src='"+psn._getImage(item)+"' alt=\"" + itemName +
 					  "\" style=\"width: 180px; height:180px;\"/></a></div>")
 
 	if offerEndDate is not None:
@@ -124,7 +119,7 @@ def generateBodyItem(container, item):
 						  + datetime.datetime.strftime(offerEndDate ,"%d/%m/%Y") + "</div>")
 
 	returnBody.append("<div style=\"margin-top: 5px;\"><span style=\"margin-right: 10px; font-weight: bold; font-size: 1.4em; color: #CE1818;\">"
-					  + psn.getDisplayPrice(item, container["store"]) + "</span><span>" + itemName + "</span></div>")
+					  + psn._getDisplayPrice(item, container["store"]) + "</span><span>" + itemName + "</span></div>")
 	returnBody.append("</div>")
 
 	return "\n".join(returnBody)

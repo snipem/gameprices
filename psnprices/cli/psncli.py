@@ -29,9 +29,9 @@ shop = None
 
 def checkWishPrice(cid, store, wishPrice):
 
-    item = psn.getItemForCid(cid, store)
-    normalPrice = psn.getPrice(item)
-    name = psn.getName(item)
+    item = psn._getItemForCid(cid, store)
+    normalPrice = psn._getPrice(item)
+    name = psn._getName(item)
 
     if (normalPrice > wishPrice):
         utils.print_enc(("Wish price {0:.2f} for '"+name+"' does not yet match {1:.2f}, exiting").format(wishPrice, normalPrice))
@@ -64,7 +64,7 @@ def searchForItemsByNameAndFormatOutput(name, store):
     return formatItems(items)
 
 def searchForItemsByContainerAndFormatOutput(container, store, filtersDict):
-    items = psn.getItemsByContainer(container, store, filtersDict)
+    items = psn._getItemsByContainer(container, store, filtersDict)
     return formatItems(items)
 
 def main(inshop):

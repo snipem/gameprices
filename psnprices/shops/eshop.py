@@ -8,6 +8,7 @@ storeRoot = ""
 fetchSize = ""
 apiVersion = ""
 country = "de"
+appendix = ""
 limit = 30
 
 class Eshop(Shop):
