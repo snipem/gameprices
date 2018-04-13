@@ -2,6 +2,7 @@
 
 from psnprices.utils import utils
 from psnprices.shops.psn import Psn
+from psnprices.shops.eshop import Eshop
 from psnprices.shops import psn
 import csv
 import sys
@@ -12,10 +13,12 @@ from email.mime.text import MIMEText
 
 import smtplib
 
+
 def getMailConfig():
     mailConfig = {}
     mailConfig = utils.getJsonFile("mailconfig.json")
     return mailConfig
+
 
 def getAlerts(alertsFilename):
     alerts = []
@@ -28,19 +31,21 @@ def getAlerts(alertsFilename):
             if len(row) >= 3:
                 alert['store'] = row[2]
             else:
-                alert['store'] = psn._determineStore(alert['cid'])
+                alert['store'] = "???"
             alerts.append(alert)
 
     return alerts
 
+
 def setAlerts(filename, alerts):
     c = csv.writer(open(filename, "w"))
     for alert in alerts:
-        c.writerow([alert['cid'],alert['price'],alert['store']])
+        c.writerow([alert['cid'], alert['price'], alert['store']])
 
 
 def alertIsMatched(alert, item):
-    return float(item.price[0].value) <= float(alert['price']) if len(item) > 0 else False
+    return item and float(item.prices[0].value) <= float(alert['price'])
+
 
 def checkAlertsAndGenerateMailBody(alerts):
 
@@ -51,10 +56,14 @@ def checkAlertsAndGenerateMailBody(alerts):
         cid = alert['cid']
         store = alert['store']
 
-        shop = Psn("DE/de")
-        item = shop.search(cid)
+        if "###" in cid:
+            shop = Eshop("DE/de")
+        else:
+            shop = Psn("DE/de")
 
-        if (item == None):
+        item = shop.get_item_by(id=cid)
+
+        if not item:
             utils.print_enc("No item found for cid '"+cid+"' in store "+store)
         else:
             if (alertIsMatched(alert, item)):
@@ -65,6 +74,7 @@ def checkAlertsAndGenerateMailBody(alerts):
     body = "\n".join(bodyElements)
 
     return unmatchedAlerts, body
+
 
 def sendMail(body):
 
@@ -87,7 +97,7 @@ def sendMail(body):
     mailServer.ehlo()
     mailServer.starttls()
     mailServer.ehlo()
-    mailServer.login(mailConfig["username"],mailConfig["password"])
+    mailServer.login(mailConfig["username"], mailConfig["password"])
     mailServer.sendmail(mailConfig["from"], msg['To'], msg.as_string())
 
     mailServer.quit()
@@ -100,9 +110,10 @@ def generateBodyElement(alert, item):
     returnBody.append("<p><img src='"+item.get_full_image()+"'/></p>")
     returnBody.append("<p>"+item.name+"</p>")
     returnBody.append("<p>Wished: "+str(alert['price'])+"</p>")
-    returnBody.append("<p>Is now: "+str(item.price[0].value)+"</p>")
+    returnBody.append("<p>Is now: "+str(item.prices[0].value)+"</p>")
 
     return "\n".join(returnBody)
+
 
 def main():
     alertsFilename = "alerts.csv"
@@ -114,7 +125,7 @@ def main():
     if (len(body) > 0):
         sendMail(body)
         utils.print_enc("Mail was sent")
-        setAlerts(alertsFilename,alertsRemaining)
+        setAlerts(alertsFilename, alertsRemaining)
     else:
         utils.print_enc("No mail was sent")
 

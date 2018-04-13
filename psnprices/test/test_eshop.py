@@ -4,9 +4,12 @@ from psnprices.shops.eshop import Eshop
 from psnprices.cli.psncli import eshop_main
 import pytest
 
+from psnprices.cli.psnmailalert import main as psnmailalert_main
+from . commons import *
+
 class EshopTest(unittest.TestCase):
 
-    eshop = Eshop(country="DE/de")
+    eshop = Eshop(country="DE")
 
     def test_getItemForId(self):
         game_offers = self.eshop.search("Celeste")
@@ -18,13 +21,11 @@ class EshopTest(unittest.TestCase):
         print('\n'.join(str(e) for e in game_offers))
         assert len(game_offers) > 1
 
-    def test_get_item_by_id(self):
-        id = "1207064"
-        name = "Celeste"
-        game_offer = self.eshop.get_item_by(id=id, name=name)
+    def test_id_encoder(self):
+        assert "DE###1207064###Celeste_123" == self.eshop._encode_id(id=1207064, name="Celeste 123")
 
-        assert game_offer.name == name
-        assert game_offer.id == id 
+    def test_id_decoder(self):
+        assert ("DE","1207064", "Celeste 123") == self.eshop._decode_id("DE###1207064###Celeste_123")
 
     def test_cli(self):
         sys.argv = [
@@ -37,3 +38,7 @@ class EshopTest(unittest.TestCase):
             eshop_main()
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 0 
+
+    def test_mailfunc(self):
+        mailalert(
+            "DE/de###1174779###Sonic_Mania,100.00,DE/de", psnmailalert_main)

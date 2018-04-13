@@ -204,8 +204,12 @@ class Psn(Shop):
         return "%s/%s/select?q=%s&%s" % (apiRoot, country, query, appendix)
 
     def _item_to_game_offer(self, game):
+        if not game:
+            raise Exception("Item is empty")
+
         return GameOffer(
                     id=game["id"],
+                    cid=game["id"],
                     url=game["url"],
                     type=game['gameContentTypesList'][0]['key'] if 'gameContentTypesList' in game else None,
                     name=game["name"],
@@ -226,7 +230,6 @@ class Psn(Shop):
                     picture_url=_getImage(game)
                     )
 
-
     def search(self, name):
         items = _searchForItemsByName(name=name, store=self.country)
         return_offers=[]
@@ -236,7 +239,7 @@ class Psn(Shop):
                         )
         return return_offers
 
-    def get_item_by(self, id, name):
+    def get_item_by(self, id, name=None):
         item = _getItemForCid(id, self.country)
         return self._item_to_game_offer(item)
 

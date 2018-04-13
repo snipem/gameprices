@@ -48,7 +48,7 @@ def formatItems(items):
         try:
             name = item.name
             itemType = item.type
-            cid = item.id
+            cid = item.cid
             price = str(item.prices[0].value) if len(item.prices) > 0 else ""
 
             platform = ",".join(item.platforms)
