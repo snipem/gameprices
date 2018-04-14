@@ -7,7 +7,16 @@ class GameOffer(object):
     platforms = []
     picture_url = None
 
-    def __init__(self, id, cid, name, url, prices, platforms, picture_url=None, type=None):
+    def __init__(
+            self,
+            id,
+            cid,
+            name,
+            url,
+            prices,
+            platforms,
+            picture_url=None,
+            type=None):
         super(GameOffer, self).__init__()
         self.prices = prices
         self.name = name
@@ -15,13 +24,14 @@ class GameOffer(object):
         self.cid = cid
         self.url = url
         self.type = type
-        #TODO
+        # TODO
         self.picture_base_url = "TODO"
         self.picture_url = picture_url
         self.platforms = platforms
 
     def __str__(self):
-        return "%s - %s on %s" % (self.name, self.prices, ",".join(self.platforms))
+        return "%s - %s on %s" % (self.name, self.prices,
+                                  ",".join(self.platforms))
 
     def get_item_by(self, id, name):
         raise NotImplementedError
@@ -34,6 +44,7 @@ class GameOffer(object):
 
 
 class Price(object):
+
     def __init__(self, value, currency, offer_type):
         super(Price, self).__init__()
         self.value = value

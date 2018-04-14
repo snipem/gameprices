@@ -13,131 +13,160 @@ from email.mime.text import MIMEText
 
 import smtplib
 
-def getMailConfig():
-	mailConfig = {}
-	mailConfig = utils.getJsonFile("mailconfig.json")
-	return mailConfig
 
-def getContainers(dealContainerAlertsFilename):
-	containers = []
-	with open(dealContainerAlertsFilename) as csvfile:
-		containersReader = csv.reader(csvfile, delimiter=',', quotechar='"')
-		for row in containersReader:
-			container = {}
-			container['containerId'] = row[0]
-			container['store'] = row[1]
-			containers.append(container)
-
-	return containers
+def get_mail_config():
+    mailConfig = {}
+    mailConfig = utils.get_json_file("mailconfig.json")
+    return mailConfig
 
 
-def checkContainersAndGenerateMailBody(containers):
+def get_containers(dealContainerAlertsFilename):
+    containers = []
+    with open(dealContainerAlertsFilename) as csvfile:
+        containersReader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in containersReader:
+            container = {}
+            container['containerId'] = row[0]
+            container['store'] = row[1]
+            containers.append(container)
+
+    return containers
 
 
-	body = ""
-	bodyElements = []
+def check_containers_and_generate_mail_body(containers):
 
-	for container in containers:
-		containerId = container['containerId']
-		store = container['store']
+    body = ""
+    bodyElements = []
 
-		items = psn._getItemsByContainer(containerId, store, {"platform": "ps4"})
+    for container in containers:
+        containerId = container['containerId']
+        store = container['store']
 
-		if (items == None):
-			utils.print_enc("No items found for Container '"+containerId+"' in store "+store)
-		else:
+        items = psn._get_items_by_container(
+            containerId, store, {"platform": "ps4"})
 
-			body = "<table style=\"width: 100%; border-spacing: 0px;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tbody><tr><td align=\"center\">"
-			body = body + "<table width=\"620\" style=\"width: 620px;\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\"><tbody>"
-			body = body + ("<tr><td><p style=\"font-family: sans-serif; font-size: 1.0em; color: #FFFFFF; background-color: #5177B4; padding: 10px; "
-						   "text-align: center; font-weight: bold; border-radius: 5px 5px 5px 5px;\">Deals in Store "
-						   + store  + " for container " + container["containerId"] + "</p></td></tr>")
+        if (items is None):
+            utils.print_enc(
+                "No items found for Container '" +
+                containerId +
+                "' in store " +
+                store)
+        else:
 
-			for subsetStartIdx in range(0, len(items), 3):
-				itemsSubset = items[subsetStartIdx: subsetStartIdx + 3]
+            body = "<table style=\"width: 100%; border-spacing: 0px;\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tbody><tr><td align=\"center\">"
+            body = body + "<table width=\"620\" style=\"width: 620px;\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\"><tbody>"
+            body = body + ("<tr><td><p style=\"font-family: sans-serif; font-size: 1.0em; color: #FFFFFF; background-color: #5177B4; padding: 10px; "
+                           "text-align: center; font-weight: bold; border-radius: 5px 5px 5px 5px;\">Deals in Store "
+                           + store + " for container " + container["containerId"] + "</p></td></tr>")
 
-				bodyElements.append(generateBodyItemsRow(container, itemsSubset))
+            for subsetStartIdx in range(0, len(items), 3):
+                itemsSubset = items[subsetStartIdx: subsetStartIdx + 3]
 
-	body = body + "\n".join(bodyElements) + "</tbody></table></td></tr></tbody></table>"
+                bodyElements.append(
+                    generate_body_itemsRow(
+                        container, itemsSubset))
 
-	return body
+    body = body + "\n".join(bodyElements) + \
+        "</tbody></table></td></tr></tbody></table>"
 
-def sendMail(body):
+    return body
 
-	mailConfig = getMailConfig()
 
-	msg = MIMEMultipart('alternative')
-	msg['From'] = mailConfig["from"]
-	msg['To'] = mailConfig["to"]
-	msg['Subject'] = "Playstation Network Deals"
+def send_mail(body):
 
-	if (sys.version_info[0] == 2):
-		sendBody = body.encode('utf-8')
-	else:
-		sendBody = body
+    mailConfig = get_mail_config()
 
-	htmlMail = MIMEText(sendBody, 'html')
-	msg.attach(htmlMail)
+    msg = MIMEMultipart('alternative')
+    msg['From'] = mailConfig["from"]
+    msg['To'] = mailConfig["to"]
+    msg['Subject'] = "Playstation Network Deals"
 
-	mailServer = smtplib.SMTP(mailConfig["server"])
-	mailServer.ehlo()
-	mailServer.starttls()
-	mailServer.ehlo()
-	mailServer.login(mailConfig["username"],mailConfig["password"])
-	mailServer.sendmail(mailConfig["from"], msg['To'], msg.as_string())
+    if (sys.version_info[0] == 2):
+        sendBody = body.encode('utf-8')
+    else:
+        sendBody = body
 
-	mailServer.quit()
+    htmlMail = MIMEText(sendBody, 'html')
+    msg.attach(htmlMail)
 
-def generateBodyItemsRow(container, items):
+    mailServer = smtplib.SMTP(mailConfig["server"])
+    mailServer.ehlo()
+    mailServer.starttls()
+    mailServer.ehlo()
+    mailServer.login(mailConfig["username"], mailConfig["password"])
+    mailServer.sendmail(mailConfig["from"], msg['To'], msg.as_string())
 
-	returnBody = []
+    mailServer.quit()
 
-	returnBody.append("<tr><td>")
 
-	for item in items:
-		returnBody.append(generateBodyItem(container, item))
+def generate_body_itemsRow(container, items):
 
-	returnBody.append("</td></tr>")
+    returnBody = []
 
-	return "\n".join(returnBody)
+    returnBody.append("<tr><td>")
 
-def generateBodyItem(container, item):
+    for item in items:
+        returnBody.append(generate_body_item(container, item))
 
-	returnBody = []
+    returnBody.append("</td></tr>")
 
-	url = psn._getStoreUrl(item, container["store"])
-	offerEndDate = psn._getOfferEndDate(item)
-	itemName = escape(psn._getName(item))
+    return "\n".join(returnBody)
 
-	returnBody.append("<div style=\"float: left; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 180px;\">")
-	returnBody.append("<div style=\"height: 180px; min-height: 180px; max-height: 180px\"><a href=\"" + url +
-					  "\" target=\"_blank\"><img src='"+psn._getImage(item)+"' alt=\"" + itemName +
-					  "\" style=\"width: 180px; height:180px;\"/></a></div>")
 
-	if offerEndDate is not None:
-		returnBody.append("<div style=\"background-color: #000000; color: white; font-size: 1.0em; padding: 5px; border-radius: 0px 0px 10px 0px; padding-left: 10px;\">Ends "
-						  + datetime.datetime.strftime(offerEndDate ,"%d/%m/%Y") + "</div>")
+def generate_body_item(container, item):
 
-	returnBody.append("<div style=\"margin-top: 5px;\"><span style=\"margin-right: 10px; font-weight: bold; font-size: 1.4em; color: #CE1818;\">"
-					  + psn._getDisplayPrice(item, container["store"]) + "</span><span>" + itemName + "</span></div>")
-	returnBody.append("</div>")
+    returnBody = []
 
-	return "\n".join(returnBody)
+    url = psn._get_store_url(item, container["store"])
+    offerEndDate = psn._get_offer_end_date(item)
+    itemName = escape(psn._get_name(item))
+
+    returnBody.append(
+        "<div style=\"float: left; padding: 10px; font-family: sans-serif; font-size: 0.8em; width: 180px;\">")
+    returnBody.append(
+        "<div style=\"height: 180px; min-height: 180px; max-height: 180px\"><a href=\"" +
+        url +
+        "\" target=\"_blank\"><img src='" +
+        psn._get_image(item) +
+        "' alt=\"" +
+        itemName +
+        "\" style=\"width: 180px; height:180px;\"/></a></div>")
+
+    if offerEndDate is not None:
+        returnBody.append(
+            "<div style=\"background-color: #000000; color: white; font-size: 1.0em; padding: 5px; border-radius: 0px 0px 10px 0px; padding-left: 10px;\">Ends " +
+            datetime.datetime.strftime(
+                offerEndDate,
+                "%d/%m/%Y") +
+            "</div>")
+
+    returnBody.append(
+        "<div style=\"margin-top: 5px;\"><span style=\"margin-right: 10px; font-weight: bold; font-size: 1.4em; color: #CE1818;\">" +
+        psn._get_display_price(
+            item,
+            container["store"]) +
+        "</span><span>" +
+        itemName +
+        "</span></div>")
+    returnBody.append("</div>")
+
+    return "\n".join(returnBody)
+
 
 def main():
-	dealContainerAlertsFilename = "alert_deal_containers.csv"
-	containers = getContainers(dealContainerAlertsFilename)
+    dealContainerAlertsFilename = "alert_deal_containers.csv"
+    containers = get_containers(dealContainerAlertsFilename)
 
-	body = checkContainersAndGenerateMailBody(containers)
-	utils.print_enc("Finished processing")
-	
-	if (len(body) > 0):
-		sendMail(body)
-		utils.print_enc("Mail was sent")
-	else:
-		utils.print_enc("No mail was sent")
-	
-	exit(0)
+    body = check_containers_and_generate_mail_body(containers)
+    utils.print_enc("Finished processing")
+
+    if (len(body) > 0):
+        send_mail(body)
+        utils.print_enc("Mail was sent")
+    else:
+        utils.print_enc("No mail was sent")
+
+    exit(0)
 
 
 if __name__ == "__main__":

@@ -14,13 +14,15 @@ elif version == 2:
 else:
     version == False
 
-def getJsonFile(filename):
-    json_data=open(filename)
+
+def get_json_file(filename):
+    json_data = open(filename)
     data = json.load(json_data)
     json_data.close()
     return data
 
-def getJsonResponse(url):
+
+def get_json_response(url):
 
     response = urlopen(url)
 
@@ -29,8 +31,16 @@ def getJsonResponse(url):
 
     return data
 
-def prettyPrintJson(jsonString):
-    return json.dumps(jsonString, sort_keys=True,indent=4, separators=(',', ': '))
+
+def pretty_print_json(jsonString):
+    return json.dumps(
+        jsonString,
+        sort_keys=True,
+        indent=4,
+        separators=(
+            ',',
+            ': '))
+
 
 def print_enc(s):
-    print(s.decode('utf-8') if type(s) == type(b'') else s)
+    print(s.decode('utf-8') if isinstance(s, type(b'')) else s)

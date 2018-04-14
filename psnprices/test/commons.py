@@ -4,17 +4,18 @@ import sys
 
 monkeypatch = MonkeyPatch()
 
+
 def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
 
     import smtplib
 
     filename = "alerts.csv"
 
-    f = open(filename,"w")
+    f = open(filename, "w")
     f.write(alerts_line)
     f.close()
 
-    f = open("mailconfig.json","w")
+    f = open("mailconfig.json", "w")
     f.write("""
     {
         "from":"from@example.com",
@@ -33,21 +34,21 @@ def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
         assert "from@example.com" == frm
         assert "to@example.com" == to
         assert "Price Drop" in msg
-        #TODO Does this really work?
+        # TODO Does this really work?
 
     monkeypatch.setattr(smtplib.SMTP, 'login', mocklogin)
     monkeypatch.setattr(smtplib.SMTP, 'sendmail', mockreturn)
 
     sys.argv = [
         "psnmailalert",
-        ]
+    ]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         # Call parameter
         mailfunc()
     assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == 0 
+    assert pytest_wrapped_e.value.code == 0
 
-    data = "" 
+    data = ""
     with open(filename, 'r') as myfile:
         data = data + myfile.read()
 

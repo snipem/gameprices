@@ -8,114 +8,131 @@ from psnprices.shops.psn import Psn
 from psnprices.cli.psnmailalert import main as psnmailalert_main
 from . commons import mailalert
 
+
 class MyTest(unittest.TestCase):
 
     # CID for item that is free for Plus members but not for normal members
     # TuneIt on german store
     freeForPlusCid = "EP4423-PCSB00407_00-TUNEIN0000000000"
 
-    def test_searchForCidByTitleInGermanStore(self):
-        cids = psn._getCidForName("Metal Gear", "DE/de")
+    def test_search_for_cid_by_title_in_german_store(self):
+        cids = psn._get_cid_for_name("Metal Gear", "DE/de")
 
         assert len(cids) > 0
 
-    def test_searchForCidByTitleInUsStore(self):
-        cids = psn._getCidForName("Metal Gear", "US/en")
+    def test_search_for_cid_by_title_in_us_store(self):
+        cids = psn._get_cid_for_name("Metal Gear", "US/en")
 
         assert len(cids) > 0
 
-    def test_getItemForCid(self):
+    def test_get_item_for_cid(self):
         store = "DE/de"
-        cids = psn._getCidForName("Tearaway", store)
+        cids = psn._get_cid_for_name("Tearaway", store)
         item = psn._getItemForCid(cids[0], store)
 
         assert item['name'] is not None
 
-    def test_getItemForCid2(self):
+    def test_get_item_for_cid2(self):
         store = "DE/de"
-        cids = psn._getCidForName("Child of Light", store)
+        cids = psn._get_cid_for_name("Child of Light", store)
         item = psn._getItemForCid(cids[0], store)
 
         assert item['name'] is not None
 
-    def test_getItemByContainer(self):
+    def test_get_item_by_container(self):
         store = "DE/de"
-        items = psn._getItemsByContainer(
+        items = psn._get_items_by_container(
             'STORE-MSF75508-PLUSINSTANTGAME', store, {"platform": "ps4"})
 
         assert len(items) > 0
 
-    def test_getPlaystationPlusPrice(self):
+    def test_get_playstation_plus_price(self):
         store = "DE/de"
         item = psn._getItemForCid(self.freeForPlusCid, store)
 
-        print("Using '" + item['name'] + "' (" + self.freeForPlusCid + ") from " + store +
-              " for comparison. Item must be free for Plus members in order to pass the unit test. This might fail due to price changes")
+        print(
+            "Using '" +
+            item['name'] +
+            "' (" +
+            self.freeForPlusCid +
+            ") from " +
+            store +
+            " for comparison. Item must be free for Plus members in order to pass the unit test. This might fail due to price changes")
 
         assert item is not None
 
-        normalPrice = psn._getPrice(item)
-        plusPrice = psn._getPlaystationPlusPrice(item)
+        normalPrice = psn._get_price(item)
+        plusPrice = psn._get_playstation_plus_price(item)
 
         print ("Normal Price: ", "%.2f" %
                normalPrice, "Plus Price: ", "%.2f" % plusPrice)
 
-        assert type(normalPrice) is float
-        assert type(plusPrice) is float
+        assert isinstance(normalPrice, float)
+        assert isinstance(plusPrice, float)
         assert plusPrice == 0
 
-    def test_checkCurrencySymbolAsPartOfName(self):
+    def test_check_currency_symbolAsPartOfName(self):
         store = "DE/de"
-        cids = psn._getCidForName("Child of Light", store)
+        cids = psn._get_cid_for_name("Child of Light", store)
         item = psn._getItemForCid(cids[0], store)
-        assert psn._getDisplayPrice(item, store)[0] == u'\N{EURO SIGN}'
+        assert psn._get_display_price(item, store)[0] == u'\N{EURO SIGN}'
 
-    def test_checkCurrencySymbol(self):
-        assert psn._getCurrencySymbol("DE/de") == u'\N{EURO SIGN}'
-        assert psn._getCurrencySymbol("US/en") == u'\N{DOLLAR SIGN}'
-        assert psn._getCurrencySymbol("JP/jp") == u'\N{YEN SIGN}'
-        assert psn._getCurrencySymbol("Unknown") == ''
-    
-    def test_getRewards(self):
+    def test_check_currency_symbol(self):
+        assert psn._get_currency_symbol("DE/de") == u'\N{EURO SIGN}'
+        assert psn._get_currency_symbol("US/en") == u'\N{DOLLAR SIGN}'
+        assert psn._get_currency_symbol("JP/jp") == u'\N{YEN SIGN}'
+        assert psn._get_currency_symbol("Unknown") == ''
+
+    def test_get_rewards(self):
         store = "DE/de"
-        item = psn._getItemForCid("EP0006-CUSA02532_00-UNRAVELUNRAVEL09", store)
-        assert len(psn._getRewards(item)) > -1
+        item = psn._getItemForCid(
+            "EP0006-CUSA02532_00-UNRAVELUNRAVEL09", store)
+        assert len(psn._get_rewards(item)) > -1
 
     @unittest.skip("Skip temporary price reduction")
-    def test_checkCurrentlyReducedItem_AllPrices(self):
+    def test_check_currently_reduced_item_all_prices(self):
         store = "DE/de"
-        item = psn._getItemForCid("EP2107-CUSA00327_00-DONTSTARVEPS4V01", store)
+        item = psn._getItemForCid(
+            "EP2107-CUSA00327_00-DONTSTARVEPS4V01", store)
         print("Checking: ", item['name'])
-        assert psn._getNormalPrice(item) == 13.99
-        assert psn._getPlaystationPlusPrice(item) == 4.89
-        assert psn._getNonPlaystationPlusPrice(item) == 6.99
-        assert psn._getPrice(item) == 4.89
+        assert psn._get_normal_price(item) == 13.99
+        assert psn._get_playstation_plus_price(item) == 4.89
+        assert psn._get_non_playstation_plus_price(item) == 6.99
+        assert psn._get_price(item) == 4.89
 
     @unittest.skip("Skip temporary price reduction")
-    def test_checkCurrentlyReducedItem_NoPlusReduction(self):
+    def test_check_currently_reduced_item_no_plus_reduction(self):
         store = "DE/de"
-        item = psn._getItemForCid("EP9000-CUSA00194_00-UNTILDAWN0000001", store)
+        item = psn._getItemForCid(
+            "EP9000-CUSA00194_00-UNTILDAWN0000001", store)
         print("Checking: ", item['name'])
-        assert psn._getNormalPrice(item) == 59.99
-        assert psn._getPlaystationPlusPrice(item) == None
-        assert psn._getNonPlaystationPlusPrice(item) == 44.99
-        assert psn._getPrice(item) == 44.99
+        assert psn._get_normal_price(item) == 59.99
+        assert psn._get_playstation_plus_price(item) is None
+        assert psn._get_non_playstation_plus_price(item) == 44.99
+        assert psn._get_price(item) == 44.99
 
-    def test_determineStoreFromCID(self):
-        assert psn._determineStore("EP9000-CUSA00194_00-UNTILDAWN0000001") == "DE/de"
-        assert psn._determineStore("JP0006-NPJB00377_00-BATTLEFIELD40000") == "JP/jp"
-        assert psn._determineStore("UP2034-CUSA04841_00-NMSDIGITAL000001") == "US/en"
-        assert psn._determineStore("1") == None 
+    def test_determine_storeFromCID(self):
+        assert psn._determine_store(
+            "EP9000-CUSA00194_00-UNTILDAWN0000001") == "DE/de"
+        assert psn._determine_store(
+            "JP0006-NPJB00377_00-BATTLEFIELD40000") == "JP/jp"
+        assert psn._determine_store(
+            "UP2034-CUSA04841_00-NMSDIGITAL000001") == "US/en"
+        assert psn._determine_store("1") is None
+
 
 class PsnTest(unittest.TestCase):
 
     psn = Psn(country="DE/de")
 
-    def get_game(self, name="Bloodborne", id="EP9000-CUSA00207_00-BLOODBORNE0000EU"):
-        game = self.psn.get_item_by(name=name,id=id)
-        return game 
+    def get_game(
+            self,
+            name="Bloodborne",
+            id="EP9000-CUSA00207_00-BLOODBORNE0000EU"):
+        game = self.psn.get_item_by(name=name, id=id)
+        return game
 
-    def test_getItemForId(self):
+    def test_get_item_for_id(self):
         game_offers = self.psn.search("Tearaway™ Unfolded")
         game_offer = game_offers[0]
         assert game_offer.name == "Tearaway™ Unfolded"
@@ -131,7 +148,7 @@ class PsnTest(unittest.TestCase):
         game_offer = self.psn.get_item_by(id=id, name=name)
 
         assert game_offer.name == name
-        assert game_offer.id == id 
+        assert game_offer.id == id
 
     def test_game_has_picture(self):
         assert "http" in self.get_game().picture_url

@@ -14,13 +14,13 @@ from email.mime.text import MIMEText
 import smtplib
 
 
-def getMailConfig():
+def get_mail_config():
     mailConfig = {}
-    mailConfig = utils.getJsonFile("mailconfig.json")
+    mailConfig = utils.get_json_file("mailconfig.json")
     return mailConfig
 
 
-def getAlerts(alertsFilename):
+def get_alerts(alertsFilename):
     alerts = []
     with open(alertsFilename) as csvfile:
         alertsreader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -30,25 +30,25 @@ def getAlerts(alertsFilename):
             alert['price'] = row[1]
             if len(row) >= 3:
                 alert['store'] = row[2]
-            #TODO wild hack and duplication of code
+            # TODO wild hack and duplication of code
             elif "###" not in alert['cid']:
-                alert['store'] = psn._determineStore(alert["cid"])
+                alert['store'] = psn._determine_store(alert["cid"])
             alerts.append(alert)
 
     return alerts
 
 
-def setAlerts(filename, alerts):
+def set_alerts(filename, alerts):
     c = csv.writer(open(filename, "w"))
     for alert in alerts:
         c.writerow([alert['cid'], alert['price'], alert['store']])
 
 
-def alertIsMatched(alert, item):
+def alert_is_matched(alert, item):
     return item and float(item.prices[0].value) <= float(alert['price'])
 
 
-def checkAlertsAndGenerateMailBody(alerts):
+def check_alerts_and_generate_mail_body(alerts):
 
     bodyElements = []
     unmatchedAlerts = list(alerts)
@@ -65,11 +65,13 @@ def checkAlertsAndGenerateMailBody(alerts):
         try:
             item = shop.get_item_by(id=cid)
         except Exception as e:
-            print("Did not find an item for id %s in store %s with exception '%s'" % (cid, store, e)) 
+            print(
+                "Did not find an item for id %s in store %s with exception '%s'" %
+                (cid, store, e))
             continue
 
-        if (alertIsMatched(alert, item)):
-            bodyElements.append(generateBodyElement(alert, item))
+        if (alert_is_matched(alert, item)):
+            bodyElements.append(generate_body_element(alert, item))
 
             unmatchedAlerts.remove(alert)
 
@@ -78,9 +80,9 @@ def checkAlertsAndGenerateMailBody(alerts):
     return unmatchedAlerts, body
 
 
-def sendMail(body):
+def send_mail(body):
 
-    mailConfig = getMailConfig()
+    mailConfig = get_mail_config()
 
     msg = MIMEMultipart('alternative')
     msg['From'] = mailConfig["from"]
@@ -102,29 +104,29 @@ def sendMail(body):
     mailServer.quit()
 
 
-def generateBodyElement(alert, item):
+def generate_body_element(alert, item):
 
     returnBody = []
     store = alert['store']
-    returnBody.append("<p><img src='"+item.get_full_image()+"'/></p>")
-    returnBody.append("<p>"+item.name+"</p>")
-    returnBody.append("<p>Wished: "+str(alert['price'])+"</p>")
-    returnBody.append("<p>Is now: "+str(item.prices[0].value)+"</p>")
+    returnBody.append("<p><img src='" + item.get_full_image() + "'/></p>")
+    returnBody.append("<p>" + item.name + "</p>")
+    returnBody.append("<p>Wished: " + str(alert['price']) + "</p>")
+    returnBody.append("<p>Is now: " + str(item.prices[0].value) + "</p>")
 
     return "\n".join(returnBody)
 
 
 def main():
     alertsFilename = "alerts.csv"
-    alerts = getAlerts(alertsFilename)
+    alerts = get_alerts(alertsFilename)
 
-    alertsRemaining, body = checkAlertsAndGenerateMailBody(alerts)
+    alertsRemaining, body = check_alerts_and_generate_mail_body(alerts)
     utils.print_enc("Finished processing")
 
     if (len(body) > 0):
-        sendMail(body)
+        send_mail(body)
         utils.print_enc("Mail was sent")
-        setAlerts(alertsFilename, alertsRemaining)
+        set_alerts(alertsFilename, alertsRemaining)
     else:
         utils.print_enc("No mail was sent")
 
