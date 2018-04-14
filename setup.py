@@ -21,12 +21,15 @@ setup(
         'requests',
     ],
     test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require=[
+        'pytest-cov'
+        ],
     entry_points={
         'console_scripts': [
             'eshopcli=psnprices.cli.psncli:eshop_main',
             'psncli=psnprices.cli.psncli:psn_main',
             'psndealsmailalert=psnprices.cli.psndealsmailalert:main',
             'psnmailalert=psnprices.cli.psnmailalert:main'],
+            'dealsmailalert=psnprices.cli.psnmailalert:main']
         }
     )
