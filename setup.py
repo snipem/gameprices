@@ -18,18 +18,9 @@ setup(
     keywords=['playstation', 'eshop', 'store', 'prices'],
     license='GPL2',
     install_requires=[
-        'requests',
-        'pytest-runner'
+        'requests'
     ],
     test_suite='pytest',
-    tests_require=[
-        'pytest',
-        'pytest-cov',
-        'pytest-xdist',
-        'pytest-instafail',
-        'pytest-pep8',
-        'pytest-spec'
-        ],
     entry_points={
         'console_scripts': [
             'eshopcli=gameprices.cli.cli:eshop_main',

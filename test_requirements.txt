@@ -1,0 +1,6 @@
+pytest
+pytest-cov
+pytest-xdist
+pytest-instafail
+pytest-pep8
+pytest-spec
