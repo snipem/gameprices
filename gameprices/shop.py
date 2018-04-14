@@ -1,4 +1,4 @@
-from psnprices.offer import GameOffer
+from gameprices.offer import GameOffer
 
 
 class Shop(object):

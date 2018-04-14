@@ -6,10 +6,10 @@ import argparse
 import codecs
 import locale
 
-from psnprices.shops import psn
-from psnprices.shops.eshop import Eshop
-from psnprices.shops.psn import Psn
-from psnprices.utils import utils
+from gameprices.shops import psn
+from gameprices.shops.eshop import Eshop
+from gameprices.shops.psn import Psn
+from gameprices.utils import utils
 
 logging.basicConfig(
     filename="psnprices.log",

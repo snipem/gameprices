@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from psnprices.shops import psn
-from psnprices.shops.psn import Psn
+from gameprices.shops import psn
+from gameprices.shops.psn import Psn
 
-from psnprices.cli.psnmailalert import main as psnmailalert_main
+from gameprices.cli.mailalert import main as psnmailalert_main
 from . commons import mailalert
 
 

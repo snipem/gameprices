@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from psnprices.utils import utils
-from psnprices.shops.psn import Psn
-from psnprices.shops.eshop import Eshop
-from psnprices.shops import psn
+from gameprices.utils import utils
+from gameprices.shops.psn import Psn
+from gameprices.shops.eshop import Eshop
+from gameprices.shops import psn
 import csv
 
 from email.mime.multipart import MIMEMultipart

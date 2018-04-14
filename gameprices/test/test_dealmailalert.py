@@ -1,4 +1,4 @@
-from psnprices.cli.psnmailalert import main as psnmailalert_main
+from gameprices.cli.mailalert import main as psnmailalert_main
 from . commons import mailalert
 
 

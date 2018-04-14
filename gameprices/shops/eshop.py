@@ -1,7 +1,7 @@
 import requests
 import json
-from psnprices.shop import Shop
-from psnprices.offer import GameOffer, Price
+from gameprices.shop import Shop
+from gameprices.offer import GameOffer, Price
 
 apiRoot = ""
 storeRoot = ""

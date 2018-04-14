@@ -2,7 +2,7 @@ import sys
 import logging
 import time
 import datetime
-from psnprices.utils import utils
+from gameprices.utils import utils
 
 apiRoot = "https://store.playstation.com/chihiro-api"
 storeRoot = "https://store.playstation.com/#!"
@@ -198,8 +198,8 @@ def _get_items_by_container(container, store, filtersDict):
 
 import requests
 import json
-from psnprices.shop import Shop
-from psnprices.offer import GameOffer, Price
+from gameprices.shop import Shop
+from gameprices.offer import GameOffer, Price
 
 
 class Psn(Shop):

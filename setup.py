@@ -6,16 +6,16 @@ except(IOError, ImportError):
     long_description = open('README.md').read()
 
 setup(
-    name='psnprices',
-    packages=['psnprices', 'psnprices.shops', 'psnprices.cli', 'psnprices.test', 'psnprices.utils'],
+    name='gameprices',
+    packages=['gameprices', 'gameprices.shops', 'gameprices.cli', 'gameprices.test', 'gameprices.utils'],
     version='1.0',
-    description='An interface for the undocumented Sony PlayStation Store PSN Api',
+    description='An interface for the undocumented Sony PlayStation Store PSN and Nintendo Eshop Apis',
     long_description=long_description,
     author='Matthias Kuech',
     author_email='halde@matthias-kuech.de',
     url='https://github.com/snipem/psnprices',
     download_url='https://github.com/snipem/psnprices/archive/1.0.tar.gz',
-    keywords=['playstation', 'store', 'prices'],
+    keywords=['playstation', 'eshop', 'store', 'prices'],
     license='GPL2',
     install_requires=[
         'requests',
@@ -26,10 +26,10 @@ setup(
         ],
     entry_points={
         'console_scripts': [
-            'eshopcli=psnprices.cli.psncli:eshop_main',
-            'psncli=psnprices.cli.psncli:psn_main',
-            'psndealsmailalert=psnprices.cli.psndealsmailalert:main',
-            'psnmailalert=psnprices.cli.psnmailalert:main',
-            'dealsmailalert=psnprices.cli.psnmailalert:main']
+            'eshopcli=gameprices.cli.cli:eshop_main',
+            'psncli=gameprices.cli.cli:psn_main',
+            'psndealsmailalert=gameprices.cli.psndealsmailalert:main',
+            'psnmailalert=gameprices.cli.mailalert:main',
+            'dealsmailalert=gameprices.cli.mailalert:main']
         }
     )

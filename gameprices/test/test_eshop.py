@@ -1,10 +1,10 @@
 import unittest
 import sys
-from psnprices.shops.eshop import Eshop
-from psnprices.cli.psncli import eshop_main
+from gameprices.shops.eshop import Eshop
+from gameprices.cli.cli import eshop_main
 import pytest
 
-from psnprices.cli.psnmailalert import main as psnmailalert_main
+from gameprices.cli.mailalert import main as psnmailalert_main
 from . commons import mailalert
 
 
