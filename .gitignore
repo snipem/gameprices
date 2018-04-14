@@ -62,3 +62,4 @@ docs/_build/
 *.sublime-workspace
 
 .eggs/README.txt
+.pytest_cache/v/cache/nodeids
