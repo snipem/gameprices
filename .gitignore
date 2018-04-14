@@ -63,3 +63,6 @@ docs/_build/
 
 .eggs/README.txt
 .pytest_cache/v/cache/nodeids
+alerts.csv
+
+.vscode
