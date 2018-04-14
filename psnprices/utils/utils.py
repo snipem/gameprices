@@ -2,18 +2,8 @@ import sys
 import json
 from pprint import pprint
 
-version = sys.version_info[0]
-
-# import only once
-if version == 3:
-    from urllib.request import urlopen
-    from urllib.parse import quote
-elif version == 2:
-    from urllib2 import urlopen
-    from urllib2 import quote
-else:
-    version == False
-
+from urllib.request import urlopen
+from urllib.parse import quote
 
 def get_json_file(filename):
     json_data = open(filename)
