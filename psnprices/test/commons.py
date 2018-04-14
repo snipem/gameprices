@@ -4,7 +4,7 @@ import sys
 
 monkeypatch = MonkeyPatch()
 
-def mailalert(alerts_line, mailfunc):
+def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
 
     import smtplib
 
@@ -51,4 +51,6 @@ def mailalert(alerts_line, mailfunc):
     with open(filename, 'r') as myfile:
         data = data + myfile.read()
 
-    assert "" == data
+    print("Remaining content of file '%s'" % data)
+
+    assert should_remain_in_file == data
