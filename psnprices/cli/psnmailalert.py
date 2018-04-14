@@ -5,7 +5,6 @@ from psnprices.shops.psn import Psn
 from psnprices.shops.eshop import Eshop
 from psnprices.shops import psn
 import csv
-import sys
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
