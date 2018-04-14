@@ -5,7 +5,6 @@ import sys
 monkeypatch = MonkeyPatch()
 
 
-
 def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
 
     import smtplib

@@ -19,10 +19,16 @@ setup(
     license='GPL2',
     install_requires=[
         'requests',
+        'pytest-runner'
     ],
-    test_suite='nose.collector',
+    test_suite='pytest',
     tests_require=[
-        'pytest-cov'
+        'pytest',
+        'pytest-cov',
+        'pytest-xdist',
+        'pytest-instafail',
+        'pytest-pep8',
+        'pytest-spec'
         ],
     entry_points={
         'console_scripts': [

@@ -36,12 +36,11 @@ parser.add_argument(
 
 shop = None
 
-
 def check_wish_price(cid, store, wishPrice):
 
     item = psn._getItemForCid(cid, store)
-    normalPrice = psn._get_price(item)
-    name = psn._get_name(item)
+    normalPrice = item.price[0].value
+    name = item.name
 
     if (normalPrice > wishPrice):
         utils.print_enc(

@@ -30,17 +30,6 @@ class EshopTest(unittest.TestCase):
         assert ("DE", "1207064", "Celeste 123") == self.eshop._decode_id(
             "DE###1207064###Celeste_123")
 
-    def test_cli(self):
-        sys.argv = [
-            "eshopcli",
-            "--query",
-            "'Vostok'"
-        ]
-
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            eshop_main()
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == 0
 
     def test_mailfunc(self):
         mailalert(
