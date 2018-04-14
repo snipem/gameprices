@@ -30,8 +30,9 @@ def getAlerts(alertsFilename):
             alert['price'] = row[1]
             if len(row) >= 3:
                 alert['store'] = row[2]
-            else:
-                alert['store'] = "???"
+            #TODO wild hack and duplication of code
+            elif "###" not in alert['cid']:
+                alert['store'] = psn._determineStore(alert["cid"])
             alerts.append(alert)
 
     return alerts
@@ -57,19 +58,20 @@ def checkAlertsAndGenerateMailBody(alerts):
         store = alert['store']
 
         if "###" in cid:
-            shop = Eshop("DE/de")
+            shop = Eshop(store)
         else:
-            shop = Psn("DE/de")
+            shop = Psn(store)
 
-        item = shop.get_item_by(id=cid)
+        try:
+            item = shop.get_item_by(id=cid)
+        except Exception as e:
+            print("Did not find an item for id %s in store %s with exception '%s'" % (cid, store, e)) 
+            continue
 
-        if not item:
-            utils.print_enc("No item found for cid '"+cid+"' in store "+store)
-        else:
-            if (alertIsMatched(alert, item)):
-                bodyElements.append(generateBodyElement(alert, item))
+        if (alertIsMatched(alert, item)):
+            bodyElements.append(generateBodyElement(alert, item))
 
-                unmatchedAlerts.remove(alert)
+            unmatchedAlerts.remove(alert)
 
     body = "\n".join(bodyElements)
 
@@ -85,10 +87,7 @@ def sendMail(body):
     msg['To'] = mailConfig["to"]
     msg['Subject'] = "PlayStation Network Price Drop"
 
-    if (sys.version_info[0] == 2):
-        sendBody = body.encode('utf-8')
-    else:
-        sendBody = body
+    sendBody = body
 
     htmlMail = MIMEText(sendBody, 'html')
     msg.attach(htmlMail)
@@ -130,7 +129,3 @@ def main():
         utils.print_enc("No mail was sent")
 
     exit(0)
-
-
-if __name__ == "__main__":
-    main()
