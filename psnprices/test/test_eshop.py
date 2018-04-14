@@ -5,7 +5,7 @@ from psnprices.cli.psncli import eshop_main
 import pytest
 
 from psnprices.cli.psnmailalert import main as psnmailalert_main
-from . commons import *
+from . commons import mailalert
 
 
 class EshopTest(unittest.TestCase):

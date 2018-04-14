@@ -2,7 +2,6 @@ import sys
 import logging
 import time
 import datetime
-from pprint import pprint
 from psnprices.utils import utils
 
 apiRoot = "https://store.playstation.com/chihiro-api"
@@ -184,9 +183,6 @@ def _determine_store(cid):
 
 
 def _get_items_by_container(container, store, filtersDict):
-
-    encContainer = quote(container)
-    timestamp = timestamp = int(time.time())
 
     url = apiRoot + "/viewfinder/" + store + "/" + \
         apiVersion + "/" + container + "?size=" + fetchSize

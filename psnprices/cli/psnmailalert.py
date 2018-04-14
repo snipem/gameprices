@@ -106,7 +106,7 @@ def send_mail(body):
 def generate_body_element(alert, item):
 
     returnBody = []
-    store = alert['store']
+    # store = alert['store']
     returnBody.append("<p><img src='" + item.get_full_image() + "'/></p>")
     returnBody.append("<p>" + item.name + "</p>")
     returnBody.append("<p>Wished: " + str(alert['price']) + "</p>")
