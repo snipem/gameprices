@@ -29,7 +29,7 @@ setup(
             'eshopcli=psnprices.cli.psncli:eshop_main',
             'psncli=psnprices.cli.psncli:psn_main',
             'psndealsmailalert=psnprices.cli.psndealsmailalert:main',
-            'psnmailalert=psnprices.cli.psnmailalert:main'],
+            'psnmailalert=psnprices.cli.psnmailalert:main',
             'dealsmailalert=psnprices.cli.psnmailalert:main']
         }
     )
