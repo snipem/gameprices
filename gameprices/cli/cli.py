@@ -38,8 +38,9 @@ shop = None
 
 def check_wish_price(cid, store, wishPrice):
 
-    item = psn._getItemForCid(cid, store)
-    normalPrice = item.price[0].value
+    # item = psn._getItemForCid(cid, store)
+    item = shop.get_item_by(id=cid)
+    normalPrice = item.prices[0].value
     name = item.name
 
     if (normalPrice > wishPrice):
@@ -96,8 +97,10 @@ def search_for_items_by_name_and_format_output(name, store):
 
 def search_for_items_by_container_and_format_output(
         container, store, filtersDict):
-    items = psn._get_items_by_container(container, store, filtersDict)
-    return format_items(items)
+
+    raise NotImplementedError("Rework has to be done on this function")
+    # items = psn._get_items_by_container(container, store, filtersDict)
+    # return format_items(items)
 
 
 def main(inshop):
