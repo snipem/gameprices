@@ -2,6 +2,7 @@ language: python
 python:
   - "3.6"
 install:
+  - pip install pytest-cov pytest-xdist pytest-instafail pytest-pep8 pytest-spec
   - pip install .
 # command to run tests
 script: 
