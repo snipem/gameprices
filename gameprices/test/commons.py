@@ -22,7 +22,7 @@ def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
         "to":"to@example.com",
         "username":"from_user",
         "password":"from_password",
-        "server":"smtp.gmail.com"
+        "server":"localhost"
     }
     """)
     f.close()
@@ -30,14 +30,30 @@ def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
     def mocklogin(cl, user, password):
         return True
 
+    def mockehlo(cl):
+        pass
+
+    def mockstarttls(cl):
+        pass
+
+    def mockinit(object, config):
+        pass
+
+    def mockquit(cl):
+        pass
+
     def mockreturn(cl, frm, to, msg):
         assert "from@example.com" == frm
         assert "to@example.com" == to
         assert "Price Drop" in msg
         # TODO Does this really work?
 
+    monkeypatch.setattr(smtplib.SMTP, '__init__', mockinit)
     monkeypatch.setattr(smtplib.SMTP, 'login', mocklogin)
+    monkeypatch.setattr(smtplib.SMTP, 'starttls', mockstarttls)
+    monkeypatch.setattr(smtplib.SMTP, 'ehlo', mockehlo)
     monkeypatch.setattr(smtplib.SMTP, 'sendmail', mockreturn)
+    monkeypatch.setattr(smtplib.SMTP, 'quit', mockquit)
 
     sys.argv = [
         "psnmailalert",
