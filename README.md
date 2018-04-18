@@ -1,6 +1,7 @@
 playstation-price-drop-alert
 ============================
-[![Build Status](https://travis-ci.org/snipem/playstation-price-drop-alert.svg?branch=master)](https://travis-ci.org/snipem/playstation-price-drop-alert)
+[![Build Status](https://travis-ci.org/snipem/psnprices.svg?branch=master)](https://travis-ci.org/snipem/psnprices)
+[![Coverage Status](https://coveralls.io/repos/github/snipem/psnprices/badge.svg?branch=master)](https://coveralls.io/github/snipem/psnprices?branch=master)
 
 Command line tool for alerting price drops in the Sony Entertainment Network aka PlayStation Network
 
