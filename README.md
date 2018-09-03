@@ -52,14 +52,12 @@ Just run `psnmailalert` for mail alerting. See example below. Alerts are set in 
 
 ### Command line interface
 
-    usage: psncli [-h] [--id ID] [--container CONTAINER] [--store STORE]
-                [--price PRICE] [--query QUERY] [--log]
+    usage: psncli [-h] [--id ID] [--store STORE] [--price PRICE] [--query QUERY]
+                [--log]
 
     optional arguments:
     -h, --help            show this help message and exit
     --id ID, -i ID        CID of game to check
-    --container CONTAINER, -c CONTAINER
-                            Container to list
     --store STORE, -s STORE
                             Regional PSN store to check. Default: 'DE/de'
     --price PRICE, -p PRICE
