@@ -150,7 +150,7 @@ def _get_cid_for_name(name, store):
                          " - Platform: " + platform + " - Type: " + itemType)
             cids.append(cid)
         except Exception as e:
-            logging.warn("Got error '" + str(e) +
+            logging.warning("Got error '" + str(e) +
                          "'' while parsing\n" + utils.pretty_print_json(link))
 
     return cids
