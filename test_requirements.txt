@@ -1,5 +1,5 @@
 python-coveralls
-coverage==4.0.3
+coverage
 pytest
 pytest-cov
 pytest-xdist
