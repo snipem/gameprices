@@ -8,12 +8,13 @@ from gameprices.shops.psn import Psn
 from gameprices.cli.mailalert import main as psnmailalert_main
 from . commons import mailalert
 
-
-class MyTest(unittest.TestCase):
+class PsnTest(unittest.TestCase):
 
     # CID for item that is free for Plus members but not for normal members
     # TuneIt on german store
     freeForPlusCid = "EP4423-PCSB00407_00-TUNEIN0000000000"
+    psn = Psn(country="DE/de")
+
 
     def test_search_for_cid_by_title_in_german_store(self):
         cids = psn._get_cid_for_name("Metal Gear", "DE/de")
@@ -119,11 +120,6 @@ class MyTest(unittest.TestCase):
         assert psn._determine_store(
             "UP2034-CUSA04841_00-NMSDIGITAL000001") == "US/en"
         assert psn._determine_store("1") is None
-
-
-class PsnTest(unittest.TestCase):
-
-    psn = Psn(country="DE/de")
 
     def get_game(
             self,
