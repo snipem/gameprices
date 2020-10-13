@@ -2,9 +2,9 @@ language: python
 python:
   - "3.8"
 install:
-  - make deps
+  - make coverage_deps
 # command to run tests
-script: 
-  - make test
+script:
+  - make coverage
 after_success:
   - coveralls
