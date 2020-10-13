@@ -6,8 +6,6 @@ on:
     branches:
       - master
       - drop-requests
-  #schedule:
-  #  - cron: "0 12 */5 * *"
 jobs:
   build:
     runs-on: ubuntu-18.04

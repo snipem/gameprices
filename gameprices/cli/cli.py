@@ -19,7 +19,6 @@ logging.basicConfig(
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help="CID of game to check")
-parser.add_argument("--container", "-c", help="Container to list")
 parser.add_argument(
     "--store",
     "-s",
@@ -95,14 +94,6 @@ def search_for_items_by_name_and_format_output(name, store):
     return format_items(items)
 
 
-def search_for_items_by_container_and_format_output(
-        container, store, filtersDict):
-
-    raise NotImplementedError("Rework has to be done on this function")
-    # items = psn._get_items_by_container(container, store, filtersDict)
-    # return format_items(items)
-
-
 def main(inshop):
 
     global shop
@@ -116,14 +107,6 @@ def main(inshop):
     if (args.query is not None and args.store is not None):
         printString = search_for_items_by_name_and_format_output(
             args.query, args.store)
-        if (len(printString) > 0):
-            utils.print_enc("\n".join(printString))
-            exit(0)
-        else:
-            exit(-1)
-    elif (args.container is not None and args.store is not None):
-        printString = search_for_items_by_container_and_format_output(
-            args.container, args.store, {"platform": "ps4"})
         if (len(printString) > 0):
             utils.print_enc("\n".join(printString))
             exit(0)
