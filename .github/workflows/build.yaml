@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.7' # Limit to Python 3.7 because of python-coverage error
+        python-version: '3.8.3'
         architecture: 'x64'
     - run: make test_deps
     - run: make test
