@@ -17,9 +17,6 @@ setup(
     download_url='https://github.com/snipem/psnprices/archive/1.0.tar.gz',
     keywords=['playstation', 'eshop', 'store', 'prices'],
     license='GPL2',
-    install_requires=[
-        'requests'
-    ],
     test_suite='pytest',
     entry_points={
         'console_scripts': [

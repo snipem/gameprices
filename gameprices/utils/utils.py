@@ -1,4 +1,5 @@
 import sys
+import urllib.request
 import json
 from pprint import pprint
 
@@ -14,12 +15,8 @@ def get_json_file(filename):
 
 def get_json_response(url):
 
-    response = urlopen(url)
-
-    enc = response.read().decode('utf-8')
-    data = json.loads(enc)
-
-    return data
+    with urllib.request.urlopen(url) as response:
+        return json.loads(response.read())
 
 
 def pretty_print_json(jsonString):
