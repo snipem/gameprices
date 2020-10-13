@@ -4,6 +4,10 @@ import time
 import datetime
 from gameprices.utils import utils
 
+import json
+from gameprices.shop import Shop
+from gameprices.offer import GameOffer, Price
+
 apiRoot = "https://store.playstation.com/chihiro-api"
 storeRoot = "https://store.playstation.com/#!"
 fetchSize = "99999"
@@ -195,11 +199,6 @@ def _get_items_by_container(container, store, filtersDict):
 
     return links
 
-
-import requests
-import json
-from gameprices.shop import Shop
-from gameprices.offer import GameOffer, Price
 
 
 class Psn(Shop):
