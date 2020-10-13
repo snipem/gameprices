@@ -1,0 +1,24 @@
+name: psnprices
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - drop-requests
+  #schedule:
+  #  - cron: "0 12 */5 * *"
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    name: Build it
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.8.3'
+        architecture: 'x64'
+    - run: make test_deps
+    - run: make test
+
