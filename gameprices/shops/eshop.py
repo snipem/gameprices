@@ -2,6 +2,7 @@ import urllib.request
 import json
 from gameprices.shop import Shop
 from gameprices.offer import GameOffer, Price
+from gameprices.utils import utils
 
 apiRoot = ""
 storeRoot = ""
@@ -35,8 +36,7 @@ class Eshop(Shop):
         url = "https://search.nintendo-europe.com/" + country + "/select?q=" + urllib.parse.quote(name) + "&fq=type%3A*%20AND%20*%3A*&start=0&rows=24&wt=json&group=true&group.field=pg_s&group.limit=" + \
             str(limit) + "&group.sort=score%20desc,%20date_from%20desc&sort=score%20desc,%20date_from%20desc"
 
-        with urllib.request.urlopen(url) as response:
-            payload = json.loads(response.read())
+        payload = utils.get_json_response(url)
 
         return_offers = []
 
