@@ -1,13 +1,14 @@
-# Get test coverage
+# Contributing
 
-    py.test \
-    --tx socket=192.168.178.87:9999 \
-    --pep8 \
-    --spec \
-    --instafail \
-    --cov=gameprices \
-    --cov-report html \
-    gameprices/test
+## Build locally
+
+     python3 -m venv .venv
+     . .venv/bin/activate
+     make test_deps test
+
+## Get test coverage
+
+    make coverage
 
 Enable paralell tests
 
