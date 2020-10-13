@@ -20,5 +20,5 @@ jobs:
         python-version: '3.8.3'
         architecture: 'x64'
 
-    - run: make test
+    - run: make test_deps test
 
