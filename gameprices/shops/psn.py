@@ -230,7 +230,7 @@ class Psn(Shop):
                     offer_type="PS+"
                 ),
             ],
-            platforms=game['playable_platform'],
+            platforms=game['playable_platform'] if 'playable_platform' in game else "",
             picture_url=_get_image(game)
         )
 

@@ -138,6 +138,11 @@ class PsnTest(unittest.TestCase):
         print('\n'.join(str(e) for e in game_offers))
         assert len(game_offers) > 1
 
+    def test_search_test_without_playable_platforms(self):
+        game_offers = self.psn.search("test")
+        print('\n'.join(str(e) for e in game_offers))
+        assert len(game_offers) > 1
+
     def test_get_item_by_id(self):
         id = "EP9000-CUSA00562_00-TEARAWAYUNFOLDED"
         name = "Tearaway™ Unfolded"
