@@ -9,3 +9,7 @@ coverage:
 
 coverage_deps:
 	python3 -m pip install -r coverage_requirements.txt
+
+venv:
+	python3 -m venv .venv
+	echo "run; . .venv/bin/activate"
