@@ -1,3 +1,6 @@
+import json
+
+
 class GameOffer(object):
     """docstring for ClassName."""
 
@@ -33,6 +36,14 @@ class GameOffer(object):
         return "%s - %s on %s" % (self.name, self.prices,
                                   ",".join(self.platforms))
 
+    def dump(self):
+        return {'id': self.id,
+                'name': self.name,
+                'url': self.url,
+                'type': self.type,
+                'prices': [o.dump() for o in self.prices], # TODO Don't print null values
+                'platforms': self.platforms}
+
     def get_item_by(self, id, name):
         raise NotImplementedError
 
@@ -50,3 +61,10 @@ class Price(object):
         self.value = value
         self.currency = currency
         self.offer_type = offer_type
+
+    def dump(self):
+        return {
+            'price': self.value,
+            'currency': self.currency,
+            'type': self.offer_type,
+        }

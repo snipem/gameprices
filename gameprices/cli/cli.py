@@ -3,9 +3,12 @@
 import sys
 import logging
 import argparse
+import json
 import codecs
 import locale
+from typing import List
 
+from gameprices.offer import GameOffer
 from gameprices.shops import psn
 from gameprices.shops.eshop import Eshop
 from gameprices.shops.psn import Psn
@@ -26,6 +29,7 @@ parser.add_argument(
     default="DE/de")
 parser.add_argument("--price", "-p", help="Desired price of game", type=float)
 parser.add_argument("--query", "-q", help="Name of item to search for")
+parser.add_argument("--json", "-j", dest='json', action='store_true', default=False, help="Print JSON")
 parser.add_argument(
     "--log",
     "-l",
@@ -60,7 +64,7 @@ def check_wish_price(cid, store, wishPrice):
         return True
 
 
-def format_items(items):
+def format_items_as_text(items):
     cids = []
     foundItems = []
 
@@ -89,9 +93,15 @@ def format_items(items):
     return foundItems
 
 
-def search_for_items_by_name_and_format_output(name, store):
+def format_items_as_json(items: List[GameOffer]) -> str:
+    return json.dumps([o.dump() for o in items])
+
+def search_for_items_by_name_and_format_output(name, store, print_json):
     items = shop.search(name)
-    return format_items(items)
+    if print_json:
+        return format_items_as_json(items)
+    else:
+        return format_items_as_text(items)
 
 
 def main(inshop):
@@ -106,12 +116,15 @@ def main(inshop):
 
     if (args.query is not None and args.store is not None):
         printString = search_for_items_by_name_and_format_output(
-            args.query, args.store)
-        if (len(printString) > 0):
+            args.query, args.store, args.json)
+        if len(printString) == 0:
+            exit(-1)
+        elif not args.json:
             utils.print_enc("\n".join(printString))
             exit(0)
-        else:
-            exit(-1)
+        elif args.json:
+            print(printString)
+            exit(0)
 
     elif (args.store is not None and args.id is not None and args.price is not None):
         priceMatched = check_wish_price(args.id, args.store, args.price)
