@@ -8,11 +8,11 @@ except(IOError, ImportError):
 setup(
     name='gameprices',
     packages=['gameprices', 'gameprices.shops', 'gameprices.cli', 'gameprices.test', 'gameprices.utils'],
-    version='1.0',
+    version='1.1',
     description='An interface for the undocumented Sony PlayStation Store PSN and Nintendo Eshop Apis',
     long_description=long_description,
     author='Matthias Kuech',
-    author_email='halde@matthias-kuech.de',
+    author_email='post@matthias-kuech.de',
     url='https://github.com/snipem/psnprices',
     download_url='https://github.com/snipem/psnprices/archive/1.0.tar.gz',
     keywords=['playstation', 'eshop', 'store', 'prices'],

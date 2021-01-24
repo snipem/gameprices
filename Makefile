@@ -1,4 +1,6 @@
-test:
+.PHONY: dist
+
+test: test_deps
 	python3 -m pytest
 
 test_deps:
@@ -13,3 +15,9 @@ coverage_deps:
 venv:
 	python3 -m venv .venv
 	echo "run; . .venv/bin/activate"
+
+dist:
+	rm dist/* || true
+	python3 -m pip install pypandoc twine wheel setuptools
+	python3 setup.py sdist
+	python3 -m twine upload dist/*
