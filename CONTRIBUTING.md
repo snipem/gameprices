@@ -1,15 +1,29 @@
 # Contributing
 
+## Build and upload to pypi
+
+```bash
+make dist
+# Upgrade version number before
+```
+
 ## Build locally
 
-     python3 -m venv .venv
-     . .venv/bin/activate
-     make test_deps test
+```bash
+ python3 -m venv .venv
+ . .venv/bin/activate
+ make test_deps test
+```
 
 ## Get test coverage
 
-    make coverage
+```bash
+make coverage
+```
 
 Enable paralell tests
 
-    -n 8
+```bash
+-n 8
+```
+
