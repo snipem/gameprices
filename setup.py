@@ -5,6 +5,10 @@ try:
 except(IOError, ImportError):
     long_description = open('README.md').read()
 
+tests_require = [
+    'pytest',
+]
+
 setup(
     name='gameprices',
     packages=['gameprices', 'gameprices.shops', 'gameprices.cli', 'gameprices.test', 'gameprices.utils'],
@@ -18,6 +22,7 @@ setup(
     keywords=['playstation', 'eshop', 'store', 'prices'],
     license='GPL2',
     test_suite="gameprices.test",
+    tests_require=tests_require,
     entry_points={
         'console_scripts': [
             'eshopcli=gameprices.cli.cli:eshop_main',
