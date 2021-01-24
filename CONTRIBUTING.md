@@ -2,6 +2,8 @@
 
 ## Build and upload to pypi
 
+Increase version number in `setup.py`
+
 ```bash
 make dist
 # Upgrade version number before
