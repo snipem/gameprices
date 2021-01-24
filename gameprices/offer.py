@@ -39,7 +39,6 @@ class GameOffer(object):
     def dump(self):
         return {'id': self.id,
                 'name': self.name,
-                'url': self.url,
                 'type': self.type,
                 'prices': [o.dump() for o in self.prices], # TODO Don't print null values
                 'platforms': self.platforms}
