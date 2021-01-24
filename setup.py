@@ -17,7 +17,7 @@ setup(
     download_url='https://github.com/snipem/psnprices/archive/1.0.tar.gz',
     keywords=['playstation', 'eshop', 'store', 'prices'],
     license='GPL2',
-    test_suite='pytest',
+    test_suite="gameprices.test",
     entry_points={
         'console_scripts': [
             'eshopcli=gameprices.cli.cli:eshop_main',
