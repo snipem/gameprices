@@ -22,16 +22,16 @@ def get_mail_config():
 def get_alerts(alertsFilename):
     alerts = []
     with open(alertsFilename) as csvfile:
-        alertsreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        alertsreader = csv.reader(csvfile, delimiter=",", quotechar='"')
         for row in alertsreader:
             alert = {}
-            alert['cid'] = row[0]
-            alert['price'] = row[1]
+            alert["cid"] = row[0]
+            alert["price"] = row[1]
             if len(row) >= 3:
-                alert['store'] = row[2]
+                alert["store"] = row[2]
             # TODO wild hack and duplication of code
-            elif "###" not in alert['cid']:
-                alert['store'] = psn._determine_store(alert["cid"])
+            elif "###" not in alert["cid"]:
+                alert["store"] = psn._determine_store(alert["cid"])
             alerts.append(alert)
 
     return alerts
@@ -40,11 +40,11 @@ def get_alerts(alertsFilename):
 def set_alerts(filename, alerts):
     c = csv.writer(open(filename, "w"))
     for alert in alerts:
-        c.writerow([alert['cid'], alert['price'], alert['store']])
+        c.writerow([alert["cid"], alert["price"], alert["store"]])
 
 
 def alert_is_matched(alert, item):
-    return item and float(item.prices[0].value) <= float(alert['price'])
+    return item and float(item.prices[0].value) <= float(alert["price"])
 
 
 def check_alerts_and_generate_mail_body(alerts):
@@ -53,8 +53,8 @@ def check_alerts_and_generate_mail_body(alerts):
     unmatchedAlerts = list(alerts)
 
     for alert in alerts:
-        cid = alert['cid']
-        store = alert['store']
+        cid = alert["cid"]
+        store = alert["store"]
 
         if "###" in cid:
             shop = Eshop(store)
@@ -65,11 +65,12 @@ def check_alerts_and_generate_mail_body(alerts):
             item = shop.get_item_by(id=cid)
         except Exception as e:
             print(
-                "Did not find an item for id %s in store %s with exception '%s'" %
-                (cid, store, e))
+                "Did not find an item for id %s in store %s with exception '%s'"
+                % (cid, store, e)
+            )
             continue
 
-        if (alert_is_matched(alert, item)):
+        if alert_is_matched(alert, item):
             bodyElements.append(generate_body_element(alert, item))
 
             unmatchedAlerts.remove(alert)
@@ -83,14 +84,14 @@ def send_mail(body):
 
     mailConfig = get_mail_config()
 
-    msg = MIMEMultipart('alternative')
-    msg['From'] = mailConfig["from"]
-    msg['To'] = mailConfig["to"]
-    msg['Subject'] = "PlayStation Network Price Drop"
+    msg = MIMEMultipart("alternative")
+    msg["From"] = mailConfig["from"]
+    msg["To"] = mailConfig["to"]
+    msg["Subject"] = "PlayStation Network Price Drop"
 
     sendBody = body
 
-    htmlMail = MIMEText(sendBody, 'html')
+    htmlMail = MIMEText(sendBody, "html")
     msg.attach(htmlMail)
 
     mailServer = smtplib.SMTP(mailConfig["server"])
@@ -98,7 +99,7 @@ def send_mail(body):
     mailServer.starttls()
     mailServer.ehlo()
     mailServer.login(mailConfig["username"], mailConfig["password"])
-    mailServer.sendmail(mailConfig["from"], msg['To'], msg.as_string())
+    mailServer.sendmail(mailConfig["from"], msg["To"], msg.as_string())
 
     mailServer.quit()
 
@@ -109,7 +110,7 @@ def generate_body_element(alert, item):
     # store = alert['store']
     returnBody.append("<p><img src='" + item.get_full_image() + "'/></p>")
     returnBody.append("<p>" + item.name + "</p>")
-    returnBody.append("<p>Wished: " + str(alert['price']) + "</p>")
+    returnBody.append("<p>Wished: " + str(alert["price"]) + "</p>")
     returnBody.append("<p>Is now: " + str(item.prices[0].value) + "</p>")
 
     return "\n".join(returnBody)
@@ -122,7 +123,7 @@ def main():
     alertsRemaining, body = check_alerts_and_generate_mail_body(alerts)
     utils.print_enc("Finished processing")
 
-    if (len(body) > 0):
+    if len(body) > 0:
         send_mail(body)
         utils.print_enc("Mail was sent")
         set_alerts(alertsFilename, alertsRemaining)

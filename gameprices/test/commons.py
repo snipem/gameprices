@@ -16,7 +16,8 @@ def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
     f.close()
 
     f = open("mailconfig.json", "w")
-    f.write("""
+    f.write(
+        """
     {
         "from":"from@example.com",
         "to":"to@example.com",
@@ -24,7 +25,8 @@ def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
         "password":"from_password",
         "server":"localhost"
     }
-    """)
+    """
+    )
     f.close()
 
     def mocklogin(cl, user, password):
@@ -48,12 +50,12 @@ def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
         assert "Price Drop" in msg
         # TODO Does this really work?
 
-    monkeypatch.setattr(smtplib.SMTP, '__init__', mockinit)
-    monkeypatch.setattr(smtplib.SMTP, 'login', mocklogin)
-    monkeypatch.setattr(smtplib.SMTP, 'starttls', mockstarttls)
-    monkeypatch.setattr(smtplib.SMTP, 'ehlo', mockehlo)
-    monkeypatch.setattr(smtplib.SMTP, 'sendmail', mockreturn)
-    monkeypatch.setattr(smtplib.SMTP, 'quit', mockquit)
+    monkeypatch.setattr(smtplib.SMTP, "__init__", mockinit)
+    monkeypatch.setattr(smtplib.SMTP, "login", mocklogin)
+    monkeypatch.setattr(smtplib.SMTP, "starttls", mockstarttls)
+    monkeypatch.setattr(smtplib.SMTP, "ehlo", mockehlo)
+    monkeypatch.setattr(smtplib.SMTP, "sendmail", mockreturn)
+    monkeypatch.setattr(smtplib.SMTP, "quit", mockquit)
 
     sys.argv = [
         "psnmailalert",
@@ -65,7 +67,7 @@ def mailalert(alerts_line, mailfunc, should_remain_in_file=""):
     assert pytest_wrapped_e.value.code == 0
 
     data = ""
-    with open(filename, 'r') as myfile:
+    with open(filename, "r") as myfile:
         data = data + myfile.read()
 
     print("Remaining content of file '%s'" % data)

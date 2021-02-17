@@ -18,7 +18,8 @@ logging.basicConfig(
     filename="psnprices.log",
     level=logging.INFO,
     format="%(asctime)s [%(levelname)-8s] %(message)s",
-    filemode="w")
+    filemode="w",
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help="CID of game to check")
@@ -26,18 +27,19 @@ parser.add_argument(
     "--store",
     "-s",
     help="Regional PSN store to check. Default: 'DE/de'",
-    default="DE/de")
+    default="DE/de",
+)
 parser.add_argument("--price", "-p", help="Desired price of game", type=float)
 parser.add_argument("--query", "-q", help="Name of item to search for")
-parser.add_argument("--json", "-j", dest='json', action='store_true', default=False, help="Print JSON")
 parser.add_argument(
-    "--log",
-    "-l",
-    help="Write to log file",
-    dest='log',
-    action='store_true')
+    "--json", "-j", dest="json", action="store_true", default=False, help="Print JSON"
+)
+parser.add_argument(
+    "--log", "-l", help="Write to log file", dest="log", action="store_true"
+)
 
 shop = None
+
 
 def check_wish_price(cid, store, wishPrice):
 
@@ -46,21 +48,21 @@ def check_wish_price(cid, store, wishPrice):
     normalPrice = item.prices[0].value
     name = item.name
 
-    if (normalPrice > wishPrice):
+    if normalPrice > wishPrice:
         utils.print_enc(
-            ("Wish price {0:.2f} for '" +
-             name +
-             "' does not yet match {1:.2f}, exiting").format(
-                wishPrice,
-                normalPrice))
+            (
+                "Wish price {0:.2f} for '"
+                + name
+                + "' does not yet match {1:.2f}, exiting"
+            ).format(wishPrice, normalPrice)
+        )
         return False
     else:
         utils.print_enc(
-            ("Wish price {0:.2f} for '" +
-             name +
-             "' matched. Is now: {1:.2f}").format(
-                wishPrice,
-                normalPrice))
+            ("Wish price {0:.2f} for '" + name + "' matched. Is now: {1:.2f}").format(
+                wishPrice, normalPrice
+            )
+        )
         return True
 
 
@@ -77,15 +79,8 @@ def format_items_as_text(items):
 
             platform = ",".join(item.platforms)
             foundItems.append(
-                (cid +
-                 "\t" +
-                 name +
-                 "\t" +
-                 platform +
-                 "\t" +
-                 price +
-                 "\t" +
-                 itemType))
+                (cid + "\t" + name + "\t" + platform + "\t" + price + "\t" + itemType)
+            )
             cids.append(cid)
         except Exception as e:
             logging.exception(e)
@@ -95,6 +90,7 @@ def format_items_as_text(items):
 
 def format_items_as_json(items: List[GameOffer]) -> str:
     return json.dumps([o.dump() for o in items])
+
 
 def search_for_items_by_name_and_format_output(name, store, print_json):
     items = shop.search(name)
@@ -114,9 +110,10 @@ def main(inshop):
     if not args.log:
         logging.getLogger().disabled = True
 
-    if (args.query is not None and args.store is not None):
+    if args.query is not None and args.store is not None:
         printString = search_for_items_by_name_and_format_output(
-            args.query, args.store, args.json)
+            args.query, args.store, args.json
+        )
         if len(printString) == 0:
             exit(-1)
         elif not args.json:
@@ -126,9 +123,9 @@ def main(inshop):
             print(printString)
             exit(0)
 
-    elif (args.store is not None and args.id is not None and args.price is not None):
+    elif args.store is not None and args.id is not None and args.price is not None:
         priceMatched = check_wish_price(args.id, args.store, args.price)
-        if (priceMatched):
+        if priceMatched:
             exit(0)
         else:
             exit(-1)
