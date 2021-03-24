@@ -67,10 +67,6 @@ Just run `psnmailalert` for mail alerting. See example below. Alerts are set in 
 
 You may have to tell Python that your terminal is capable of dealing with UTF-8 outputs. Some PSN items are annotated with trademark, copyright or foreign language specific symbols. To do so set `export PYTHONIOENCODING=utf-8` in your terminal window.
 
-### Mail alerting for collections of price reductions
-
-The PlayStation Network creates collections for price reductions. Run `python psndealsmailalert.py` for watching those collections and be alerted if there are new reductions. Alerts for collections are set in the `alert_deal_containers.csv` file.
-
 ## Example
 
 You may run this script with the following command line variants:
