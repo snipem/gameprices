@@ -62,7 +62,7 @@ def check_alerts_and_generate_mail_body(alerts):
             shop = Psn(store)
 
         try:
-            item = shop.get_item_by(id=cid)
+            item = shop.get_item_by(item_id=cid)
         except Exception as e:
             print(
                 "Did not find an item for id %s in store %s with exception '%s'"

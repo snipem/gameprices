@@ -80,9 +80,9 @@ class Eshop(Shop):
 
         return return_offers
 
-    def get_item_by(self, id, name=None):
-        country, id, name = self._decode_id(id)
+    def get_item_by(self, item_id, name=None):
+        country, item_id, name = self._decode_id(item_id)
         games = self.search(name=name)
         for game in games:
-            if game.id == id:
+            if game.id == item_id:
                 return game

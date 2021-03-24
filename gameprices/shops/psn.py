@@ -1,29 +1,25 @@
-import sys
-import logging
-import time
 import datetime
+import logging
+import sys
+from urllib.parse import quote
+
+from gameprices.offer import GameOffer, Price
+from gameprices.shop import Shop
 from gameprices.utils import utils
 
-import json
-from gameprices.shop import Shop
-from gameprices.offer import GameOffer, Price
-
-apiRoot = "https://store.playstation.com/chihiro-api"
-storeRoot = "https://store.playstation.com/#!"
-fetchSize = "99999"
+api_root = "https://store.playstation.com/chihiro-api"
+store_root = "https://store.playstation.com/#!"
+fetch_size = "99999"
 appendix = ""
-apiVersion = "19"
+api_version = "19"
 
 version = sys.version_info[0]
-
-from urllib.request import urlopen
-from urllib.parse import quote
 
 """ Dictionary object containing data specific to a Country store. The key is the store identifier per the
 PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
 [1]: The currency symbol, in its unicode encoding
-[2]: The character preceeding each marketplaces CID """
-storeCodeMappings = {
+[2]: The character preceding each marketplaces CID """
+store_code_mappings: dict[str, list[str]] = {
     "NL/nl": ["nl-nl", u"\N{EURO SIGN}"],
     "DE/de": ["de-de", u"\N{EURO SIGN}", "E"],
     "US/en": ["us-en", u"\N{DOLLAR SIGN}", "U"],
@@ -38,38 +34,18 @@ def _filter_none(item):
         return True
 
 
-def _getItemForCid(cid, store):
+def _get_item_for_cid(cid, store):
     try:
-        url = (
-            apiRoot
-            + "/viewfinder/"
-            + store
-            + "/"
-            + apiVersion
-            + "/"
-            + cid
-            + "?size="
-            + fetchSize
-        )
+        url = (api_root + "/viewfinder/" + store + "/" + api_version + "/" + cid + "?size=" + fetch_size)
         data = utils.get_json_response(url)
         return data
     except Exception as e:
-        logging.error(
-            "Got error '"
-            + str(e)
-            + "' while retrieving cid '"
-            + cid
-            + "' in store "
-            + store
-        )
+        logging.error("Got error '" + str(e) + "' while retrieving cid '" + cid + "' in store " + store)
         return None
 
 
 def _get_rewards(item):
     rewards = []
-
-    # TODO Use Default SKU
-    # if "default_sku" in item and "rewards" in item["default_sku"]: rewards.append(item["default_sku"]["rewards"].pop())
 
     for sku in item["skus"]:
         if "rewards" in sku:
@@ -81,9 +57,9 @@ def _get_rewards(item):
 
 def _get_display_price(item, store):
     price = _get_price(item)
-    displayPrice = storeCodeMappings[store][1] + str(price)
+    display_price = store_code_mappings[store][1] + str(price)
 
-    return displayPrice
+    return display_price
 
 
 def _get_cheapest_price(prices):
@@ -91,12 +67,12 @@ def _get_cheapest_price(prices):
 
 
 def _get_price(item):
-    normalPrice = _get_normal_price(item)
-    nonPlaystationPlusPrice = _get_non_playstation_plus_price(item)
-    playstationPlusPrice = _get_playstation_plus_price(item)
+    normal_price = _get_normal_price(item)
+    non_playstation_plus_price = _get_non_playstation_plus_price(item)
+    playstation_plus_price = _get_playstation_plus_price(item)
 
     return _get_cheapest_price(
-        [normalPrice, nonPlaystationPlusPrice, playstationPlusPrice]
+        [normal_price, non_playstation_plus_price, playstation_plus_price]
     )
 
 
@@ -138,21 +114,20 @@ def _get_offer_end_date(item):
 
     if item["default_sku"] is not None:
         if "end_date" in item["default_sku"]:
-            endDate = item["default_sku"]["end_date"]
-            if endDate is not None:
-                return datetime.datetime.strptime(endDate, "%Y-%m-%dT%H:%M:%SZ")
+            end_date = item["default_sku"]["end_date"]
+            if end_date is not None:
+                return datetime.datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%SZ")
 
 
 def _get_store_url(item, store):
     cid = item["id"]
 
-    url = storeRoot + "/" + storeCodeMappings[store][0] + "/cid=" + cid
+    url = store_root + "/" + store_code_mappings[store][0] + "/cid=" + cid
 
     return url
 
 
 def _get_cid_for_name(name, store):
-
     links = _search_for_items_by_name(name, store)
     cids = []
 
@@ -160,85 +135,48 @@ def _get_cid_for_name(name, store):
         try:
             logging.debug("Parsing:\n" + utils.pretty_print_json(link))
             name = link["name"]
-            itemType = link["default_sku"]["name"]
+            item_type = link["default_sku"]["name"]
             cid = link["id"]
             platform = ", ".join(link["playable_platform"])
 
-            logging.info(
-                "Found: "
-                + name
-                + " - "
-                + cid
-                + " - Platform: "
-                + platform
-                + " - Type: "
-                + itemType
-            )
+            logging.info("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + item_type)
             cids.append(cid)
         except Exception as e:
-            logging.warning(
-                "Got error '"
-                + str(e)
-                + "'' while parsing\n"
-                + utils.pretty_print_json(link)
-            )
+            logging.warning("Got error '" + str(e) + "'' while parsing\n" + utils.pretty_print_json(link))
 
     return cids
 
 
 def _search_for_items_by_name(name, store):
-
-    encodedName = quote(name)
-    url = (
-        apiRoot
-        + "/bucket-search/"
-        + store
-        + "/"
-        + apiVersion
-        + "/"
-        + encodedName
-        + "?size="
-        + fetchSize
-        + "&start=0"
-    )
+    encoded_name = quote(name)
+    url = api_root + "/bucket-search/" + store + "/" + api_version + "/" + encoded_name + "?size=" + fetch_size + "&start=0"
     data = utils.get_json_response(url)
     links = data["categories"]["games"]["links"]
     return links
 
 
 def _get_currency_symbol(store):
-    try:
-        return storeCodeMappings.get(store)[1]
-    except:
+    if store in store_code_mappings:
+        return store_code_mappings.get(store)[1]
+    else:
         return ""
 
 
 def _determine_store(cid):
-    for store in storeCodeMappings:
-        storeCodeMapping = storeCodeMappings.get(store)
+    for store in store_code_mappings:
+        store_code_mapping = store_code_mappings.get(store)
 
-        if len(storeCodeMapping) >= 3 and cid.startswith(
-            storeCodeMappings.get(store)[2]
+        if len(store_code_mapping) >= 3 and cid.startswith(
+                store_code_mappings.get(store)[2]
         ):
             return store
 
 
-def _get_items_by_container(container, store, filtersDict):
+def _get_items_by_container(container, store, filters_dict):
+    url = api_root + "/viewfinder/" + store + "/" + api_version + "/" + container + "?size=" + fetch_size
 
-    url = (
-        apiRoot
-        + "/viewfinder/"
-        + store
-        + "/"
-        + apiVersion
-        + "/"
-        + container
-        + "?size="
-        + fetchSize
-    )
-
-    for i in filtersDict:
-        url = url + "&" + quote(i) + "=" + quote(filtersDict[i])
+    for i in filters_dict:
+        url = url + "&" + quote(i) + "=" + quote(filters_dict[i])
 
     data = utils.get_json_response(url)
     links = data["links"]
@@ -247,8 +185,9 @@ def _get_items_by_container(container, store, filtersDict):
 
 
 class Psn(Shop):
-    def _build_api_url(self, country, query):
-        return "%s/%s/select?q=%s&%s" % (apiRoot, country, query, appendix)
+    @staticmethod
+    def _build_api_url(country, query):
+        return "%s/%s/select?q=%s&%s" % (api_root, country, query, appendix)
 
     def _item_to_game_offer(self, game):
         if not game:
@@ -286,6 +225,6 @@ class Psn(Shop):
             return_offers.append(self._item_to_game_offer(item))
         return return_offers
 
-    def get_item_by(self, id, name=None):
-        item = _getItemForCid(id, self.country)
+    def get_item_by(self, item_id):
+        item = _get_item_for_cid(item_id, self.country)
         return self._item_to_game_offer(item)

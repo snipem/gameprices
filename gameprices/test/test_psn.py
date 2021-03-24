@@ -29,14 +29,14 @@ class PsnTest(unittest.TestCase):
     def test_get_item_for_cid(self):
         store = "DE/de"
         cids = psn._get_cid_for_name("Tearaway", store)
-        item = psn._getItemForCid(cids[0], store)
+        item = psn._get_item_for_cid(cids[0], store)
 
         assert item["name"] is not None
 
     def test_get_item_for_cid2(self):
         store = "DE/de"
         cids = psn._get_cid_for_name("Child of Light", store)
-        item = psn._getItemForCid(cids[0], store)
+        item = psn._get_item_for_cid(cids[0], store)
 
         assert item["name"] is not None
 
@@ -50,7 +50,7 @@ class PsnTest(unittest.TestCase):
 
     def test_get_playstation_plus_price(self):
         store = "DE/de"
-        item = psn._getItemForCid(self.freeForPlusCid, store)
+        item = psn._get_item_for_cid(self.freeForPlusCid, store)
 
         print(
             "Using '"
@@ -78,7 +78,7 @@ class PsnTest(unittest.TestCase):
     def test_check_currency_symbolAsPartOfName(self):
         store = "DE/de"
         cids = psn._get_cid_for_name("Child of Light", store)
-        item = psn._getItemForCid(cids[0], store)
+        item = psn._get_item_for_cid(cids[0], store)
         assert psn._get_display_price(item, store)[0] == u"\N{EURO SIGN}"
 
     def test_check_currency_symbol(self):
@@ -89,13 +89,13 @@ class PsnTest(unittest.TestCase):
 
     def test_get_rewards(self):
         store = "DE/de"
-        item = psn._getItemForCid("EP0006-CUSA02532_00-UNRAVELUNRAVEL09", store)
+        item = psn._get_item_for_cid("EP0006-CUSA02532_00-UNRAVELUNRAVEL09", store)
         assert len(psn._get_rewards(item)) > -1
 
     @unittest.skip("Skip temporary price reduction")
     def test_check_currently_reduced_item_all_prices(self):
         store = "DE/de"
-        item = psn._getItemForCid("EP2107-CUSA00327_00-DONTSTARVEPS4V01", store)
+        item = psn._get_item_for_cid("EP2107-CUSA00327_00-DONTSTARVEPS4V01", store)
         print("Checking: ", item["name"])
         assert psn._get_normal_price(item) == 13.99
         assert psn._get_playstation_plus_price(item) == 4.89
@@ -105,7 +105,7 @@ class PsnTest(unittest.TestCase):
     @unittest.skip("Skip temporary price reduction")
     def test_check_currently_reduced_item_no_plus_reduction(self):
         store = "DE/de"
-        item = psn._getItemForCid("EP9000-CUSA00194_00-UNTILDAWN0000001", store)
+        item = psn._get_item_for_cid("EP9000-CUSA00194_00-UNTILDAWN0000001", store)
         print("Checking: ", item["name"])
         assert psn._get_normal_price(item) == 59.99
         assert psn._get_playstation_plus_price(item) is None
@@ -119,7 +119,7 @@ class PsnTest(unittest.TestCase):
         assert psn._determine_store("1") is None
 
     def get_game(self, name="Bloodborne", id="EP9000-CUSA00207_00-BLOODBORNE0000EU"):
-        game = self.psn.get_item_by(name=name, id=id)
+        game = self.psn.get_item_by(item_id=id)
         return game
 
     def test_get_item_for_id(self):
@@ -140,7 +140,7 @@ class PsnTest(unittest.TestCase):
     def test_get_item_by_id(self):
         id = "EP9000-CUSA00562_00-TEARAWAYUNFOLDED"
         name = "Tearaway™ Unfolded"
-        game_offer = self.psn.get_item_by(id=id, name=name)
+        game_offer = self.psn.get_item_by(item_id=id)
 
         assert game_offer.name == name
         assert game_offer.id == id

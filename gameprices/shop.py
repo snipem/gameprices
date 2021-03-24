@@ -2,7 +2,7 @@ from gameprices.offer import GameOffer
 
 
 class Shop(object):
-    """A generic videm game shop"""
+    """A generic video game online store"""
 
     def __init__(self, country):
         super(Shop, self).__init__()
