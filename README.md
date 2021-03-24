@@ -52,19 +52,16 @@ Just run `psnmailalert` for mail alerting. See example below. Alerts are set in 
 
 ### Command line interface
 
-    usage: psncli [-h] [--id ID] [--store STORE] [--price PRICE] [--query QUERY]
-                [--log]
+    usage: psncli [-h] [--id ID] [--store STORE] [--price PRICE] [--query QUERY] [--json] [--log]
 
     optional arguments:
-    -h, --help            show this help message and exit
-    --id ID, -i ID        CID of game to check
-    --store STORE, -s STORE
-                            Regional PSN store to check. Default: 'DE/de'
-    --price PRICE, -p PRICE
-                            Desired price of game
-    --query QUERY, -q QUERY
-                            Name of item to search for
-    --log, -l             Write to log file
+    -h, --help                  show this help message and exit
+    --id ID, -i ID              CID of game to check
+    --store STORE, -s STORE     Regional PSN store to check. Default: 'DE/de'
+    --price PRICE, -p PRICE     Desired price of game
+    --query QUERY, -q QUERY     Name of item to search for
+    --json, -j                  Print JSON
+    --log, -l                   Write to log file
 
 #### Retrieving UTF-8 encoded output on terminals
 
