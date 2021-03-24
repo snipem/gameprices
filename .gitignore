@@ -66,5 +66,6 @@ docs/_build/
 alerts.csv
 
 .vscode
+.idea
 
 .venv
