@@ -6,7 +6,7 @@ from gameprices.shops import psn
 from gameprices.shops.psn import Psn
 
 from gameprices.cli.mailalert import main as psnmailalert_main
-from .commons import mailalert
+from commons import mailalert
 
 
 class PsnTest(unittest.TestCase):
