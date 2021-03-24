@@ -1,32 +1,27 @@
 #!/usr/bin/env python
 
-from gameprices.utils import utils
-from gameprices.shops.psn import Psn
-from gameprices.shops.eshop import Eshop
-from gameprices.shops import psn
 import csv
-
+import smtplib
 from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 
-import smtplib
+from gameprices.shops import psn
+from gameprices.shops.eshop import Eshop
+from gameprices.shops.psn import Psn
+from gameprices.utils import utils
 
 
 def get_mail_config():
-    mailConfig = {}
-    mailConfig = utils.get_json_file("mailconfig.json")
-    return mailConfig
+    mail_config = utils.get_json_file("mailconfig.json")
+    return mail_config
 
 
-def get_alerts(alertsFilename):
+def get_alerts(alerts_filename):
     alerts = []
-    with open(alertsFilename) as csvfile:
-        alertsreader = csv.reader(csvfile, delimiter=",", quotechar='"')
-        for row in alertsreader:
-            alert = {}
-            alert["cid"] = row[0]
-            alert["price"] = row[1]
+    with open(alerts_filename) as csv_file:
+        alerts_reader = csv.reader(csv_file, delimiter=",", quotechar='"')
+        for row in alerts_reader:
+            alert = {"cid": row[0], "price": row[1]}
             if len(row) >= 3:
                 alert["store"] = row[2]
             # TODO wild hack and duplication of code
@@ -49,8 +44,8 @@ def alert_is_matched(alert, item):
 
 def check_alerts_and_generate_mail_body(alerts):
 
-    bodyElements = []
-    unmatchedAlerts = list(alerts)
+    body_elements = []
+    unmatched_alerts = list(alerts)
 
     for alert in alerts:
         cid = alert["cid"]
@@ -71,62 +66,62 @@ def check_alerts_and_generate_mail_body(alerts):
             continue
 
         if alert_is_matched(alert, item):
-            bodyElements.append(generate_body_element(alert, item))
+            body_elements.append(generate_body_element(alert, item))
 
-            unmatchedAlerts.remove(alert)
+            unmatched_alerts.remove(alert)
 
-    body = "\n".join(bodyElements)
+    body = "\n".join(body_elements)
 
-    return unmatchedAlerts, body
+    return unmatched_alerts, body
 
 
 def send_mail(body):
 
-    mailConfig = get_mail_config()
+    mail_config = get_mail_config()
 
     msg = MIMEMultipart("alternative")
-    msg["From"] = mailConfig["from"]
-    msg["To"] = mailConfig["to"]
+    msg["From"] = mail_config["from"]
+    msg["To"] = mail_config["to"]
     msg["Subject"] = "PlayStation Network Price Drop"
 
-    sendBody = body
+    send_body = body
 
-    htmlMail = MIMEText(sendBody, "html")
-    msg.attach(htmlMail)
+    html_mail = MIMEText(send_body, "html")
+    msg.attach(html_mail)
 
-    mailServer = smtplib.SMTP(mailConfig["server"])
-    mailServer.ehlo()
-    mailServer.starttls()
-    mailServer.ehlo()
-    mailServer.login(mailConfig["username"], mailConfig["password"])
-    mailServer.sendmail(mailConfig["from"], msg["To"], msg.as_string())
+    mail_server = smtplib.SMTP(mail_config["server"])
+    mail_server.ehlo()
+    mail_server.starttls()
+    mail_server.ehlo()
+    mail_server.login(mail_config["username"], mail_config["password"])
+    mail_server.sendmail(mail_config["from"], msg["To"], msg.as_string())
 
-    mailServer.quit()
+    mail_server.quit()
 
 
 def generate_body_element(alert, item):
 
-    returnBody = []
-    # store = alert['store']
-    returnBody.append("<p><img src='" + item.get_full_image() + "'/></p>")
-    returnBody.append("<p>" + item.name + "</p>")
-    returnBody.append("<p>Wished: " + str(alert["price"]) + "</p>")
-    returnBody.append("<p>Is now: " + str(item.prices[0].value) + "</p>")
+    return_body = [
+        "<p><img src='" + item.get_full_image() + "'/></p>",
+        "<p>" + item.name + "</p>",
+        "<p>Wished: " + str(alert["price"]) + "</p>",
+        "<p>Is now: " + str(item.prices[0].value) + "</p>"
+    ]
 
-    return "\n".join(returnBody)
+    return "\n".join(return_body)
 
 
 def main():
-    alertsFilename = "alerts.csv"
-    alerts = get_alerts(alertsFilename)
+    alerts_filename = "alerts.csv"
+    alerts = get_alerts(alerts_filename)
 
-    alertsRemaining, body = check_alerts_and_generate_mail_body(alerts)
+    alerts_remaining, body = check_alerts_and_generate_mail_body(alerts)
     utils.print_enc("Finished processing")
 
     if len(body) > 0:
         send_mail(body)
         utils.print_enc("Mail was sent")
-        set_alerts(alertsFilename, alertsRemaining)
+        set_alerts(alerts_filename, alerts_remaining)
     else:
         utils.print_enc("No mail was sent")
 

@@ -1,8 +1,4 @@
-import json
-
-
 class GameOffer(object):
-    """docstring for ClassName."""
 
     id = None
     name = None

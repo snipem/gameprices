@@ -1,4 +1,6 @@
 import urllib.request
+import urllib.parse
+
 from gameprices.shop import Shop
 from gameprices.offer import GameOffer, Price
 from gameprices.utils import utils
@@ -13,22 +15,15 @@ limit = 30
 
 
 class Eshop(Shop):
-
     whitespace_replacer = "_"
     id_spacer = "###"
 
     @staticmethod
-    def _build_api_url(country, query):
-        return "%s/%s/select?q=%s&%s" % (apiRoot, country, query, appendix)
+    def _build_api_url(api_country, query):
+        return "%s/%s/select?q=%s&%s" % (apiRoot, api_country, query, appendix)
 
-    def _encode_id(self, id, name):
-        return (
-            self.country
-            + self.id_spacer
-            + str(id)
-            + self.id_spacer
-            + name.replace(" ", self.whitespace_replacer)
-        )
+    def _encode_id(self, encode_id, name):
+        return self.country + self.id_spacer + str(encode_id) + self.id_spacer + name.replace(" ", self.whitespace_replacer)
 
     def _decode_id(self, encoded_id):
         split_id = encoded_id.split(self.id_spacer)
@@ -38,15 +33,7 @@ class Eshop(Shop):
         return country_from_id, id_from_id, name_from_id
 
     def search(self, name):
-        url = (
-            "https://search.nintendo-europe.com/"
-            + country
-            + "/select?q="
-            + urllib.parse.quote(name)
-            + "&fq=type%3A*%20AND%20*%3A*&start=0&rows=24&wt=json&group=true&group.field=pg_s&group.limit="
-            + str(limit)
-            + "&group.sort=score%20desc,%20date_from%20desc&sort=score%20desc,%20date_from%20desc"
-        )
+        url = "https://search.nintendo-europe.com/" + country + "/select?q=" + urllib.parse.quote(name) + "&fq=type%3A*%20AND%20*%3A*&start=0&rows=24&wt=json&group=true&group.field=pg_s&group.limit=" + str(limit) + "&group.sort=score%20desc,%20date_from%20desc&sort=score%20desc,%20date_from%20desc"
 
         payload = utils.get_json_response(url)
 
@@ -59,7 +46,7 @@ class Eshop(Shop):
                     return_offers.append(
                         GameOffer(
                             id=game["fs_id"],
-                            cid=self._encode_id(id=game["fs_id"], name=game["title"]),
+                            cid=self._encode_id(encode_id=game["fs_id"], name=game["title"]),
                             url=game["url"],
                             name=game["title"],
                             type=game["type"],
@@ -68,7 +55,7 @@ class Eshop(Shop):
                                     value=price if price > 0 else None,
                                     # TODO add currency
                                     currency="",
-                                    offer_type="LOWEST",
+                                    offer_type="OFFER",
                                 ),
                             ],
                             platforms=game["system_names_txt"],
@@ -80,8 +67,8 @@ class Eshop(Shop):
 
         return return_offers
 
-    def get_item_by(self, item_id, name=None):
-        country, item_id, name = self._decode_id(item_id)
+    def get_item_by(self, item_id):
+        decoded_country, item_id, name = self._decode_id(item_id)
         games = self.search(name=name)
         for game in games:
             if game.id == item_id:

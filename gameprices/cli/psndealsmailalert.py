@@ -1,71 +1,65 @@
 #!/usr/bin/env python
 
+import csv
+import datetime
+import smtplib
+import sys
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from xml.sax.saxutils import escape
+
 from gameprices.shops import psn
 from gameprices.utils import utils
-from xml.sax.saxutils import escape
-import csv
-import sys
-import datetime
-
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email.mime.text import MIMEText
-
-import smtplib
 
 
 def get_mail_config():
-    mailConfig = {}
-    mailConfig = utils.get_json_file("mailconfig.json")
-    return mailConfig
+    mail_config = utils.get_json_file("mailconfig.json")
+    return mail_config
 
 
-def get_containers(dealContainerAlertsFilename):
+def get_containers(deal_container_alerts_filename):
     containers = []
-    with open(dealContainerAlertsFilename) as csvfile:
-        containersReader = csv.reader(csvfile, delimiter=",", quotechar='"')
-        for row in containersReader:
-            container = {}
-            container["containerId"] = row[0]
-            container["store"] = row[1]
+    with open(deal_container_alerts_filename) as csvfile:
+        containers_reader = csv.reader(csvfile, delimiter=",", quotechar='"')
+        for row in containers_reader:
+            container = {"containerId": row[0], "store": row[1]}
             containers.append(container)
 
     return containers
 
 
 def check_containers_and_generate_mail_body(containers):
-
     body = ""
     bodyElements = []
 
     for container in containers:
-        containerId = container["containerId"]
+        container_id = container["containerId"]
         store = container["store"]
 
-        items = psn._get_items_by_container(containerId, store, {"platform": "ps4"})
+        # FIXME: Only supports PS4
+        items = psn._get_items_by_container(container_id, store, {"platform": "ps4"})
 
         if items is None:
             utils.print_enc(
-                "No items found for Container '" + containerId + "' in store " + store
+                "No items found for Container '" + container_id + "' in store " + store
             )
         else:
 
             body = '<table style="width: 100%; border-spacing: 0px;" cellspacing="0" cellpadding="0" border="0"><tbody><tr><td align="center">'
             body = (
-                body
-                + '<table width="620" style="width: 620px;" align="center" cellspacing="0" cellpadding="0"><tbody>'
-            )
+                '{0}<table width=\"620\" style=\"width: 620px;\" align=\"center\" cellspacing=\"0\" cellpadding=\"0\"><tbody>'.format(
+                    body))
             body = body + (
-                '<tr><td><p style="font-family: sans-serif; font-size: 1.0em; color: #FFFFFF; background-color: #5177B4; padding: 10px; '
-                'text-align: center; font-weight: bold; border-radius: 5px 5px 5px 5px;">Deals in Store '
-                + store
-                + " for container "
-                + container["containerId"]
-                + "</p></td></tr>"
+                    '<tr><td><p style="font-family: sans-serif; font-size: 1.0em; color: #FFFFFF; background-color: #5177B4; padding: 10px; '
+                    'text-align: center; font-weight: bold; border-radius: 5px 5px 5px 5px;">Deals in Store '
+                    + store
+                    + " for container "
+                    + container["containerId"]
+                    + "</p></td></tr>"
             )
 
             for subsetStartIdx in range(0, len(items), 3):
-                itemsSubset = items[subsetStartIdx : subsetStartIdx + 3]
+                itemsSubset = items[subsetStartIdx: subsetStartIdx + 3]
 
                 bodyElements.append(generate_body_itemsRow(container, itemsSubset))
 
@@ -75,7 +69,6 @@ def check_containers_and_generate_mail_body(containers):
 
 
 def send_mail(body):
-
     mailConfig = get_mail_config()
 
     msg = MIMEMultipart("alternative")
@@ -102,7 +95,6 @@ def send_mail(body):
 
 
 def generate_body_itemsRow(container, items):
-
     returnBody = []
 
     returnBody.append("<tr><td>")
@@ -116,7 +108,6 @@ def generate_body_itemsRow(container, items):
 
 
 def generate_body_item(container, item):
-
     returnBody = []
 
     url = psn._get_store_url(item, container["store"])
