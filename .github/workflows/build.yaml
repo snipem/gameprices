@@ -4,9 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - "!*"
-    tags:
-      - "v*"
+      - master
 jobs:
   build:
     runs-on: ubuntu-18.04
