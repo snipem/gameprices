@@ -5,7 +5,7 @@
 Increase version number in `setup.py`
 
 ```bash
-make dist
+make upload
 # Upgrade version number before
 ```
 
@@ -23,9 +23,8 @@ make dist
 make coverage
 ```
 
-Enable paralell tests
+Enable parallel tests
 
 ```bash
 -n 8
 ```
-
