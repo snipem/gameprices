@@ -1,10 +1,15 @@
+from typing import List
+
+from gameprices.price import Price
+
+
 class GameOffer(object):
 
-    id = None
-    name = None
-    prices = []
-    platforms = []
-    picture_url = None
+    id: str = None
+    name: str = None
+    prices: list[Price] = []
+    platforms: List[str] = []
+    picture_url: str = None
 
     def __init__(
         self, id, cid, name, url, prices, platforms, picture_url=None, type=None
@@ -29,7 +34,7 @@ class GameOffer(object):
             "id": self.id,
             "name": self.name,
             "type": self.type,
-            "prices": [o.dump() for o in self.prices],  # TODO Don't print null values
+            "prices": [o.dump() for o in self.prices],
             "platforms": self.platforms,
         }
 
@@ -41,16 +46,3 @@ class GameOffer(object):
 
     def get_full_image(self):
         return self.picture_base_url + self.picture_url
-
-
-class Price(object):
-    def __init__(self, value, offer_type):
-        super(Price, self).__init__()
-        self.value = value
-        self.offer_type = offer_type
-
-    def dump(self):
-        return {
-            "price": self.value,
-            "type": self.offer_type,
-        }
