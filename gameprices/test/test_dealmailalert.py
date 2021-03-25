@@ -1,5 +1,5 @@
 from gameprices.cli.mailalert import main as psnmailalert_main
-from commons import mailalert
+from gameprices.test.commons import mailalert
 
 
 def test_mailfunc_not_existing():

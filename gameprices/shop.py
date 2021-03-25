@@ -7,3 +7,6 @@ class Shop(object):
     def __init__(self, country):
         super(Shop, self).__init__()
         self.country = country
+
+    def search(self, name):
+        super(Shop, self).search()

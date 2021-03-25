@@ -19,7 +19,7 @@ version = sys.version_info[0]
 PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
 [1]: The currency symbol, in its unicode encoding
 [2]: The character preceding each marketplaces CID """
-store_code_mappings: dict[str, list[str]] = {
+store_code_mappings = {
     "NL/nl": ["nl-nl", u"\N{EURO SIGN}"],
     "DE/de": ["de-de", u"\N{EURO SIGN}", "E"],
     "US/en": ["us-en", u"\N{DOLLAR SIGN}", "U"],

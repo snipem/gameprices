@@ -1,11 +1,8 @@
 import unittest
-import sys
-from gameprices.shops.eshop import Eshop
-from gameprices.cli.cli import eshop_main
-import pytest
 
+from gameprices.test.commons import mailalert
 from gameprices.cli.mailalert import main as psnmailalert_main
-from commons import mailalert
+from gameprices.shops.eshop import Eshop
 
 
 class EshopTest(unittest.TestCase):

@@ -80,7 +80,7 @@ def format_items_as_json(items: List[GameOffer]) -> str:
     return json.dumps([o.dump() for o in items])
 
 
-def search_for_items_by_name_and_format_output(shop, name, print_json):
+def search_for_items_by_name_and_format_output(shop: Shop, name: str, print_json: bool):
     items = shop.search(name)
     if print_json:
         return format_items_as_json(items)
@@ -96,7 +96,7 @@ def main(shop):
 
     if args.query is not None and args.store is not None:
         print_string = search_for_items_by_name_and_format_output(
-            shop, args.query, args.store, args.json
+            shop, args.query, args.json
         )
         if len(print_string) == 0:
             exit(-1)
@@ -108,7 +108,7 @@ def main(shop):
             exit(0)
 
     elif args.store is not None and args.id is not None and args.price is not None:
-        price_matched = check_wish_price(args.id, args.store, args.price)
+        price_matched = check_wish_price(shop, args.id, args.price)
         if price_matched:
             exit(0)
         else:
