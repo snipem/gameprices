@@ -1,5 +1,6 @@
 # Gameprices
 
+[![Build](https://github.com/snipem/psnprices/actions/workflows/build.yaml/badge.svg)](https://github.com/snipem/psnprices/actions/workflows/build.yaml)
 [![Build Status](https://travis-ci.org/snipem/psnprices.svg?branch=master)](https://travis-ci.org/snipem/psnprices)
 [![Coverage Status](https://coveralls.io/repos/github/snipem/psnprices/badge.svg?branch=master)](https://coveralls.io/github/snipem/psnprices?branch=master)
 
@@ -7,7 +8,7 @@ Command line tool for alerting price drops in the Sony PlayStation Network (PSN)
 
 ## Description
 
-The Sony Entertainment Network (SEN) uses CIDs to identify items in its catalogue. In order to alert you on the desired price of an SEN you need the CID. Use your Browser (cid GET parameter in URL) or this script (--search) to retrieve the CID.
+The Sony Entertainment Network (SEN) uses CIDs to identify items in its catalogue. In order to alert you on the desired price of an SEN you need the CID. Use your Browser (cid GET parameter in URL) or this script (`--query`) to retrieve the CID.
 
 In order to check the price of an item. You need a store identifier. These store identifiers are known to work:
 
@@ -17,51 +18,53 @@ In order to check the price of an item. You need a store identifier. These store
 * SE/en (Sweden)
 * JP/jp (Japan)
 
-Prices are always in the local currency. Therefore, it is € for DE/de and £ for GB/en. Additionally, prices are that for PlayStation Plus users.
+Prices are always in the local currency. Therefore, it is € for DE/de and £ for GB/en. Additionally, prices are those for PlayStation Plus users.
 
-### Eshop implementation
-
-The eshop implementation is not yet fully functional and only available in the development build.
+The Eshop implementation lacks unique identifiers, because the Eshop does not support searching for unique identifiers. Therefore, an identifier is constructed containing the game name.
 
 ## Installation
 
-Use PyPI to install `psnprices`
+Use PyPI to install `gameprices`
 
-    pip install psnprices
+```bash
+pip install gameprices
+```
 
 This will install the Python modules and also the following command line tools
 
-    psncli
-    psnmailalert
-    psndealsmailalert
+```
+psncli
+eshopcli
+psnmailalert
+dealsmailalert
+```
 
 ### Install development build
 
-    pip install .
-
-This will also install the beta eshop implementation
-
-    eshopcli
-    dealsmailalert
+```bash
+pip install .
+```
 
 ## Usage
 
 ### Mail alerting for single alerts you define yourself
 
-Just run `psnmailalert` for mail alerting. See example below. Alerts are set in the `alerts.csv` file. If no store is set. The german / european store is used as a default.
+Just run `psnmailalert` for mail alerting. See example below. Alerts are set in the `alerts.csv` file. If no store is set. The German / European store is used as a default.
 
 ### Command line interface
 
-    usage: psncli [-h] [--id ID] [--store STORE] [--price PRICE] [--query QUERY] [--json] [--log]
+```bash
+usage: psncli [-h] [--id ID] [--store STORE] [--price PRICE] [--query QUERY] [--json] [--log]
 
-    optional arguments:
-    -h, --help                  show this help message and exit
-    --id ID, -i ID              CID of game to check
-    --store STORE, -s STORE     Regional PSN store to check. Default: 'DE/de'
-    --price PRICE, -p PRICE     Desired price of game
-    --query QUERY, -q QUERY     Name of item to search for
-    --json, -j                  Print JSON
-    --log, -l                   Write to log file
+optional arguments:
+-h, --help                  show this help message and exit
+--id ID, -i ID              CID of game to check
+--store STORE, -s STORE     Regional PSN store to check. Default: 'DE/de'
+--price PRICE, -p PRICE     Desired price of game
+--query QUERY, -q QUERY     Name of item to search for
+--json, -j                  Print JSON
+--log, -l                   Write to log file
+```
 
 #### Retrieving UTF-8 encoded output on terminals
 
@@ -75,11 +78,13 @@ You may run this script with the following command line variants:
 
 With `psnmailalert` you may set alerts for price drops in the `alerts.csv` file. The first value is the CID for the item, the second is the price to be matched in order to alert you by mail, and the second value is the store to search in. You may mix stores in the `alerts.csv`. After a price has been matched, the alert is removed from `alerts.csv`. You will not get any further alerts for that item.
 
-    P0001-NPEJ00305_00-B000000000001030,19.00,DE/de
-    P0001-NPEJ00305_00-B000000000001030,19.00,DE/de
-    EP0102-CUSA02521_00-MEGAMANLEGACY000,7.00
-    UP0102-CUSA02516_00-MEGAMANLEGACY000,7.00,US/en
-    P0101-ULES01372_00-GPCMETALGE000001,10.00,DE/de
+```csv
+P0001-NPEJ00305_00-B000000000001030,19.00,DE/de
+P0001-NPEJ00305_00-B000000000001030,19.00,DE/de
+EP0102-CUSA02521_00-MEGAMANLEGACY000,7.00
+UP0102-CUSA02516_00-MEGAMANLEGACY000,7.00,US/en
+P0101-ULES01372_00-GPCMETALGE000001,10.00,DE/de
+```
 
 If the store value is left blank, the script tries to extract the store from the beginning character of the CID.
 
@@ -103,12 +108,37 @@ You will get a result containing one to many search results with the CID. The fi
 
     EP0101-ULES01372_00-GPCMETALGE000001    Metal Gear Solid: Peace Walker  PS Vita,PSP®    9.99    GAME
 
+Use the `--json` flag to get the same output as JSON.
+
+```bash
+eshopcli --json -q "Dynasty Warriors 8 Xtreme Legends"
+[
+  {
+    "id": "1490013",
+    "name": "DYNASTY WARRIORS 8: Xtreme Legends Definitive Edition",
+    "type": "GAME",
+    "prices": [
+      {
+        "price": 39.99,
+        "currency": "",
+        "type": "OFFER"
+      }
+    ],
+    "platforms": [
+      "Nintendo Switch"
+    ]
+  },
+...
+```
+
 ### Check if desired price has been met
 
 The price is in local currency. As exit statuses render the outcome of the alert, you may send mails or desktop notifications with `&&` or `||`. In this example, there is a string printed to the console.
 
-    psncli --id EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
-    echo "Price matched, let's buy Metal Gear Solid PW"
+```bash
+psncli --id EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
+echo "Price matched, let's buy Metal Gear Solid PW"
+```
 
 ## Disclaimer
 
