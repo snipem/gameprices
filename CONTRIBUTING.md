@@ -8,6 +8,7 @@ Increase version number in `setup.py`
 make upload
 # Upgrade version number before
 ```
+Currently, releasing `gameprices` with the Github Workflow does not work.
 
 ## Build locally
 
@@ -21,10 +22,4 @@ make upload
 
 ```bash
 make coverage
-```
-
-Enable parallel tests
-
-```bash
--n 8
 ```
