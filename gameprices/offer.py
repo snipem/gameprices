@@ -44,15 +44,13 @@ class GameOffer(object):
 
 
 class Price(object):
-    def __init__(self, value, currency, offer_type):
+    def __init__(self, value, offer_type):
         super(Price, self).__init__()
         self.value = value
-        self.currency = currency
         self.offer_type = offer_type
 
     def dump(self):
         return {
             "price": self.value,
-            "currency": self.currency,
             "type": self.offer_type,
         }

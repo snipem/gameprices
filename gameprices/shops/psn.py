@@ -17,13 +17,12 @@ version = sys.version_info[0]
 
 """ Dictionary object containing data specific to a Country store. The key is the store identifier per the
 PSN API. The array of parameters contains [0]: the country-code folder for the PSN Store URL and
-[1]: The currency symbol, in its unicode encoding
-[2]: The character preceding each marketplaces CID """
+[1]: The character preceding each marketplaces CID """
 store_code_mappings = {
-    "NL/nl": ["nl-nl", u"\N{EURO SIGN}"],
-    "DE/de": ["de-de", u"\N{EURO SIGN}", "E"],
-    "US/en": ["us-en", u"\N{DOLLAR SIGN}", "U"],
-    "JP/jp": ["jp-jp", u"\N{YEN SIGN}", "J"],
+    "DE/de": ["de-de", "E"],
+    "NL/nl": ["nl-nl", "E"],
+    "US/en": ["us-en", "U"],
+    "JP/jp": ["jp-jp", "J"],
 }
 
 
@@ -155,19 +154,12 @@ def _search_for_items_by_name(name, store):
     return links
 
 
-def _get_currency_symbol(store):
-    if store in store_code_mappings:
-        return store_code_mappings.get(store)[1]
-    else:
-        return ""
-
-
-def _determine_store(cid):
+def _determine_store(cid: str) -> str:
     for store in store_code_mappings:
         store_code_mapping = store_code_mappings.get(store)
 
-        if len(store_code_mapping) >= 3 and cid.startswith(
-                store_code_mappings.get(store)[2]
+        if len(store_code_mapping) >= 2 and cid.startswith(
+                store_code_mappings.get(store)[1]
         ):
             return store
 
@@ -205,12 +197,10 @@ class Psn(Shop):
             prices=[
                 Price(
                     value=_get_normal_price(game),
-                    currency=_get_currency_symbol(self.country),
                     offer_type="NORMAL",
                 ),
                 Price(
                     value=_get_playstation_plus_price(game),
-                    currency=_get_currency_symbol(self.country),
                     offer_type="PS+",
                 ),
             ],

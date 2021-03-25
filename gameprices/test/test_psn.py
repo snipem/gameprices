@@ -75,18 +75,6 @@ class PsnTest(unittest.TestCase):
         assert isinstance(plusPrice, float)
         assert plusPrice == 0
 
-    def test_check_currency_symbolAsPartOfName(self):
-        store = "DE/de"
-        cids = psn._get_cid_for_name("Child of Light", store)
-        item = psn._get_item_for_cid(cids[0], store)
-        assert psn._get_display_price(item, store)[0] == u"\N{EURO SIGN}"
-
-    def test_check_currency_symbol(self):
-        assert psn._get_currency_symbol("DE/de") == u"\N{EURO SIGN}"
-        assert psn._get_currency_symbol("US/en") == u"\N{DOLLAR SIGN}"
-        assert psn._get_currency_symbol("JP/jp") == u"\N{YEN SIGN}"
-        assert psn._get_currency_symbol("Unknown") == ""
-
     def test_get_rewards(self):
         store = "DE/de"
         item = psn._get_item_for_cid("EP0006-CUSA02532_00-UNRAVELUNRAVEL09", store)

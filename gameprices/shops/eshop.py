@@ -52,11 +52,9 @@ class Eshop(Shop):
                             type=game["type"],
                             prices=[
                                 Price(
-                                    value=price if price > 0 else None,
-                                    # TODO add currency
-                                    currency="",
+                                    value=price,
                                     offer_type="OFFER",
-                                ),
+                                ) if price > 0 else None,
                             ],
                             platforms=game["system_names_txt"],
                             picture_url=game["image_url"]
