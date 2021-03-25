@@ -23,4 +23,6 @@ dist:
 	rm dist/* || true
 	python3 -m pip install pypandoc twine wheel setuptools
 	python3 setup.py sdist
+
+upload: dist
 	python3 -m twine upload dist/*
