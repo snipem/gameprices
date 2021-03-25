@@ -1,8 +1,4 @@
-import json
-
-
 class GameOffer(object):
-    """docstring for ClassName."""
 
     id = None
     name = None
@@ -11,15 +7,8 @@ class GameOffer(object):
     picture_url = None
 
     def __init__(
-            self,
-            id,
-            cid,
-            name,
-            url,
-            prices,
-            platforms,
-            picture_url=None,
-            type=None):
+        self, id, cid, name, url, prices, platforms, picture_url=None, type=None
+    ):
         super(GameOffer, self).__init__()
         self.prices = prices
         self.name = name
@@ -33,15 +22,16 @@ class GameOffer(object):
         self.platforms = platforms
 
     def __str__(self):
-        return "%s - %s on %s" % (self.name, self.prices,
-                                  ",".join(self.platforms))
+        return "%s - %s on %s" % (self.name, self.prices, ",".join(self.platforms))
 
     def dump(self):
-        return {'id': self.id,
-                'name': self.name,
-                'type': self.type,
-                'prices': [o.dump() for o in self.prices], # TODO Don't print null values
-                'platforms': self.platforms}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": self.type,
+            "prices": [o.dump() for o in self.prices],  # TODO Don't print null values
+            "platforms": self.platforms,
+        }
 
     def get_item_by(self, id, name):
         raise NotImplementedError
@@ -54,7 +44,6 @@ class GameOffer(object):
 
 
 class Price(object):
-
     def __init__(self, value, currency, offer_type):
         super(Price, self).__init__()
         self.value = value
@@ -63,7 +52,7 @@ class Price(object):
 
     def dump(self):
         return {
-            'price': self.value,
-            'currency': self.currency,
-            'type': self.offer_type,
+            "price": self.value,
+            "currency": self.currency,
+            "type": self.offer_type,
         }
