@@ -35,7 +35,6 @@ setup(
         "console_scripts": [
             "eshopcli=gameprices.cli.cli:eshop_main",
             "psncli=gameprices.cli.cli:psn_main",
-            "psndealsmailalert=gameprices.cli.psndealsmailalert:main",
             "psnmailalert=gameprices.cli.mailalert:main",
             "dealsmailalert=gameprices.cli.mailalert:main",
         ]
