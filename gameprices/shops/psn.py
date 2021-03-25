@@ -185,6 +185,23 @@ class Psn(Shop):
         if not game:
             raise Exception("Item is empty")
 
+        normal_price = _get_normal_price(game)
+        plus_price = _get_playstation_plus_price(game)
+
+        prices = []
+
+        if normal_price:
+            prices.append(Price(
+                value=normal_price,
+                offer_type="NORMAL",
+            ))
+
+        if plus_price:
+            prices.append(Price(
+                value=plus_price,
+                offer_type="PS+",
+            ))
+
         return GameOffer(
             id=game["id"],
             cid=game["id"],
@@ -193,17 +210,7 @@ class Psn(Shop):
             if "gameContentTypesList" in game
             else None,
             name=game["name"],
-            # prices=[game['default_sku']['price']/100],
-            prices=[
-                Price(
-                    value=_get_normal_price(game),
-                    offer_type="NORMAL",
-                ),
-                Price(
-                    value=_get_playstation_plus_price(game),
-                    offer_type="PS+",
-                ),
-            ],
+            prices=prices,
             platforms=game["playable_platform"] if "playable_platform" in game else "",
             picture_url=_get_image(game),
         )
