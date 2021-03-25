@@ -1,4 +1,4 @@
-# gameprices
+# Gameprices
 
 [![Build Status](https://travis-ci.org/snipem/psnprices.svg?branch=master)](https://travis-ci.org/snipem/psnprices)
 [![Coverage Status](https://coveralls.io/repos/github/snipem/psnprices/badge.svg?branch=master)](https://coveralls.io/github/snipem/psnprices?branch=master)
@@ -7,7 +7,7 @@ Command line tool for alerting price drops in the Sony PlayStation Network (PSN)
 
 ## Description
 
-The Sony Entertainment Network (SEN) uses CIDs to identify items in it's catalogue. In order to alert you on the desired price of an SEN you need the CID. Use your Browser (cid GET parameter in URL) or this script (--search) to retrieve the CID.
+The Sony Entertainment Network (SEN) uses CIDs to identify items in its catalogue. In order to alert you on the desired price of an SEN you need the CID. Use your Browser (cid GET parameter in URL) or this script (--search) to retrieve the CID.
 
 In order to check the price of an item. You need a store identifier. These store identifiers are known to work:
 
@@ -17,11 +17,11 @@ In order to check the price of an item. You need a store identifier. These store
 * SE/en (Sweden)
 * JP/jp (Japan)
 
-Prices are always in the local currency. Therefore it is € for DE/de and £ for GB/en. Additionaly, prices are that for PlayStation Plus users.
+Prices are always in the local currency. Therefore, it is € for DE/de and £ for GB/en. Additionally, prices are that for PlayStation Plus users.
 
 ### Eshop implementation
 
-The eshop implementation is not yet fully functional and only available in the dvelopment build.
+The eshop implementation is not yet fully functional and only available in the development build.
 
 ## Installation
 
@@ -105,13 +105,13 @@ You will get a result containing one to many search results with the CID. The fi
 
 ### Check if desired price has been met
 
-The price is in local currency. As exit statuses render the outcome of the alert, you may send you e-mails or desktop notifications with `&&` or `||`. In this example, there is a string printed to the console.
+The price is in local currency. As exit statuses render the outcome of the alert, you may send mails or desktop notifications with `&&` or `||`. In this example, there is a string printed to the console.
 
     psncli --id EP0101-ULES01372_00-GPCMETALGE000001 --store DE/de --price 15.00 &&
     echo "Price matched, let's buy Metal Gear Solid PW"
 
 ## Disclaimer
 
-This script is not associated with Sony, Sony PlayStation, the PlayStation Network in any kind. It consumes an public interface that is publicly advertised to the browser to list store contents.
+This script is not associated with Sony, Sony PlayStation, the PlayStation Network in any kind. It consumes a public interface that is publicly advertised to the browser to list store contents.
 
-This script is not associated with Nintendo, Nintendo Switch, or the Nintendo Eshop in any kind. It consumes an public interface that is publicly advertised to the browser to list store contents.
+This script is not associated with Nintendo, Nintendo Switch, or the Nintendo Eshop in any kind. It consumes a public interface that is publicly advertised to the browser to list store contents.
