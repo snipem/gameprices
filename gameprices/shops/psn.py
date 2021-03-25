@@ -76,7 +76,7 @@ def _get_price(item):
 
 
 def _get_normal_price(item):
-    return float(item["default_sku"]["price"]) / 100 if "default_sku" in item else None
+    return float(item["skus"][0]["price"]) / 100 if "skus" in item and len(item["skus"]) > 0 else None
 
 
 def _get_non_playstation_plus_price(item):
@@ -111,9 +111,9 @@ def _get_offer_end_date(item):
         :param item: The item for which the Offer End Date is to be retrieved
         :return: A datetime object which is the Offer End Date """
 
-    if item["default_sku"] is not None:
-        if "end_date" in item["default_sku"]:
-            end_date = item["default_sku"]["end_date"]
+    if item["skus"][0] is not None:
+        if "end_date" in item["skus"][0]:
+            end_date = item["skus"][0]["end_date"]
             if end_date is not None:
                 return datetime.datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%SZ")
 
@@ -134,7 +134,7 @@ def _get_cid_for_name(name, store):
         try:
             logging.debug("Parsing:\n" + utils.pretty_print_json(link))
             name = link["name"]
-            item_type = link["default_sku"]["name"]
+            item_type = link["skus"][0]["name"]
             cid = link["id"]
             platform = ", ".join(link["playable_platform"])
 

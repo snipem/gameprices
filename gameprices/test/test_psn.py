@@ -115,6 +115,10 @@ class PsnTest(unittest.TestCase):
         game_offer = game_offers[0]
         assert game_offer.name == "Tearaway™ Unfolded"
 
+    def test_get_turing_test(self):
+        turing_test = self.psn.search("the turing test")
+        assert turing_test[0].prices[0].value < 1000 # When searching for turing test, a ps4_cloud game is returned costing > 1000
+
     def test_search_alot(self):
         game_offers = self.psn.search("park")
         print("\n".join(str(e) for e in game_offers))
