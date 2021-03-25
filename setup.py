@@ -22,7 +22,6 @@ setup(
     ],
     version="1.2",
     description="An interface for the undocumented Sony PlayStation Store PSN and Nintendo Eshop Apis",
-    long_description=long_description,
     author="Matthias Kuech",
     author_email="post@matthias-kuech.de",
     url="https://github.com/snipem/psnprices",
