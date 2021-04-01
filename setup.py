@@ -20,7 +20,7 @@ setup(
         "gameprices.test",
         "gameprices.utils",
     ],
-    version="1.3.1",
+    version="1.3.2",
     description="An interface for the undocumented Sony PlayStation Store PSN and Nintendo Eshop Apis",
     author="Matthias Kuech",
     author_email="post@matthias-kuech.de",
