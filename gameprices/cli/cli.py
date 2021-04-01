@@ -11,13 +11,6 @@ from gameprices.shops.eshop import Eshop
 from gameprices.shops.psn import Psn
 from gameprices.utils import utils
 
-logging.basicConfig(
-    filename="psnprices.log",
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)-8s] %(message)s",
-    filemode="w",
-)
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help="CID of game to check")
 parser.add_argument(
@@ -93,6 +86,13 @@ def main(shop):
 
     if not args.log:
         logging.getLogger().disabled = True
+    else:
+        logging.basicConfig(
+            filename="psnprices.log",
+            level=logging.INFO,
+            format="%(asctime)s [%(levelname)-8s] %(message)s",
+            filemode="w",
+        )
 
     if args.query is not None and args.store is not None:
         print_string = search_for_items_by_name_and_format_output(
