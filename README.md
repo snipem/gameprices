@@ -1,8 +1,6 @@
 # Gameprices
 
 [![Build](https://github.com/snipem/psnprices/actions/workflows/build.yaml/badge.svg)](https://github.com/snipem/psnprices/actions/workflows/build.yaml)
-[![Build Status](https://travis-ci.org/snipem/psnprices.svg?branch=master)](https://travis-ci.org/snipem/psnprices)
-[![Coverage Status](https://coveralls.io/repos/github/snipem/psnprices/badge.svg?branch=master)](https://coveralls.io/github/snipem/psnprices?branch=master)
 
 Command line tool for alerting price drops in the Sony PlayStation Network (PSN) and the Nintendo Eshop.
 
