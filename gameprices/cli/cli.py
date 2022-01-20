@@ -10,6 +10,7 @@ from gameprices.shop import Shop
 from gameprices.shops.eshop import Eshop
 from gameprices.shops.psn import Psn
 from gameprices.utils import utils
+from gameprices.utils.utils import format_items_as_json, format_items_as_text
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--id", "-i", help="CID of game to check")
@@ -45,32 +46,6 @@ def check_wish_price(shop: Shop, cid: str, wish_price: float) -> bool:
             )
         )
         return True
-
-
-def format_items_as_text(items):
-    cids = []
-    found_items = []
-
-    for item in items:
-        try:
-            name = item.name
-            item_type = item.type
-            cid = item.cid
-            price = str(item.prices[0].value) if len(item.prices) > 0 else ""
-
-            platform = ",".join(item.platforms)
-            found_items.append(
-                (cid + "\t" + name + "\t" + platform + "\t" + price + "\t" + item_type)
-            )
-            cids.append(cid)
-        except Exception as e:
-            logging.exception(e)
-
-    return found_items
-
-
-def format_items_as_json(items: List[GameOffer]) -> str:
-    return json.dumps([o.dump() for o in items])
 
 
 def search_for_items_by_name_and_format_output(shop: Shop, name: str, print_json: bool):

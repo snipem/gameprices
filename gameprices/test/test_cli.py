@@ -57,6 +57,24 @@ def test_cli_by_container():
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 0
 
+def test_cli_json_price_reduction(capsys):
+    sys.argv = ["psncli", "--json", "--query", "Tearaway"]
+
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        psn_main()
+
+    captured = capsys.readouterr()
+    response = json.loads(captured.out)
+    assert response is not None
+
+    # Check if response json is populated
+    assert len(response[0]["name"]) > 0
+    assert len(response[0]["prices"]) > 0
+    assert len(response[0]["type"]) > 0
+
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 0
+
 
 def test_cli_json(capsys):
     sys.argv = ["psncli", "--json", "--query", "Metal Gear"]
@@ -75,6 +93,25 @@ def test_cli_json(capsys):
 
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 0
+
+def test_eshop_cli_json(capsys):
+    sys.argv = ["eshopcli", "--json", "--query", "Tetris"]
+
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        eshop_main()
+
+    captured = capsys.readouterr()
+    response = json.loads(captured.out)
+    assert response is not None
+
+    # Check if response json is populated
+    assert len(response[0]["name"]) > 0
+    assert len(response[0]["prices"]) > 0
+    assert len(response[0]["type"]) > 0
+
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 0
+
 
 
 def test_cli_normal(capsys):
