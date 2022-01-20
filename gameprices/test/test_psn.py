@@ -83,12 +83,12 @@ class PsnTest(unittest.TestCase):
     @unittest.skip("Skip temporary price reduction")
     def test_check_currently_reduced_item_all_prices(self):
         store = "DE/de"
-        item = psn._get_item_for_cid("EP2107-CUSA00327_00-DONTSTARVEPS4V01", store)
+        item = psn._get_item_for_cid("EP9000-CUSA04301_00-DREAMS0000000000", store)
         print("Checking: ", item["name"])
-        assert psn._get_normal_price(item) == 13.99
-        assert psn._get_playstation_plus_price(item) == 4.89
-        assert psn._get_non_playstation_plus_price(item) == 6.99
-        assert psn._get_price(item) == 4.89
+        assert psn._get_normal_price(item) == 39.99
+        assert psn._get_playstation_plus_price(item) == 15.99
+        assert psn._get_non_playstation_plus_price(item) == 15.99
+        assert psn._get_price(item) == 15.99
 
     @unittest.skip("Skip temporary price reduction")
     def test_check_currently_reduced_item_no_plus_reduction(self):
@@ -113,11 +113,14 @@ class PsnTest(unittest.TestCase):
     def test_get_item_for_id(self):
         game_offers = self.psn.search("Tearaway™ Unfolded")
         game_offer = game_offers[0]
+        assert game_offer.prices[0].value >= 0
         assert game_offer.name == "Tearaway™ Unfolded"
 
-    def test_get_turing_test(self):
-        turing_test = self.psn.search("the turing test")
-        assert turing_test[0].prices[0].value < 1000 # When searching for turing test, a ps4_cloud game is returned costing > 1000
+    def test_get_item_for_id_that_misses_price(self):
+        game_offers = self.psn.search("Dreams")
+        game_offer = game_offers[0]
+        assert game_offer.prices[0].value >= 0
+        assert game_offer.name == "Dreams™"
 
     def test_search_alot(self):
         game_offers = self.psn.search("park")

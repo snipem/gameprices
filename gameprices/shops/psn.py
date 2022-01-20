@@ -47,7 +47,7 @@ def _get_rewards(item):
     rewards = []
 
     for sku in item["skus"]:
-        if "rewards" in sku:
+        if "defaultSku" in sku and sku["defaultSku"] == True and "rewards" in sku:
             for reward in sku["rewards"]:
                 rewards.append(reward)
 
@@ -76,12 +76,16 @@ def _get_price(item):
 
 
 def _get_normal_price(item):
-    return float(item["skus"][0]["price"]) / 100 if "skus" in item and len(item["skus"]) > 0 else None
+    for sku in item["skus"]:
+        if "defaultSku" in sku and sku["defaultSku"] == True:
+            return float(sku["price"]) / 100
+
+    return None
 
 
 def _get_non_playstation_plus_price(item):
     for reward in _get_rewards(item):
-        if reward.get("reward_type") == 4:
+        if not reward.get("is_plus"):
             return float(reward.get("price")) / 100
 
 
@@ -89,10 +93,8 @@ def _get_playstation_plus_price(item):
     for reward in _get_rewards(item):
         if reward.get("bonus_price") is not None:
             return float(reward.get("bonus_price")) / 100
-        elif reward.get("isPlus") is True:
-            return float(reward.get("price")) / 100
         else:
-            return None
+            return float(reward.get("price")) / 100
 
     return None
 
@@ -131,17 +133,14 @@ def _get_cid_for_name(name, store):
     cids = []
 
     for link in links:
-        try:
-            logging.debug("Parsing:\n" + utils.pretty_print_json(link))
-            name = link["name"]
-            item_type = link["skus"][0]["name"]
-            cid = link["id"]
-            platform = ", ".join(link["playable_platform"])
+        logging.debug("Parsing:\n" + utils.pretty_print_json(link))
+        name = link["name"]
+        item_type = link["top_category"]
+        cid = link["id"]
+        platform = ", ".join(link["playable_platform"])
 
-            logging.info("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + item_type)
-            cids.append(cid)
-        except Exception as e:
-            logging.warning("Got error '" + str(e) + "'' while parsing\n" + utils.pretty_print_json(link))
+        logging.info("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + item_type)
+        cids.append(cid)
 
     return cids
 
@@ -219,7 +218,8 @@ class Psn(Shop):
         items = _search_for_items_by_name(name=name, store=self.country)
         return_offers = []
         for item in items:
-            return_offers.append(self._item_to_game_offer(item))
+            if 'bucket' in item and item['bucket'] == 'games':  # Only add items that are games and have prices etc.
+                return_offers.append(self._item_to_game_offer(item))
         return return_offers
 
     def get_item_by(self, item_id):
