@@ -4,9 +4,11 @@
 import unittest
 from gameprices.shops import psn
 from gameprices.shops.psn import Psn
+from gameprices.cli import *
 
 from gameprices.cli.mailalert import main as psnmailalert_main
 from gameprices.test.commons import mailalert
+from gameprices.utils.utils import format_items_as_json
 
 
 class PsnTest(unittest.TestCase):
@@ -110,6 +112,11 @@ class PsnTest(unittest.TestCase):
         game = self.psn.get_item_by(item_id=id)
         return game
 
+    def test_format_items_to_json(self):
+        game_offers = self.psn.search("Tearaway Unfolded")
+        json_string = format_items_as_json(game_offers)
+        assert "Tearaway" in json_string
+
     def test_get_item_for_id(self):
         game_offers = self.psn.search("Tearaway™ Unfolded")
         game_offer = game_offers[0]
@@ -139,6 +146,7 @@ class PsnTest(unittest.TestCase):
 
         assert game_offer.name == name
         assert game_offer.id == id
+        assert game_offer.prices[0].value == 0
 
     def test_game_has_picture(self):
         assert "http" in self.get_game().picture_url
