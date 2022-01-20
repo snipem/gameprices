@@ -146,7 +146,6 @@ class PsnTest(unittest.TestCase):
 
         assert game_offer.name == name
         assert game_offer.id == id
-        assert game_offer.prices[0].value == 0
 
     def test_game_has_picture(self):
         assert "http" in self.get_game().picture_url
