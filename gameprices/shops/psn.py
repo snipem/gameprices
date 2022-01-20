@@ -201,6 +201,9 @@ class Psn(Shop):
                 offer_type="PS+",
             ))
 
+        # Make lowest price first in list
+        prices.sort(key=lambda x: x.value)
+
         return GameOffer(
             id=game["id"],
             cid=game["id"],
