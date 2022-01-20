@@ -1,7 +1,7 @@
 .PHONY: dist
 
 install:
-	python3 setup.py develop
+	pip3 install .
 
 test: test_deps
 	python3 -m pytest
