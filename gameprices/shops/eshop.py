@@ -54,7 +54,7 @@ class Eshop(Shop):
                                 Price(
                                     value=price,
                                     offer_type="OFFER",
-                                ) if price > 0 else None,
+                                ) if price > 0 else Price(value=-1, offer_type="NONE"),
                             ],
                             platforms=game["system_names_txt"],
                             picture_url=game["image_url"]
