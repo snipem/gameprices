@@ -1,13 +1,16 @@
 import datetime
 import logging
 import sys
+import json
+import urllib.request
+from lxml import etree
 from urllib.parse import quote
 
 from gameprices.offer import GameOffer, Price
 from gameprices.shop import Shop
 from gameprices.utils import utils
 
-api_root = "https://store.playstation.com/chihiro-api"
+api_root = "https://store.playstation.com"
 store_root = "https://store.playstation.com/#!"
 fetch_size = "99999"
 appendix = ""
@@ -145,12 +148,31 @@ def _get_cid_for_name(name, store):
     return cids
 
 
+def _get_next_data_respose(url):
+
+    response = urllib.request.urlopen(url)
+    html_response = response.read()
+    encoding = response.headers.get_content_charset('utf-8')
+    decoded_html = html_response.decode(encoding)
+
+    html = etree.HTML(decoded_html)
+    # h = etree.tostring(html, pretty_print=True, encoding=encoding, method="html").decode()
+
+    from cssselect import GenericTranslator, SelectorError
+    try:
+        expression = GenericTranslator().css_to_xpath('#__NEXT_DATA__')
+    except SelectorError:
+        print('Invalid selector.')
+
+    selection = [''.join(e.itertext()) for e in html.xpath(expression)]
+    return json.loads(selection[0])
+
 def _search_for_items_by_name(name, store):
     encoded_name = quote(name)
-    url = api_root + "/bucket-search/" + store + "/" + api_version + "/" + encoded_name + "?size=" + fetch_size + "&start=0"
-    data = utils.get_json_response(url)
-    links = data["categories"]["games"]["links"]
-    return links
+    url = Psn._build_api_url(country=store, query=encoded_name)
+    data = _get_next_data_respose(url)
+    items = data["props"]["apolloState"]
+    return items
 
 
 def _determine_store(cid: str) -> str:
@@ -178,7 +200,8 @@ def _get_items_by_container(container, store, filters_dict):
 class Psn(Shop):
     @staticmethod
     def _build_api_url(country, query):
-        return "%s/%s/select?q=%s&%s" % (api_root, country, query, appendix)
+        # TODO make safe for countries not in map
+        return "%s/%s/search/%s" % (api_root, store_code_mappings.get(country)[0], query)
 
     def _item_to_game_offer(self, game):
         if not game:
