@@ -8,6 +8,7 @@ from typing import List
 from urllib.parse import quote
 
 from lxml import etree
+from cssselect import GenericTranslator, SelectorError
 
 from gameprices.offer import GameOffer, Price
 from gameprices.shop import Shop
@@ -134,19 +135,12 @@ def _get_store_url(item, store):
     return url
 
 
-def _get_cid_for_name(name, store):
-    links = _search_for_items_by_name(name, store)
+def _get_cid_for_name(name: str, store: str) -> List[str]:
+    items = _search_for_items_by_name(name, store)
     cids = []
 
-    for link in links:
-        logging.debug("Parsing:\n" + utils.pretty_print_json(link))
-        name = link["name"]
-        item_type = link["top_category"]
-        cid = link["id"]
-        platform = ", ".join(link["playable_platform"])
-
-        logging.info("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + item_type)
-        cids.append(cid)
+    for item in items:
+        cids.append(item.cid)
 
     return cids
 
@@ -160,7 +154,6 @@ def _get_next_data_respose(url):
     html = etree.HTML(decoded_html)
     # h = etree.tostring(html, pretty_print=True, encoding=encoding, method="html").decode()
 
-    from cssselect import GenericTranslator, SelectorError
     try:
         expression = GenericTranslator().css_to_xpath('#__NEXT_DATA__')
     except SelectorError:
@@ -179,18 +172,33 @@ def _search_for_items_by_name(name: str, store: str) -> List[GameOffer]:
     return game_offers
 
 
+def _get_master_image_item_id_for_id(media_items, items):
+
+    media_items_ids = []
+
+    for media_item in media_items:
+        media_items_ids.append(media_item["id"])
+
+    for media_items_id in media_items_ids:
+        if media_items_id in items and items[media_items_id]["role"] == "MASTER":
+            return media_items_id
+
+
 def _items_to_game_offers(items: List, country: str) -> List[GameOffer]:
     return_list: List[GameOffer] = []
 
     for i in items:
         if "npTitleId" in items[i]:
             # This is a game
+            cid = items[i]["id"]
             price_id = items[i]['price']['id']
+            master_image_item_id = _get_master_image_item_id_for_id(items[i]["media"], items)
             g = GameOffer(
                 name=items[i]["name"],
-                id=items[i]["id"],
-                cid=items[i]["id"],
+                id=cid,
+                cid=cid,
                 url="%s/%s/product/%s" % (store_root, country, items[i]["id"]),
+                picture_url=items[master_image_item_id]["url"],
                 prices=[
                     Price(
                         value=_get_price_value_from_price_string(items[price_id]["discountedPrice"]),
@@ -242,7 +250,8 @@ class Psn(Shop):
     @staticmethod
     def _build_api_url(country, query):
         # TODO make safe for countries not in map
-        return "%s/%s/search/%s" % (api_root, store_code_mappings.get(country)[0], query)
+        cleaned_country = country.replace("/","-").lower()
+        return "%s/%s/search/%s" % (api_root, cleaned_country, query)
 
     def _item_to_game_offer(self, game):
         if not game:
