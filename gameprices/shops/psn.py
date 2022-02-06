@@ -4,6 +4,7 @@ import logging
 import re
 import sys
 import urllib.request
+from types import SimpleNamespace
 from typing import List
 from urllib.parse import quote
 
@@ -15,6 +16,8 @@ from gameprices.shop import Shop
 from gameprices.utils import utils
 
 api_root = "https://store.playstation.com"
+query_type_search = "search"
+query_type_product = "product"
 store_root = api_root
 fetch_size = "99999"
 appendix = ""
@@ -38,16 +41,6 @@ def _filter_none(item):
         return False
     else:
         return True
-
-
-def _get_item_for_cid(cid, store):
-    try:
-        url = (api_root + "/viewfinder/" + store + "/" + api_version + "/" + cid + "?size=" + fetch_size)
-        data = utils.get_json_response(url)
-        return data
-    except Exception as e:
-        logging.error("Got error '" + str(e) + "' while retrieving cid '" + cid + "' in store " + store)
-        return None
 
 
 def _get_rewards(item):
@@ -152,7 +145,6 @@ def _get_next_data_respose(url):
     decoded_html = html_response.decode(encoding)
 
     html = etree.HTML(decoded_html)
-    # h = etree.tostring(html, pretty_print=True, encoding=encoding, method="html").decode()
 
     try:
         expression = GenericTranslator().css_to_xpath('#__NEXT_DATA__')
@@ -165,11 +157,50 @@ def _get_next_data_respose(url):
 
 def _search_for_items_by_name(name: str, store: str) -> List[GameOffer]:
     encoded_name = quote(name)
-    url = Psn._build_api_url(country=store, query=encoded_name)
+    url = Psn._build_api_url_for_search(country=store, query=encoded_name)
+    return _get_game_offers(url, store)
+
+def _get_item_for_cid(cid: str, store: str) -> GameOffer:
+    # TODO This does not return a parsable object, it is lacking price
+    url = Psn._build_api_url_for_product_page(country=store, cid=cid)
+    return _get_game_offers_from_product_page(url, store)
+
+def _get_game_offers(url, store: str) -> List[GameOffer]:
     data = _get_next_data_respose(url)
     items = data["props"]["apolloState"]
-    game_offers = _items_to_game_offers(items, country=store)
+    game_offers = _search_items_to_game_offers(items, country=store)
     return game_offers
+
+def _get_game_offers_from_product_page(url, store: str) -> GameOffer:
+    data = _get_next_data_respose(url)
+    cta = data["props"]["pageProps"]["batarangs"]["cta"]["text"]
+    game_offer = _get_game_offer_from_cta(cta, url=url)
+    return game_offer
+
+def _get_game_offer_from_cta(text: str, url: str) -> GameOffer:
+    cid = _get_data_from_malformed_json(text, "productId")
+    return GameOffer(
+        id=cid,
+        cid=cid,
+        name="", #TODO not implemented, maybe get from "batarangs"
+        url=url,
+        platforms=[], # TODO not implemented
+        prices=[
+            Price(
+                # This simply takes the first two prices
+                value=_get_price_value_from_price_string(_get_data_from_malformed_json(text, "discountPriceFormatted")),
+                offer_type="discountedPrice"
+            ),
+            Price(
+                value=_get_price_value_from_price_string(_get_data_from_malformed_json(text, "originalPriceFormatted")),
+                offer_type="basePrice"
+            ),
+        ],
+    )
+
+def _get_data_from_malformed_json(text: str, element_name :str) -> str:
+    m = re.search('"%s":"([^"]*)"' % element_name, text)
+    return m.group(1)
 
 
 def _get_master_image_item_id_for_id(media_items, items):
@@ -184,7 +215,7 @@ def _get_master_image_item_id_for_id(media_items, items):
             return media_items_id
 
 
-def _items_to_game_offers(items: List, country: str) -> List[GameOffer]:
+def _search_items_to_game_offers(items: List, country: str) -> List[GameOffer]:
     return_list: List[GameOffer] = []
 
     for i in items:
@@ -248,10 +279,16 @@ def _get_price_value_from_price_string(price: str) -> float:
 
 class Psn(Shop):
     @staticmethod
-    def _build_api_url(country, query):
+    def _build_api_url_for_search(country, query):
         # TODO make safe for countries not in map
         cleaned_country = country.replace("/","-").lower()
         return "%s/%s/search/%s" % (api_root, cleaned_country, query)
+
+    @staticmethod
+    def _build_api_url_for_product_page(country: str, cid: str):
+        # TODO make safe for countries not in map
+        cleaned_country = country.replace("/","-").lower()
+        return "%s/%s/product/%s" % (api_root, cleaned_country, cid)
 
     def _item_to_game_offer(self, game):
         if not game:
@@ -300,5 +337,4 @@ class Psn(Shop):
         return game_offers
 
     def get_item_by(self, item_id):
-        item = _get_item_for_cid(item_id, self.country)
-        return self._item_to_game_offer(item)
+        return _get_item_for_cid(item_id, self.country)
