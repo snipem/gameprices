@@ -1,17 +1,20 @@
 import datetime
-import logging
-import sys
 import json
+import logging
+import re
+import sys
 import urllib.request
-from lxml import etree
+from typing import List
 from urllib.parse import quote
+
+from lxml import etree
 
 from gameprices.offer import GameOffer, Price
 from gameprices.shop import Shop
 from gameprices.utils import utils
 
 api_root = "https://store.playstation.com"
-store_root = "https://store.playstation.com/#!"
+store_root = api_root
 fetch_size = "99999"
 appendix = ""
 api_version = "19"
@@ -149,7 +152,6 @@ def _get_cid_for_name(name, store):
 
 
 def _get_next_data_respose(url):
-
     response = urllib.request.urlopen(url)
     html_response = response.read()
     encoding = response.headers.get_content_charset('utf-8')
@@ -167,12 +169,44 @@ def _get_next_data_respose(url):
     selection = [''.join(e.itertext()) for e in html.xpath(expression)]
     return json.loads(selection[0])
 
-def _search_for_items_by_name(name, store):
+
+def _search_for_items_by_name(name: str, store: str) -> List[GameOffer]:
     encoded_name = quote(name)
     url = Psn._build_api_url(country=store, query=encoded_name)
     data = _get_next_data_respose(url)
     items = data["props"]["apolloState"]
-    return items
+    game_offers = _items_to_game_offers(items, country=store)
+    return game_offers
+
+
+def _items_to_game_offers(items: List, country: str) -> List[GameOffer]:
+    return_list: List[GameOffer] = []
+
+    for i in items:
+        if "npTitleId" in items[i]:
+            # This is a game
+            price_id = items[i]['price']['id']
+            g = GameOffer(
+                name=items[i]["name"],
+                id=items[i]["id"],
+                cid=items[i]["id"],
+                url="%s/%s/product/%s" % (store_root, country, items[i]["id"]),
+                prices=[
+                    Price(
+                        value=_get_price_value_from_price_string(items[price_id]["discountedPrice"]),
+                        offer_type="discountedPrice"
+                    ),
+                    Price(
+                        value=_get_price_value_from_price_string(items[price_id]["basePrice"]),
+                        offer_type="basePrice"
+                    ),
+                ],
+                type=items[i]["storeDisplayClassification"],
+                platforms=items[i]["platforms"]["json"]
+            )
+            return_list.append(g)
+
+    return return_list
 
 
 def _determine_store(cid: str) -> str:
@@ -195,6 +229,13 @@ def _get_items_by_container(container, store, filters_dict):
     links = data["links"]
 
     return links
+
+
+def _get_price_value_from_price_string(price: str) -> float:
+    try:
+        return float(re.sub("[^0-9,\.,\,]", "", price).replace(",", "."))
+    except Exception:
+        return -1
 
 
 class Psn(Shop):
@@ -241,12 +282,13 @@ class Psn(Shop):
         )
 
     def search(self, name):
-        items = _search_for_items_by_name(name=name, store=self.country)
-        return_offers = []
-        for item in items:
-            if 'bucket' in item and item['bucket'] == 'games':  # Only add items that are games and have prices etc.
-                return_offers.append(self._item_to_game_offer(item))
-        return return_offers
+        game_offers = _search_for_items_by_name(name=name, store=self.country)
+        # return_offers = []
+        # for item in items:
+        #     if 'bucket' in item and item['bucket'] == 'games':  # Only add items that are games and have prices etc.
+        #         return_offers.append(self._item_to_game_offer(item))
+        # return return_offers
+        return game_offers
 
     def get_item_by(self, item_id):
         item = _get_item_for_cid(item_id, self.country)
