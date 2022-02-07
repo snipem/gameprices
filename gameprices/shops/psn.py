@@ -76,8 +76,17 @@ def _get_price(item):
 
 
 def _get_normal_price(item):
+
+    # This will sort the prices by highest to lowest.
+    # There are some low prices in the skus which could be demo version,
+    # bundle bonuses etc. We expect that the highest normal price is the
+    # one we are searching
+    item["skus"].sort(key=lambda x: x["price"], reverse=True)
+
     for sku in item["skus"]:
-        if "defaultSku" in sku and sku["defaultSku"] == True:
+        # Has no rewards, therefore this should be the normal price.
+        # Otherwise it could pick the PS Now price which is 100.0
+        if len(sku["rewards"]) == 0:
             return float(sku["price"]) / 100
 
     return None
@@ -189,13 +198,13 @@ class Psn(Shop):
 
         prices = []
 
-        if normal_price:
+        if normal_price != None:
             prices.append(Price(
                 value=normal_price,
                 offer_type="NORMAL",
             ))
 
-        if plus_price:
+        if plus_price != None:
             prices.append(Price(
                 value=plus_price,
                 offer_type="PS+",
@@ -225,6 +234,6 @@ class Psn(Shop):
                 return_offers.append(self._item_to_game_offer(item))
         return return_offers
 
-    def get_item_by(self, item_id):
+    def get_item_by(self, item_id) -> GameOffer:
         item = _get_item_for_cid(item_id, self.country)
         return self._item_to_game_offer(item)
