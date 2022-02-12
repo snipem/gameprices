@@ -224,7 +224,7 @@ class Psn(Shop):
 
         if non_plus_price != None:
             prices.append(Price(
-                value=plus_price,
+                value=non_plus_price,
                 offer_type="Without PS+",
             ))
 
