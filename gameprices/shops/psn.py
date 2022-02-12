@@ -47,65 +47,76 @@ def _get_rewards(item):
     rewards = []
 
     for sku in item["skus"]:
-        if "defaultSku" in sku and sku["defaultSku"] == True and "rewards" in sku:
+        if "rewards" in sku:
             for reward in sku["rewards"]:
                 rewards.append(reward)
 
     return rewards
 
 
-def _get_display_price(item, store):
-    price = _get_price(item)
-    display_price = store_code_mappings[store][1] + str(price)
+def _get_all_prices(item):
+    # Returns all prices, regardless of their semantics
 
-    return display_price
+    prices = []  # highest to lowest
+    has_free_offer = False
 
+    for sku in item["skus"]:
+        p = float(sku["price"]) / 100
+        if p != 0 and p != 100:  # 0 is likely demo, 100 is likely PS Now offering
+            prices.append(p)
+        elif p == 0:
+            has_free_offer = True
 
-def _get_cheapest_price(prices):
-    return sorted(filter(_filter_none, prices))[0]
+    for reward in _get_rewards(item):
+        p = float(reward.get("price")) / 100
+        if p != 0 and p != 100:  # 0 is likely demo, 100 is likely PS Now offering
+            prices.append(p)
+        elif p == 0:
+            has_free_offer = True
 
+        if "bonus_price" in reward:
+            p = float(reward.get("bonus_price")) / 100
+            prices.append(p)
 
-def _get_price(item):
-    normal_price = _get_normal_price(item)
-    non_playstation_plus_price = _get_non_playstation_plus_price(item)
-    playstation_plus_price = _get_playstation_plus_price(item)
+    prices.sort(key=lambda x: x, reverse=True)
 
-    return _get_cheapest_price(
-        [normal_price, non_playstation_plus_price, playstation_plus_price]
-    )
+    if len(prices) == 0 and has_free_offer:
+        # If there were no other prices found and there was found
+        # a 0 price before, expect this to be a free item and no demo
+        prices.append(0.0)
+
+    return prices
 
 
 def _get_normal_price(item):
-
-    # This will sort the prices by highest to lowest.
-    # There are some low prices in the skus which could be demo version,
-    # bundle bonuses etc. We expect that the highest normal price is the
-    # one we are searching
-    item["skus"].sort(key=lambda x: x["price"], reverse=True)
-
-    for sku in item["skus"]:
-        # Has no rewards, therefore this should be the normal price.
-        # Otherwise it could pick the PS Now price which is 100.0
-        if len(sku["rewards"]) == 0:
-            return float(sku["price"]) / 100
-
-    return None
+    """Returns the highest price of the item as the normal non reduced price"""
+    prices = _get_all_prices(item)
+    if len(prices) > 0:
+        return prices[0]
+    else:
+        return None
 
 
-def _get_non_playstation_plus_price(item):
-    for reward in _get_rewards(item):
-        if not reward.get("is_plus"):
-            return float(reward.get("price")) / 100
+def _get_non_playstation_plus_price_reduction(item):
+    """Returns the middle price of the item as the non playstation plus reduced price"""
+    prices = _get_all_prices(item)
+    if len(prices) == 3: # Has normal, non ps plus and ps plus price
+        return prices[1]
+    elif len(prices) == 2:
+        return prices[len(prices) - 1] # return last price as non ps plus price
+    else:
+        return None
 
 
-def _get_playstation_plus_price(item):
-    for reward in _get_rewards(item):
-        if reward.get("bonus_price") is not None:
-            return float(reward.get("bonus_price")) / 100
-        else:
-            return float(reward.get("price")) / 100
-
-    return None
+def _get_playstation_plus_price_reduction(item):
+    """Returns the lowest price as the playstation plus price reduction of the item"""
+    prices = _get_all_prices(item)
+    if len(prices) == 3:
+        return prices[len(prices) - 1] # Expect ps plus always to be the lowest on three prices
+    elif len(prices) == 2:
+        return prices[1]
+    else:
+        return None
 
 
 def _get_name(item):
@@ -194,7 +205,8 @@ class Psn(Shop):
             raise Exception("Item is empty")
 
         normal_price = _get_normal_price(game)
-        plus_price = _get_playstation_plus_price(game)
+        plus_price = _get_playstation_plus_price_reduction(game)
+        non_plus_price = _get_non_playstation_plus_price_reduction(game)
 
         prices = []
 
@@ -208,6 +220,12 @@ class Psn(Shop):
             prices.append(Price(
                 value=plus_price,
                 offer_type="PS+",
+            ))
+
+        if non_plus_price != None:
+            prices.append(Price(
+                value=plus_price,
+                offer_type="Without PS+",
             ))
 
         # Make lowest price first in list
