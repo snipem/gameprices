@@ -1,14 +1,24 @@
 import datetime
+import json
 import logging
+import re
 import sys
+import urllib.request
+from types import SimpleNamespace
+from typing import List
 from urllib.parse import quote
+
+from lxml import etree
+from cssselect import GenericTranslator, SelectorError
 
 from gameprices.offer import GameOffer, Price
 from gameprices.shop import Shop
 from gameprices.utils import utils
 
-api_root = "https://store.playstation.com/chihiro-api"
-store_root = "https://store.playstation.com/#!"
+api_root = "https://store.playstation.com"
+query_type_search = "search"
+query_type_product = "product"
+store_root = api_root
 fetch_size = "99999"
 appendix = ""
 api_version = "19"
@@ -31,16 +41,6 @@ def _filter_none(item):
         return False
     else:
         return True
-
-
-def _get_item_for_cid(cid, store):
-    try:
-        url = (api_root + "/viewfinder/" + store + "/" + api_version + "/" + cid + "?size=" + fetch_size)
-        data = utils.get_json_response(url)
-        return data
-    except Exception as e:
-        logging.error("Got error '" + str(e) + "' while retrieving cid '" + cid + "' in store " + store)
-        return None
 
 
 def _get_rewards(item):
@@ -148,29 +148,124 @@ def _get_store_url(item, store):
     return url
 
 
-def _get_cid_for_name(name, store):
-    links = _search_for_items_by_name(name, store)
+def _get_cid_for_name(name: str, store: str) -> List[str]:
+    items = _search_for_items_by_name(name, store)
     cids = []
 
-    for link in links:
-        logging.debug("Parsing:\n" + utils.pretty_print_json(link))
-        name = link["name"]
-        item_type = link["top_category"]
-        cid = link["id"]
-        platform = ", ".join(link["playable_platform"])
-
-        logging.info("Found: " + name + " - " + cid + " - Platform: " + platform + " - Type: " + item_type)
-        cids.append(cid)
+    for item in items:
+        cids.append(item.cid)
 
     return cids
 
 
-def _search_for_items_by_name(name, store):
+def _get_next_data_respose(url):
+    response = urllib.request.urlopen(url)
+    html_response = response.read()
+    encoding = response.headers.get_content_charset('utf-8')
+    decoded_html = html_response.decode(encoding)
+
+    html = etree.HTML(decoded_html)
+
+    try:
+        expression = GenericTranslator().css_to_xpath('#__NEXT_DATA__')
+    except SelectorError:
+        print('Invalid selector.')
+
+    selection = [''.join(e.itertext()) for e in html.xpath(expression)]
+    return json.loads(selection[0])
+
+
+def _search_for_items_by_name(name: str, store: str) -> List[GameOffer]:
     encoded_name = quote(name)
-    url = api_root + "/bucket-search/" + store + "/" + api_version + "/" + encoded_name + "?size=" + fetch_size + "&start=0"
-    data = utils.get_json_response(url)
-    links = data["categories"]["games"]["links"]
-    return links
+    url = Psn._build_api_url_for_search(country=store, query=encoded_name)
+    return _get_game_offers(url, store)
+
+def _get_item_for_cid(cid: str, store: str) -> GameOffer:
+    # TODO This does not return a parsable object, it is lacking price
+    url = Psn._build_api_url_for_product_page(country=store, cid=cid)
+    return _get_game_offers_from_product_page(url, store)
+
+def _get_game_offers(url, store: str) -> List[GameOffer]:
+    data = _get_next_data_respose(url)
+    items = data["props"]["apolloState"]
+    game_offers = _search_items_to_game_offers(items, country=store)
+    return game_offers
+
+def _get_game_offers_from_product_page(url, store: str) -> GameOffer:
+    data = _get_next_data_respose(url)
+    cta = data["props"]["pageProps"]["batarangs"]["cta"]["text"]
+    game_offer = _get_game_offer_from_cta(cta, url=url)
+    return game_offer
+
+def _get_game_offer_from_cta(text: str, url: str) -> GameOffer:
+    cid = _get_data_from_malformed_json(text, "productId")
+    return GameOffer(
+        id=cid,
+        cid=cid,
+        name="", #TODO not implemented, maybe get from "batarangs"
+        url=url,
+        platforms=[], # TODO not implemented
+        prices=[
+            Price(
+                # This simply takes the first two prices
+                value=_get_price_value_from_price_string(_get_data_from_malformed_json(text, "discountPriceFormatted")),
+                offer_type="discountedPrice"
+            ),
+            Price(
+                value=_get_price_value_from_price_string(_get_data_from_malformed_json(text, "originalPriceFormatted")),
+                offer_type="basePrice"
+            ),
+        ],
+    )
+
+def _get_data_from_malformed_json(text: str, element_name :str) -> str:
+    m = re.search('"%s":"([^"]*)"' % element_name, text)
+    return m.group(1)
+
+
+def _get_master_image_item_id_for_id(media_items, items):
+
+    media_items_ids = []
+
+    for media_item in media_items:
+        media_items_ids.append(media_item["id"])
+
+    for media_items_id in media_items_ids:
+        if media_items_id in items and items[media_items_id]["role"] == "MASTER":
+            return media_items_id
+
+
+def _search_items_to_game_offers(items: List, country: str) -> List[GameOffer]:
+    return_list: List[GameOffer] = []
+
+    for i in items:
+        if "npTitleId" in items[i]:
+            # This is a game
+            cid = items[i]["id"]
+            price_id = items[i]['price']['id']
+            master_image_item_id = _get_master_image_item_id_for_id(items[i]["media"], items)
+            g = GameOffer(
+                name=items[i]["name"],
+                id=cid,
+                cid=cid,
+                url="%s/%s/product/%s" % (store_root, country, items[i]["id"]),
+                picture_url=items[master_image_item_id]["url"],
+                prices=[
+                    Price(
+                        value=_get_price_value_from_price_string(items[price_id]["discountedPrice"]),
+                        offer_type="discountedPrice"
+                    ),
+                    Price(
+                        value=_get_price_value_from_price_string(items[price_id]["basePrice"]),
+                        offer_type="basePrice"
+                    ),
+                ],
+                type=items[i]["storeDisplayClassification"],
+                platforms=items[i]["platforms"]["json"]
+            )
+            return_list.append(g)
+
+    return return_list
 
 
 def _determine_store(cid: str) -> str:
@@ -195,10 +290,25 @@ def _get_items_by_container(container, store, filters_dict):
     return links
 
 
+def _get_price_value_from_price_string(price: str) -> float:
+    try:
+        return float(re.sub("[^0-9,\.,\,]", "", price).replace(",", "."))
+    except Exception:
+        return -1
+
+
 class Psn(Shop):
     @staticmethod
-    def _build_api_url(country, query):
-        return "%s/%s/select?q=%s&%s" % (api_root, country, query, appendix)
+    def _build_api_url_for_search(country, query):
+        # TODO make safe for countries not in map
+        cleaned_country = country.replace("/","-").lower()
+        return "%s/%s/search/%s" % (api_root, cleaned_country, query)
+
+    @staticmethod
+    def _build_api_url_for_product_page(country: str, cid: str):
+        # TODO make safe for countries not in map
+        cleaned_country = country.replace("/","-").lower()
+        return "%s/%s/product/%s" % (api_root, cleaned_country, cid)
 
     def _item_to_game_offer(self, game):
         if not game:
@@ -245,12 +355,13 @@ class Psn(Shop):
         )
 
     def search(self, name):
-        items = _search_for_items_by_name(name=name, store=self.country)
-        return_offers = []
-        for item in items:
-            if 'bucket' in item and item['bucket'] == 'games':  # Only add items that are games and have prices etc.
-                return_offers.append(self._item_to_game_offer(item))
-        return return_offers
+        game_offers = _search_for_items_by_name(name=name, store=self.country)
+        # return_offers = []
+        # for item in items:
+        #     if 'bucket' in item and item['bucket'] == 'games':  # Only add items that are games and have prices etc.
+        #         return_offers.append(self._item_to_game_offer(item))
+        # return return_offers
+        return game_offers
 
     def get_item_by(self, item_id) -> GameOffer:
         item = _get_item_for_cid(item_id, self.country)
