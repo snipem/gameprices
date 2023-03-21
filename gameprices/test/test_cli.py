@@ -129,7 +129,7 @@ def test_cli_no_match():
     sys.argv = [
         "psncli",
         "--query",
-        "sdfjsdkfsdkfjskdfj YOU WONT FIND ME NEVER EVER. HOPEFULLY",
+        "sdfjsdkfsdkfjskdfj", # this may hopefully never yield results
     ]
 
     with pytest.raises(SystemExit) as pytest_wrapped_e:
