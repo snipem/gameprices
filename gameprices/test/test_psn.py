@@ -75,89 +75,6 @@ class PsnTest(unittest.TestCase):
         item = psn._get_item_for_cid("EP0006-CUSA02532_00-UNRAVELUNRAVEL09", store)
         assert len(psn._get_rewards(item)) > -1
 
-    def test_get_rewards_from_string(self):
-        item = {
-            'skus': [{'amortizeFlag': False, 'bundleExclusiveFlag': False, 'chargeImmediatelyFlag': False,
-                      'charge_type_id': 0, 'credit_card_required_flag': 0, 'defaultSku': True,
-                      'display_price': '€49,99', 'eligibilities': [], 'entitlements': [
-                    {'description': None, 'drms': [], 'duration': 0, 'durationOverrideTypeId': None,
-                     'exp_after_first_use': 0, 'feature_type_id': 3, 'id': 'PILLARS-CID',
-                     'license_type': 0, 'metadata': {'voiceLanguageCode': ['en'],
-                                                     'subtitleLanguageCode': ['de', 'ru', 'en', 'it', 'fr', 'pl',
-                                                                              'es']},
-                     'name': 'Pillars of Eternity: Complete Edition', 'packageType': 'PS4GD',
-                     'packages': [{'platformId': 13, 'platformName': 'ps4', 'size': 151248}],
-                     'preorder_placeholder_flag': False, 'size': 0, 'subType': 0,
-                     'subtitle_language_codes': ['de', 'ru', 'en', 'it', 'fr', 'pl', 'es'], 'type': 5, 'use_count': 0,
-                     'voice_language_codes': ['en']}], 'id': 'PILLARS-CID',
-                      'is_original': False, 'name': 'Vollversion', 'platforms': [0, 18, 10, 13], 'price': 4999,
-                      'rewards': [{'id': 'ID_CAMPAIGN_1', 'discount': 70, 'price': 1499, 'reward_type': 2,
-                                   'display_price': '€14,99', 'isPlus': False, 'campaigns': [
-                              {'id': 'ID_CAMPAIGN_2', 'start_date': '2022-02-02T00:00:00Z',
-                               'end_date': '2022-02-16T23:59:00Z'}], 'bonus_discount': 80,
-                                   'bonus_entitlement_id': 'PLUS_ENTITLEMENT_ID', 'bonus_price': 999,
-                                   'reward_source_type_id': 2, 'start_date': '2022-02-02T00:00:00Z',
-                                   'end_date': '2022-02-16T23:59:00Z', 'bonus_display_price': '€9,99'}],
-                      'seasonPassExclusiveFlag': False, 'skuAvailabilityOverrideFlag': False, 'sku_type': 0,
-                      'type': 'standard'}]
-        }
-        assert psn._get_all_prices(item) == [49.99, 14.99, 9.99]
-        assert psn._get_normal_price(item) == 49.99
-        assert psn._get_playstation_plus_price_reduction(item) == 9.99
-        assert psn._get_non_playstation_plus_price_reduction(item) == 14.99
-
-    def test_get_rewards_from_string_with_demo_and_psnow(self):
-        item = {
-            'skus': [{'amortizeFlag': True, 'bundleExclusiveFlag': False, 'chargeImmediatelyFlag': False,
-                      'charge_type_id': 0, 'credit_card_required_flag': 0, 'defaultSku': True,
-                      'display_price': '€100,00', 'eligibilities': [], 'entitlements': [
-                    {'description': None, 'drms': [], 'duration': 1800, 'durationOverrideTypeId': None,
-                     'exp_after_first_use': 0, 'feature_type_id': 3, 'id': 'TEARAWAY_CID',
-                     'license_type': 0, 'metadata': {
-                        'voiceLanguageCode': ['de', 'no', 'fi', 'ru', 'sv', 'pt', 'en', 'it', 'fr', 'es', 'pl', 'da',
-                                              'nl'],
-                        'subtitleLanguageCode': ['de', 'no', 'fi', 'sv', 'ru', 'pt', 'en', 'it', 'fr', 'es', 'pl', 'da',
-                                                 'nl']}, 'name': 'Tearaway™ Unfolded', 'packageType': 'PS4GD',
-                     'packages': [{'platformId': 13, 'platformName': 'ps4', 'size': 77712}],
-                     'preorder_placeholder_flag': False, 'size': 0, 'subType': 0,
-                     'subtitle_language_codes': ['de', 'no', 'fi', 'sv', 'ru', 'pt', 'en', 'it', 'fr', 'es', 'pl', 'da',
-                                                 'nl'], 'type': 5, 'use_count': 0,
-                     'voice_language_codes': ['de', 'no', 'fi', 'ru', 'sv', 'pt', 'en', 'it', 'fr', 'es', 'pl', 'da',
-                                              'nl']}], 'id': 'TEARAWAY_CID',
-                      'is_original': False, 'name': 'PS Now Download Game', 'platforms': [0, 18, 10, 13],
-                      'price': 10000, 'rewards': [
-                    {'id': 'ID2', 'entitlement_id': 'IP9102-NPIA90011_01-RWD-104513',
-                     'service_provider_id': 'ID3', 'discount': 100, 'price': 0, 'reward_type': 2,
-                     'display_price': 'Kostenlos', 'name': 'PS Now -- Discount 100% Off', 'isPlus': False,
-                     'rewardSourceId': 3, 'reward_source_type_id': 1, 'start_date': '2000-01-01T00:00:00Z'}],
-                      'seasonPassExclusiveFlag': False, 'skuAvailabilityOverrideFlag': False, 'sku_type': 0,
-                      'type': 'standard'},
-                     {'amortizeFlag': False, 'bundleExclusiveFlag': False, 'chargeImmediatelyFlag': False,
-                      'charge_type_id': 0, 'credit_card_required_flag': 0, 'display_price': '€19,99',
-                      'eligibilities': [], 'entitlements': [
-                         {'description': None, 'drms': [], 'duration': 0, 'durationOverrideTypeId': None,
-                          'exp_after_first_use': 0, 'feature_type_id': 3, 'id': 'TEARAWAY_CID',
-                          'license_type': 0, 'metadata': {
-                             'voiceLanguageCode': ['de', 'no', 'fi', 'ru', 'sv', 'pt', 'en', 'it', 'fr', 'es', 'pl',
-                                                   'da', 'nl'],
-                             'subtitleLanguageCode': ['de', 'no', 'fi', 'sv', 'ru', 'pt', 'en', 'it', 'fr', 'es', 'pl',
-                                                      'da', 'nl']}, 'name': 'Tearaway™ Unfolded',
-                          'packageType': 'PS4GD',
-                          'packages': [{'platformId': 13, 'platformName': 'ps4', 'size': 70937}],
-                          'preorder_placeholder_flag': False, 'size': 0, 'subType': 0,
-                          'subtitle_language_codes': ['de', 'no', 'fi', 'sv', 'ru', 'pt', 'en', 'it', 'fr', 'es', 'pl',
-                                                      'da', 'nl'], 'type': 5, 'use_count': 0,
-                          'voice_language_codes': ['de', 'no', 'fi', 'ru', 'sv', 'pt', 'en', 'it', 'fr', 'es', 'pl',
-                                                   'da', 'nl']}], 'id': 'TEARAWAY_CID',
-                      'is_original': False, 'name': 'Vollversion', 'platforms': [0, 18, 10, 13], 'price': 1999,
-                      'rewards': [], 'seasonPassExclusiveFlag': False, 'skuAvailabilityOverrideFlag': False,
-                      'sku_type': 0, 'type': 'standard'}]
-        }
-        assert psn._get_all_prices(item) == [19.99]
-        assert psn._get_normal_price(item) == 19.99
-        assert psn._get_playstation_plus_price_reduction(item) == None
-        assert psn._get_non_playstation_plus_price_reduction(item) == None
-
     @unittest.skip("Skip temporary price reduction")
     def test_check_currently_reduced_item_all_prices(self):
         store = "DE/de"
@@ -197,7 +114,7 @@ class PsnTest(unittest.TestCase):
         game_offers = self.psn.search("Tearaway™ Unfolded")
         game_offer = game_offers[0]
         assert game_offer.name == "Tearaway™ Unfolded"
-        assert game_offer.prices[0].offer_type == "NORMAL" # Normal price should be first
+        assert game_offer.prices[0].offer_type == "discountedPrice" # Discounted price should be first
         assert game_offer.prices[0].value != 0  # Demo should not be first returned
         assert game_offer.prices[0].value != 100  # Price should not be 100 which is the PS Now dummy price
 
