@@ -17,7 +17,7 @@ jobs:
         python-version: '3.9'
         architecture: 'x64'
 
-    - run: make test_deps test
+    - run: make deps test_deps test
 
     - run: make dist
 

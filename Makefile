@@ -3,6 +3,9 @@
 install:
 	pip3 install .
 
+deps:
+	python3 -m pip install -r requirements.txt
+
 test: test_deps
 	python3 -m pytest
 
