@@ -24,7 +24,7 @@ venv:
 
 dist:
 	rm dist/* || true
-	python3 -m pip install pypandoc twine wheel setuptools
+	python3 -m pip install pypandoc==1.5 twine wheel setuptools
 	python3 setup.py sdist
 
 upload: dist
