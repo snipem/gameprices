@@ -15,7 +15,6 @@ from gameprices.utils.utils import format_items_as_json
 
 NO_SEARCH_FOR_CID_REASON = "The search for IDs with the new PSN API as of 2020 is not yet implemented"
 
-@pytest.mark.skip(reason=NO_SEARCH_FOR_CID_REASON)
 class PsnTest(unittest.TestCase):
     # CID for item that is free for Plus members but not for normal members
     # TuneIt on german store
@@ -144,10 +143,9 @@ class PsnTest(unittest.TestCase):
         assert game_offer.name == name
         assert game_offer.id == id
 
+    @pytest.mark.skip(reason=NO_SEARCH_FOR_CID_REASON)
     def test_get_item_by_id_has_picture(self):
         assert "http" in self.get_game().picture_url
-
-
 
     @pytest.mark.skip(reason=NO_SEARCH_FOR_CID_REASON)
     def test_mailfunc(self):
