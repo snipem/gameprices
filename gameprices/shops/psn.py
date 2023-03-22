@@ -54,36 +54,15 @@ def _get_rewards(item):
     return rewards
 
 
-def _get_all_prices(item):
+def _get_all_prices(item) -> List[float]:
     # Returns all prices, regardless of their semantics
 
     prices = []  # highest to lowest
-    has_free_offer = False
 
-    for sku in item["skus"]:
-        p = float(sku["price"]) / 100
-        if p != 0 and p != 100:  # 0 is likely demo, 100 is likely PS Now offering
-            prices.append(p)
-        elif p == 0:
-            has_free_offer = True
-
-    for reward in _get_rewards(item):
-        p = float(reward.get("price")) / 100
-        if p != 0 and p != 100:  # 0 is likely demo, 100 is likely PS Now offering
-            prices.append(p)
-        elif p == 0:
-            has_free_offer = True
-
-        if "bonus_price" in reward:
-            p = float(reward.get("bonus_price")) / 100
-            prices.append(p)
+    for price in item.prices:
+        prices.append(price.value)
 
     prices.sort(key=lambda x: x, reverse=True)
-
-    if len(prices) == 0 and has_free_offer:
-        # If there were no other prices found and there was found
-        # a 0 price before, expect this to be a free item and no demo
-        prices.append(0.0)
 
     return prices
 
@@ -182,8 +161,10 @@ def _search_for_items_by_name(name: str, store: str) -> List[GameOffer]:
 
 def _get_item_for_cid(cid: str, store: str) -> GameOffer:
     # TODO This does not return a parsable object, it is lacking price
+    raise NotImplementedError("Searching by CID is not implemented yet for the new PSN API")
     url = Psn._build_api_url_for_product_page(country=store, cid=cid)
-    return _get_game_offers_from_product_page(url, store)
+    offers = _get_game_offers_from_product_page(url, store)
+    return offers
 
 def _get_game_offers(url, store: str) -> List[GameOffer]:
     data = _get_next_data_respose(url)
@@ -278,17 +259,6 @@ def _determine_store(cid: str) -> str:
             return store
 
 
-def _get_items_by_container(container, store, filters_dict):
-    url = api_root + "/viewfinder/" + store + "/" + api_version + "/" + container + "?size=" + fetch_size
-
-    for i in filters_dict:
-        url = url + "&" + quote(i) + "=" + quote(filters_dict[i])
-
-    data = utils.get_json_response(url)
-    links = data["links"]
-
-    return links
-
 
 def _get_price_value_from_price_string(price: str) -> float:
     try:
@@ -310,13 +280,13 @@ class Psn(Shop):
         cleaned_country = country.replace("/","-").lower()
         return "%s/%s/product/%s" % (api_root, cleaned_country, cid)
 
-    def _item_to_game_offer(self, game):
-        if not game:
+    def _item_to_game_offer(self, item):
+        if not item:
             raise Exception("Item is empty")
 
-        normal_price = _get_normal_price(game)
-        plus_price = _get_playstation_plus_price_reduction(game)
-        non_plus_price = _get_non_playstation_plus_price_reduction(game)
+        normal_price = _get_normal_price(item)
+        plus_price = _get_playstation_plus_price_reduction(item)
+        non_plus_price = _get_non_playstation_plus_price_reduction(item)
 
         prices = []
 
@@ -341,18 +311,7 @@ class Psn(Shop):
         # Make lowest price first in list
         prices.sort(key=lambda x: x.value)
 
-        return GameOffer(
-            id=game["id"],
-            cid=game["id"],
-            url=game["url"],
-            type=game["gameContentTypesList"][0]["key"]
-            if "gameContentTypesList" in game
-            else None,
-            name=game["name"],
-            prices=prices,
-            platforms=game["playable_platform"] if "playable_platform" in game else "",
-            picture_url=_get_image(game),
-        )
+        return game
 
     def search(self, name):
         game_offers = _search_for_items_by_name(name=name, store=self.country)
@@ -365,4 +324,5 @@ class Psn(Shop):
 
     def get_item_by(self, item_id) -> GameOffer:
         item = _get_item_for_cid(item_id, self.country)
-        return self._item_to_game_offer(item)
+        game_offer = self._item_to_game_offer(item)
+        return game_offer
