@@ -1,6 +1,6 @@
 # Gameprices
 
-[![Build](https://github.com/snipem/gameprices/actions/workflows/build.yaml/badge.svg)](https://github.com/snipem/psnprices/actions/workflows/build.yaml) [![PyPI version](https://badge.fury.io/py/gameprices.svg)](https://badge.fury.io/py/gameprices)
+[![Build](https://github.com/snipem/gameprices/actions/workflows/build.yaml/badge.svg)](https://github.com/snipem/gameprices/actions/workflows/build.yaml) [![PyPI version](https://badge.fury.io/py/gameprices.svg)](https://badge.fury.io/py/gameprices)
 
 Command line tool for alerting price drops in the Sony PlayStation Network (PSN) and the Nintendo Eshop.
 
@@ -94,7 +94,7 @@ If the store value is left blank, the script tries to extract the store from the
 
 #### Example mail
 
-![Mail with alerts](https://raw.githubusercontent.com/snipem/psnprices/master/res/mail.png "Mail with alerts")
+![Mail with alerts](https://raw.githubusercontent.com/snipem/gameprices/master/res/mail.png "Mail with alerts")
 
 ### Searching for the CID of an item
 
