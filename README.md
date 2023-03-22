@@ -6,6 +6,8 @@ Command line tool for alerting price drops in the Sony PlayStation Network (PSN)
 
 ## Description
 
+**Since the PSN upgrade that came with the release of PlayStation 5, some functionality of the PSN interface is broken. Currently only searching by a name query is working**
+
 The Sony Entertainment Network (SEN) uses CIDs to identify items in its catalogue. In order to alert you on the desired price of an SEN you need the CID. Use your Browser (cid GET parameter in URL) or this script (`--query`) to retrieve the CID.
 
 In order to check the price of an item. You need a store identifier. These store identifiers are known to work:
